@@ -1,6 +1,7 @@
-from header import *
-    
+
 printMessages = False
+
+v_ref = 1.0 # Voltage setpoint is always 1.0 p.u
 
 # Q mode = 2
 def V_control(ppc_master_obj):

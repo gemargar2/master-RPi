@@ -1,4 +1,3 @@
-from header import *
 import json
 
 # Local setpoints

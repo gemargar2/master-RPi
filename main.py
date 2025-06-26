@@ -1,5 +1,4 @@
 import threading
-from header import *
 from scada_rx import *
 from tso_rx import *
 from hvmeter_rx import *

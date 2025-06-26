@@ -1,6 +1,11 @@
-from header import *
+import zmq
 
 printMessages = False
+
+# Establish connection to forward data to device
+device_context_tx = zmq.Context()
+device_socket_tx = device_context_tx.socket(zmq.PUSH)
+device_socket_tx.bind("tcp://*:2000")
 
 def send_P_in_sp(p_in_sp):
     try:

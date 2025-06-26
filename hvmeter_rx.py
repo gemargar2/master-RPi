@@ -1,4 +1,4 @@
-from header import *
+import zmq
 from remote_callbacks import *
 from local_callbacks import *
 
@@ -6,7 +6,7 @@ def hvmeter_rx(ppc_master_obj):
     # Real
     context_rx = zmq.Context()
     socket_rx = context_rx.socket(zmq.PULL)
-    socket_rx.connect("tcp://127.0.0.1:13004")
+    socket_rx.connect("tcp://160.40.48.99:2002") # Receive directly from emulator
 
     while True:
         # Wait for command
@@ -28,3 +28,5 @@ def hvmeter_rx(ppc_master_obj):
             if message['id'] == "13":
                 if message['value_name'] == 'temperature': ppc_master_obj.temp = float(message["value"])
                 elif message['value_name'] == 'Direct Irradiance': ppc_master_obj.irradiance = float(message["value"])
+                
+                

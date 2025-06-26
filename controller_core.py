@@ -4,9 +4,11 @@ from device_tx import *
 from F_control import *
 from V_control import *
 from limit import *
+import time
 
 plotFlag = True
 
+dt = 0.1 # 100ms
 time_interval = 1000 * dt # 100 miliseconds
 prev_time = time.time()
 
@@ -75,7 +77,7 @@ def controllerCore(i, window_obj, ppc_master_obj):
         q_in_sp = PF_control(ppc_master_obj)
     elif ppc_master_obj.q_mode == 4:
         window_obj.ax3.set_title('Reactive power: Q open loop')
-        q_in_sp = q_ex_sp # Q Open Loop = Just pass the external setpoint
+        q_in_sp = q_grad_sp # Q Open Loop = Just pass the external setpoint
     elif ppc_master_obj.q_mode == 5:
         window_obj.ax3.set_title('Reactive power: Q(U)')
         q_in_sp = QU_VDE(ppc_master_obj)

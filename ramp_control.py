@@ -1,4 +1,4 @@
-from header import *
+import math
 
 # --- PID controllers --------------------------------
 
@@ -50,6 +50,12 @@ def ramp_rate(ppc_master_obj):
     return prev_p_sp, prev_q_sp
 
 # --- Active power ---------------------------------
+
+# PID aux variables
+p_prev_error = 0
+q_prev_error = 0
+p_integral = 0
+q_integral = 0
 
 # P mode = 0
 def P_control(p_grad_sp, prev_p_in_sp, ppc_master_obj):

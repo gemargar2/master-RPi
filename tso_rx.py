@@ -1,4 +1,4 @@
-from header import *
+import zmq
 from remote_callbacks import *
 from local_callbacks import *
 

@@ -1,4 +1,6 @@
-from header import *
+
+f_counter = 0
+v_counter = 0
 shutdown = False
 
 # Check if frequency and voltage are within limits

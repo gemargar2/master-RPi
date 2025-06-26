@@ -1,6 +1,11 @@
-from header import *
+import zmq
 import math
 import json
+
+# Establish connection to send data back to SCADA
+context_tx = zmq.Context()
+socket_tx = context_tx.socket(zmq.PUSH)
+socket_tx.bind("tcp://*:13001")
 
 # --- MV quantities -------------------------------------------
 

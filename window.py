@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from collections import deque
 
 xmax = 40 # seconds
-portrait = True
+portrait = False
 
 class Window_class:
 

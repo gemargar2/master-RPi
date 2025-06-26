@@ -1,7 +1,8 @@
-from header import *
 from ramp_control import *
 
 printMessages = True
+
+f_ref = 50.0 # Frequency setpoint is always 50.0 Hz
 
 # F control submode
 # 0 = FSM
@@ -53,7 +54,7 @@ def F_control_pid(p_in_sp, prev_p_in_sp, ppc_master_obj):
 
 def LFSM_U(p_ref, ppc_master_obj, window_obj):
     window_obj.ax8.set_xlim(47.5, 49.9)
-    window_obj.ax8.set_ylim(p_ref, 1.0)
+    window_obj.ax8.set_ylim(0.5, 1.0)
     s2 = ppc_master_obj.s_LFSM_U # Droop default value 5%
     f_1 = 49.8 # LFSM-U frequency threshold default 49.8Hz
     delta_P = (f_1-ppc_master_obj.f_actual)/(f_ref*s2) # positive for f_actual<f_1 (underfrequency)
@@ -63,7 +64,7 @@ def LFSM_U(p_ref, ppc_master_obj, window_obj):
 
 def LFSM_O(p_ref, ppc_master_obj, window_obj):
     window_obj.ax8.set_xlim(50.1, 51.5)
-    window_obj.ax8.set_ylim(0, p_ref)
+    window_obj.ax8.set_ylim(0, 0.5)
     s2 = ppc_master_obj.s_LFSM_O # Droop default value 5%
     f_1 = 50.2 # LFSM-O frequency threshold default 50.2Hz
     delta_P = (f_1-ppc_master_obj.f_actual)/(f_ref*s2) # negative for f_actual>f_1 (overfrequency)
@@ -158,7 +159,8 @@ def F_control(prev_p_in_sp, ppc_master_obj, window_obj):
 
     # Ramp BEFORE PID = avoid integral error overflow
     # Ramp AFTER PID = avoid output changing to steeply
-    p_in_sp1 = F_control_pid(p_in_sp, prev_p_in_sp, ppc_master_obj)
-    p_in_sp2 = F_ramp_control(ppc_master_obj, p_in_sp1, prev_p_in_sp)
+    # p_in_sp1 = F_ramp_control(ppc_master_obj, p_in_sp, prev_p_in_sp)
+    p_in_sp2 = F_control_pid(p_in_sp, prev_p_in_sp, ppc_master_obj)
+    
     
     return p_in_sp2
