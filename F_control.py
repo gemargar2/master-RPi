@@ -3,6 +3,7 @@ from ramp_control import *
 printMessages = True
 
 f_ref = 50.0 # Frequency setpoint is always 50.0 Hz
+dt = 0.1
 
 # F control submode
 # 0 = FSM
@@ -159,8 +160,8 @@ def F_control(prev_p_in_sp, ppc_master_obj, window_obj):
 
     # Ramp BEFORE PID = avoid integral error overflow
     # Ramp AFTER PID = avoid output changing to steeply
-    # p_in_sp1 = F_ramp_control(ppc_master_obj, p_in_sp, prev_p_in_sp)
-    p_in_sp2 = F_control_pid(p_in_sp, prev_p_in_sp, ppc_master_obj)
+    p_in_sp1 = F_ramp_control(ppc_master_obj, p_in_sp, prev_p_in_sp)
+    # p_in_sp2 = F_control_pid(p_in_sp, prev_p_in_sp, ppc_master_obj)
     
     
-    return p_in_sp2
+    return p_in_sp1

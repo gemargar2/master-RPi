@@ -6,11 +6,11 @@ def tso_rx(ppc_master_obj, window_obj):
     # Real
     context_rx = zmq.Context()
     socket_rx = context_rx.socket(zmq.PULL)
-    socket_rx.connect("tcp://127.0.0.1:13002")
+    socket_rx.connect("tcp://160.40.50.122:13002")
 
     while True:
         # Wait for command
-        message = socket_rx.recv_json()
+        message = socket_rx.recv_json()l
 
         # Check for local / remote signal
         if message['origin'] == 'localPlatform':

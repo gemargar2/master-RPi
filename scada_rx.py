@@ -1,21 +1,18 @@
 import zmq
 from local_callbacks import *
-from time import *
+from time import sleep
 
 def scada_rx(ppc_master_obj, window_obj):
-    # Real
-    context_rx = zmq.Context()
-    socket_rx = context_rx.socket(zmq.PULL)
-    socket_rx.connect("tcp://160.40.50.94:13001")
-
+    
     while True:
         # Wait for command
-        message = socket_rx.recv_json()
+        message = ppc_master_obj.socket_rx.recv_json()
         # print(message)
         
         # Check for local / remote signal
         if message['origin'] == 'localPlatform':
             if message['value_name'] == 'Local_Remote':
+                print(message)
                 ppc_master_obj.local_remote = int(message['value'])
                 # Update plots
                 window_obj.plot_PF_curve(ppc_master_obj)

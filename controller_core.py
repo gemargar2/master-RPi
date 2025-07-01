@@ -1,6 +1,6 @@
 from window import *
 from scada_tx import *
-from device_tx import *
+from slave_tx import *
 from F_control import *
 from V_control import *
 from limit import *
@@ -15,11 +15,6 @@ prev_time = time.time()
 # Internal setpoints
 prev_p_in_sp = 0
 prev_q_in_sp = 0
-
-f_actual = 50
-v_actual = 1
-p_actual_hv = 0
-q_actual_hv = 0
 p_in_sp = 0
 q_in_sp = 0
 
@@ -103,7 +98,7 @@ def controllerCore(i, window_obj, ppc_master_obj):
         time.sleep(1)
 
     # Forward internal setpoints to slave
-    device_tx(p_in_sp, q_in_sp, p_grad_sp, q_grad_sp)
+    slave_tx(ppc_master_obj, p_in_sp, q_in_sp, p_grad_sp, q_grad_sp)
 
     # Report back to SCADA
     # scada_tx(ppc_master_obj)

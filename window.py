@@ -2,44 +2,26 @@ import matplotlib.pyplot as plt
 from collections import deque
 
 xmax = 40 # seconds
-portrait = False
 
 class Window_class:
 
     def __init__(self):
         # --- init plot --------------
-        if portrait:
-            # Portrait
-            self.fig = plt.figure(figsize=(10, 14))
-            mngr = plt.get_current_fig_manager()
-            mngr.window.geometry("+1950-5")
-            self.fig.suptitle('PPC Master')
+        # Landscape
+        self.fig = plt.figure(figsize=(18, 8))
+        mngr = plt.get_current_fig_manager()
+        mngr.window.geometry("+50+100")
+        self.fig.suptitle('Master PPC')
 
-            # create axis
-            self.ax1 = self.fig.add_subplot(421)
-            self.ax2 = self.fig.add_subplot(422)
-            self.ax3 = self.fig.add_subplot(423)
-            self.ax4 = self.fig.add_subplot(424)
-            self.ax5 = self.fig.add_subplot(425)
-            self.ax6 = self.fig.add_subplot(426)
-            self.ax7 = self.fig.add_subplot(427)
-            self.ax8 = self.fig.add_subplot(428)
-        else:
-            # Landscape
-            self.fig = plt.figure(figsize=(18, 7))
-            mngr = plt.get_current_fig_manager()
-            mngr.window.geometry("+20+50")
-            self.fig.suptitle('PPC Master')
-
-            # create axis
-            self.ax1 = self.fig.add_subplot(241)
-            self.ax2 = self.fig.add_subplot(242)
-            self.ax3 = self.fig.add_subplot(243)
-            self.ax4 = self.fig.add_subplot(244)
-            self.ax5 = self.fig.add_subplot(245)
-            self.ax6 = self.fig.add_subplot(246)
-            self.ax7 = self.fig.add_subplot(247)
-            self.ax8 = self.fig.add_subplot(248)
+        # create axis
+        self.ax1 = self.fig.add_subplot(241)
+        self.ax2 = self.fig.add_subplot(242)
+        self.ax3 = self.fig.add_subplot(243)
+        self.ax4 = self.fig.add_subplot(244)
+        self.ax5 = self.fig.add_subplot(245)
+        self.ax6 = self.fig.add_subplot(246)
+        self.ax7 = self.fig.add_subplot(247)
+        self.ax8 = self.fig.add_subplot(248)
 
         # Set titles of subplots
         self.ax1.set_title('Active Power')
@@ -238,7 +220,7 @@ class Window_class:
             self.ln41.axes.set_xlim(x-xmax, x)
         
         # Emulate FuncAnimation
-        plt.pause(0.001) # 1/20Hz = 0.05 s (TG3, section 6.1.1, p.132)
+        plt.pause(0.05) # 1/20Hz = 0.05 s (TG3, section 6.1.1, p.132)
     
     def plot_PF_curve(self, ppc_master_obj):
         # P(f) curve (limits fixed / slopes modifiable)

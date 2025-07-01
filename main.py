@@ -1,5 +1,6 @@
 import threading
 from scada_rx import *
+from scada_tx import *
 from tso_rx import *
 from hvmeter_rx import *
 from controller_core import *
@@ -20,11 +21,13 @@ def main():
 
     # Start parallel processes
     # Scans Tsotakis IP for signals comming from SCADA
-    scadaApp = threading.Thread(target = scada_rx, args=(ppc_master_obj, window_obj))
-    scadaApp.start()
+#     scada_receive = threading.Thread(target = scada_rx, args=(ppc_master_obj, window_obj))
+#     scada_receive.start()
+#     scada_send = threading.Thread(target l= scada_tx, args=(ppc_master_obj,))
+#     scada_send.start()
     # Scans local IP for signals comming from TSO
-    # tsoApp = threading.Thread(target = tso_rx, args=(ppc_master_obj, window_obj))
-    # tsoApp.start()
+    tsoApp = threading.Thread(target = tso_rx, args=(ppc_master_obj, window_obj))
+    tsoApp.start()
     # Scans local IP for signals comming from HV meter
     hvmeterApp = threading.Thread(target = hvmeter_rx, args=(ppc_master_obj,))
     hvmeterApp.start()

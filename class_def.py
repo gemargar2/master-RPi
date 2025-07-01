@@ -1,9 +1,11 @@
-import threading
+import zmq
 import time
+import threading
 from F_control import *
 
 class PPC_master_class:
     def __init__(self, json_obj, json_obj2):
+        # --- Configuration ----------------------------
         # Store setpoints in m
         self.memory = json_obj
         self.configdata = json_obj2
@@ -18,8 +20,6 @@ class PPC_master_class:
         self.solar_zenith = self.configdata["device"]["solar_zenith"]
         self.solar_azimuth = self.configdata["device"]["solar_azimuth"]
         self.temp_coefficient = self.configdata["device"]["temp_coefficient_of_power"]
-        # Local = SCADA / Remote = TSO
-        self.local_remote = 0 # 0 = Local / 1 = Remote
         # Mode of operation for active and reactive control
         self.p_mode = 2 # 0 = P control (PID) / 1 = F control (FSM) / 2 = P Open Loop / 3 = MPPT control
         self.q_mode = 4 # 0 = Q control (PID) / 1 = Q(P) control / 2 = V control / 3 = PF control / 4 = Q Open Loop / 5 = Q(U) / 6 = Q(U) with limit
@@ -31,6 +31,18 @@ class PPC_master_class:
         self.max_P_cap = 1 # Max active power capability (meteo are ignored)
         self.max_Q_cap = 0.2 # Max reactive power capability (meteo are ignored)
         self.min_Q_cap = -0.35 # Max reactive power capability (meteo are ignored)
+        # --- Establish connection for transmission --------------
+        self.context_tx = zmq.Context()
+        self.socket_tx = self.context_tx.socket(zmq.PUSH)
+        self.socket_tx.bind("ipc:///tmp/zmqsub")
+        # --- Establish connection for reception --------------
+        self.context_rx = zmq.Context()
+        self.socket_rx = self.context_rx.socket(zmq.PULL)
+        self.socket_rx.connect("ipc:///tmp/zmqpub")
+        time.sleep(5)
+        # --- Signals ----------------------------
+        # Local = SCADA / Remote = TSO
+        self.local_remote = 0 # 0 = Local / 1 = Remote
         # Status
         self.operational_state = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
         self.f_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
