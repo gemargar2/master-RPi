@@ -10,7 +10,7 @@ def tso_rx(ppc_master_obj, window_obj):
 
     while True:
         # Wait for command
-        message = socket_rx.recv_json()l
+        message = socket_rx.recv_json()
 
         # Check for local / remote signal
         if message['origin'] == 'localPlatform':

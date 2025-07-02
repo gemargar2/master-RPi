@@ -12,7 +12,7 @@ def scada_rx(ppc_master_obj, window_obj):
         # Check for local / remote signal
         if message['origin'] == 'localPlatform':
             if message['value_name'] == 'Local_Remote':
-                print(message)
+                # print(message)
                 ppc_master_obj.local_remote = int(message['value'])
                 # Update plots
                 window_obj.plot_PF_curve(ppc_master_obj)
@@ -67,3 +67,18 @@ def scada_rx(ppc_master_obj, window_obj):
             if message['origin'] == 'localPlatform':
                 # print("You are in remote mode - SCADA messages are ignored (except for local_remote)")
                 pass
+
+        if message['origin'] == 'HV_Meter':
+            # print(message)
+            if message['value_name'] == 'VAC_ph': ppc_master_obj.v_actual = float(message["value"])
+            elif message['value_name'] == 'f': ppc_master_obj.f_actual = float(message["value"])
+            elif message['value_name'] == 'Pa': ppc_master_obj.p_actual_hv = float(message["value"])
+            elif message['value_name'] == 'Qa': ppc_master_obj.q_actual_hv = float(message["value"])
+        
+        elif message['origin'] == 'Slave':
+            # print(message)
+            if message['id'] == "13":
+                if message['value_name'] == 'temperature': ppc_master_obj.temp = float(message["value"])
+                elif message['value_name'] == 'Direct Irradiance': ppc_master_obj.irradiance = float(message["value"])
+
+

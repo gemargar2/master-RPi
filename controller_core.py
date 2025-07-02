@@ -101,5 +101,5 @@ def controllerCore(i, window_obj, ppc_master_obj):
     slave_tx(ppc_master_obj, p_in_sp, q_in_sp, p_grad_sp, q_grad_sp)
 
     # Report back to SCADA
-    # scada_tx(ppc_master_obj)
+    scada_tx(ppc_master_obj)
     
