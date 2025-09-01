@@ -1,5 +1,5 @@
 {
-    "device": {
+	"device": {
 		"name": "Master1",
 		"description": "This is the one and only Power Park Controller (PPC) master for the whole site with project number 024455 in Meliti, Florina, Greece",
 		"plant_type": "D",
@@ -8,8 +8,15 @@
 		"slaves": {
 			"Slave1": {
 				"ID": 13,
-				"name": "slave1",
-				"nominalpower": "50",
+				"name": "Slave_1",
+				"nominal_power": "20",
+				"has_solar_sensor": "False",
+				"has_temp_sensor": "False"
+			}, 
+			"Slave2": {
+				"ID": 14,
+				"name": "Slave_2",
+				"nominal_power": "30",
 				"has_solar_sensor": "False",
 				"has_temp_sensor": "False"
 			}

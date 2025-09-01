@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from collections import deque
 
 xmax = 40 # seconds
+smax = 400 # samples
 
 class Window_class:
 
@@ -11,15 +12,15 @@ class Window_class:
         self.fig = plt.figure(figsize=(18, 8))
         mngr = plt.get_current_fig_manager()
         mngr.window.geometry("+50+100")
-        self.fig.suptitle('Master PPC')
+        self.fig.suptitle('Master PPC: Local')
 
         # create axis
         self.ax1 = self.fig.add_subplot(241)
         self.ax2 = self.fig.add_subplot(242)
-        self.ax3 = self.fig.add_subplot(243)
-        self.ax4 = self.fig.add_subplot(244)
-        self.ax5 = self.fig.add_subplot(245)
-        self.ax6 = self.fig.add_subplot(246)
+        self.ax3 = self.fig.add_subplot(245)
+        self.ax4 = self.fig.add_subplot(246)
+        self.ax5 = self.fig.add_subplot(243)
+        self.ax6 = self.fig.add_subplot(244)
         self.ax7 = self.fig.add_subplot(247)
         self.ax8 = self.fig.add_subplot(248)
 
@@ -88,8 +89,8 @@ class Window_class:
         self.ax1.legend(handles=[self.ln11, self.ln12, self.ln13])
         # F plot
         self.ln21, = self.ax2.plot([], [], "b-", label="Actual")
-        self.ln22, = self.ax2.plot([], [], "r-", label="49Hz")
-        self.ln23, = self.ax2.plot([], [], "r-", label="51Hz")
+        self.ln22, = self.ax2.plot([], [], "r--", label="49Hz")
+        self.ln23, = self.ax2.plot([], [], "r--", label="51Hz")
         # Q plots
         self.ln31, = self.ax3.plot([], [], "b-", label="Actual")
         self.ln32, = self.ax3.plot([], [], "r-", label='ex_sp')
@@ -97,20 +98,20 @@ class Window_class:
         self.ax3.legend(handles=[self.ln31, self.ln32, self.ln33])
         # V plot
         self.ln41, = self.ax4.plot([], [], "b-", label="Actual")
-        self.ln42, = self.ax4.plot([], [], "r-", label="0.9pu")
-        self.ln43, = self.ax4.plot([], [], "r-", label="1.05pu")
+        self.ln42, = self.ax4.plot([], [], "r--", label="0.9pu")
+        self.ln43, = self.ax4.plot([], [], "r--", label="1.18pu")
         # U-Q
-        self.ln51, = self.ax5.plot([], [], "b-", label="Actual")
-        self.ln52, = self.ax5.plot([], [], "g-", label="Setpoint")
-        # self.ln51, = self.ax5.plot([], [], "w-", label="Actual", marker='o', mec='b')
-        # self.ln52, = self.ax5.plot([], [], "w-", label="Setpoint", marker='o', mec='g')
+        # self.ln51, = self.ax5.plot([], [], "b-", label="Actual")
+        # self.ln52, = self.ax5.plot([], [], "g-", label="Setpoint")
+        self.ln51, = self.ax5.plot([], [], "w-", label="Actual", marker='o', mec='b')
+        self.ln52, = self.ax5.plot([], [], "w-", label="Setpoint", marker='o', mec='g')
         self.ln53, = self.ax5.plot([], [], "r-", label="Limit")
         self.ax5.legend(handles=[self.ln51, self.ln52, self.ln53])
         # P-Q
-        self.ln61, = self.ax6.plot([], [], "b-", label="Actual")
-        self.ln62, = self.ax6.plot([], [], "g-", label="Setpoint")
-        # self.ln61, = self.ax6.plot([], [], "w-", label="Actual", marker='o', mec='b')
-        # self.ln62, = self.ax6.plot([], [], "w-", label="Setpoint", marker='o', mec='g')
+        # self.ln61, = self.ax6.plot([], [], "b-", label="Actual")
+        # self.ln62, = self.ax6.plot([], [], "g-", label="Setpoint")
+        self.ln61, = self.ax6.plot([], [], "w-", label="Actual", marker='o', mec='b')
+        self.ln62, = self.ax6.plot([], [], "w-", label="Setpoint", marker='o', mec='g')
         self.ln63, = self.ax6.plot([], [], "r-", label="Limit")
         self.ln64, = self.ax6.plot([], [], "k-", label="Q(P)")
         # Q(U)
@@ -144,26 +145,26 @@ class Window_class:
         #     wspace=0.2
         # )
     
-    p_data = []
-    p_sp_data = []
-    p_nsp_data = []
-    f_data = []
-    f_up = []
-    f_dn = []
-    q_data = []
-    q_sp_data = []
-    q_nsp_data = []
-    v_data = []
-    v_up = []
-    v_dn = []
-    x_data = []
+    p_data = deque([], maxlen=smax)
+    p_sp_data = deque([], maxlen=smax)
+    p_nsp_data = deque([], maxlen=smax)
+    f_data = deque([], maxlen=smax)
+    f_up = deque([], maxlen=smax)
+    f_dn = deque([], maxlen=smax)
+    q_data = deque([], maxlen=smax)
+    q_sp_data = deque([], maxlen=smax)
+    q_nsp_data = deque([], maxlen=smax)
+    v_data = deque([], maxlen=smax)
+    v_up = deque([], maxlen=smax)
+    v_dn = deque([], maxlen=smax)
+    x_data = deque([], maxlen=smax)
 
-    def plot_data(self, x, ppc_master_obj, p_in_sp, q_in_sp):
+    def plot_data(self, x, ppc_master_obj):
         self.x_data.append(x)
         # P plot
         self.p_data.append(ppc_master_obj.p_actual_hv)
         self.p_sp_data.append(ppc_master_obj.p_ex_sp)
-        self.p_nsp_data.append(p_in_sp)
+        self.p_nsp_data.append(ppc_master_obj.p_in_sp)
         # F plot
         self.f_data.append(ppc_master_obj.f_actual)
         self.f_up.append(51)
@@ -171,7 +172,7 @@ class Window_class:
         # Q plots
         self.q_data.append(ppc_master_obj.q_actual_hv)
         self.q_sp_data.append(ppc_master_obj.q_ex_sp)
-        self.q_nsp_data.append(q_in_sp)
+        self.q_nsp_data.append(ppc_master_obj.q_in_sp)
         # V plots
         self.v_data.append(ppc_master_obj.v_actual)
         self.v_up.append(1.118)
@@ -195,18 +196,18 @@ class Window_class:
         self.ln42.set_data(self.x_data, self.v_up)
         self.ln43.set_data(self.x_data, self.v_dn)
         # V-Q
-        self.ln51.set_data(self.q_data, self.v_data)
-        self.ln52.set_data(self.q_nsp_data, self.v_data)
-        # self.ln51.set_data(ppc_master_obj.q_actual_hv, ppc_master_obj.v_actual)
-        # self.ln52.set_data(q_in_sp, ppc_master_obj.v_actual)
+        # self.ln51.set_data(self.q_data, self.v_data)
+        # self.ln52.set_data(self.q_nsp_data, self.v_data)
+        self.ln51.set_data(ppc_master_obj.q_actual_hv, ppc_master_obj.v_actual)
+        self.ln52.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.v_actual)
         # P-Q
-        self.ln61.set_data(self.q_data, self.p_data)
-        self.ln62.set_data(self.q_nsp_data, self.p_nsp_data)
-        # self.ln61.set_data(ppc_master_obj.q_actual_hv, ppc_master_obj.p_actual_hv)
-        # self.ln62.set_data(q_in_sp, p_in_sp)
+        # self.ln61.set_data(self.q_data, self.p_data)
+        # self.ln62.set_data(self.q_nsp_data, self.p_nsp_data)
+        self.ln61.set_data(ppc_master_obj.q_actual_hv, ppc_master_obj.p_actual_hv)
+        self.ln62.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.p_in_sp)
         self.ln73.set_data(ppc_master_obj.v_actual, ppc_master_obj.q_actual_hv)
         # P-f
-        self.ln82.set_data(ppc_master_obj.f_actual, p_in_sp)
+        self.ln82.set_data(ppc_master_obj.f_actual, ppc_master_obj.p_in_sp)
         self.ln83.set_data(ppc_master_obj.f_actual, ppc_master_obj.p_actual_hv)
 
         # Slide window
