@@ -36,7 +36,7 @@ def recalc_contribution(ppc_master_obj, window_obj):
 
 # --- SLAVES ------------------------------------------------
 def send_internal_setpoints(ppc_master_obj, window_obj):
-	recalc_contribution(ppc_master_obj, window_obj)
+	# Iterate through slaves
 	for i in range(ppc_master_obj.numberOfSlaves):
 		dest = "Slave_" + str(i+1)
 		ppc_master_obj.slave_p_sp[i] = ppc_master_obj.p_in_sp * ppc_master_obj.contribution[i]
