@@ -22,18 +22,20 @@ def routine_10min(ppc_master_obj, window_obj):
 # Fose setpoints
 
 def fose_P_setpoint(ppc_master_obj, window_obj, var):
-	pass
+	# Update ppc_master_obj variable
+	ppc_master_obj.fose_P_sp = var/ppc_master_obj.S_nom # store as per-unit
 
 def fose_Q_setpoint(ppc_master_obj, window_obj, var):
-	pass
+	# Update ppc_master_obj variable
+	ppc_master_obj.fose_Q_sp = var/ppc_master_obj.S_nom # store as per-unit
     
 # Remote setpoints
 
 def remote_P_setpoint(ppc_master_obj, window_obj, var):
 	# Update ppc_master_obj variable
-	ppc_master_obj.remote_P_sp = var/ppc_master_obj.S_nom
+	ppc_master_obj.tso_P_sp = var/ppc_master_obj.S_nom # store as per-unit
 	ppc_master_obj.memory["remote_P_sp"] = var
-	# Update plots
+	# Update plots 
 	window_obj.plot_PF_curve(ppc_master_obj)
 	# Update setpoint json file
 	with open("setpoints.json", "w") as outfile:
@@ -41,7 +43,7 @@ def remote_P_setpoint(ppc_master_obj, window_obj, var):
 
 def remote_Q_setpoint(ppc_master_obj, window_obj, var):
 	# Update ppc_master_obj variable
-	ppc_master_obj.remote_Q_sp = var/ppc_master_obj.S_nom
+	ppc_master_obj.tso_Q_sp = var/ppc_master_obj.S_nom # store as per-unit
 	ppc_master_obj.memory["remote_Q_sp"] = var
 	# Update plots
 	window_obj.plot_QU_limit_curve(ppc_master_obj)

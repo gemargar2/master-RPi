@@ -36,6 +36,7 @@ def controllerCore(i, window_obj, ppc_master_obj):
     
 	# Check frequency and voltage ranges
 	shutdown = operating_ranges(ppc_master_obj, window_obj)
+	recalc_contribution(ppc_master_obj, window_obj)
 
 	if ppc_master_obj.f_shutdown != 0:
 		ppc_master_obj.operational_state = ppc_master_obj.f_shutdown

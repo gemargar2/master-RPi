@@ -4,7 +4,7 @@ import json
 
 def local_P_setpoint(ppc_master_obj, window_obj, var):
 	# Update ppc_master_obj variable
-	ppc_master_obj.local_P_sp = var/ppc_master_obj.S_nom
+	ppc_master_obj.local_P_sp = var/ppc_master_obj.S_nom # store as per-unit
 	ppc_master_obj.memory["local_P_sp"] = var
 	# Update plots
 	window_obj.plot_PF_curve(ppc_master_obj)
@@ -14,7 +14,7 @@ def local_P_setpoint(ppc_master_obj, window_obj, var):
 
 def local_Q_setpoint(ppc_master_obj, window_obj, var):
 	# Update ppc_master_obj variable
-	ppc_master_obj.local_Q_sp = var/ppc_master_obj.S_nom
+	ppc_master_obj.local_Q_sp = var/ppc_master_obj.S_nom # store as per-unit
 	ppc_master_obj.memory["local_Q_sp"] = var
 	# Update plots
 	window_obj.plot_QU_limit_curve(ppc_master_obj)

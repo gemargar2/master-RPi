@@ -27,16 +27,24 @@ class PPC_master_class:
 		# Slave PPCs management
 		self.slaves_data = self.configdata["device"]["slaves"]
 		self.numberOfSlaves = len(self.slaves_data) # number of slaves
-		self.p_installed = [] # nominal power of slaves
-		self.pmax_avail = zeros(self.numberOfSlaves)
-		self.qmax_avail = zeros(self.numberOfSlaves)
-		self.qmin_avail = zeros(self.numberOfSlaves)
-		self.contribution = [] # percentage of contribution to the final power output
+		self.slaves_Pinst = [] # nominal power of slaves
 		self.slave_id = []
-		self.connect_to_slaves()
+		# Slaves availability
+		self.slave_pmax = zeros(self.numberOfSlaves) # Pmax available
+		self.slave_qmax = zeros(self.numberOfSlaves) # Qmax available
+		self.slave_qmin = zeros(self.numberOfSlaves) # Qmin available
+		# Contribution percentages
+		self.pi_per = zeros(self.numberOfSlaves) # percentage of contribution to the injected active power
+		self.qi_per = zeros(self.numberOfSlaves) # percentage of contribution to the injected reactive power
+		self.qa_per = zeros(self.numberOfSlaves) # percentage of contribution to the absorbed reactive power
 		# Slave setpoints
 		self.slave_p_sp = zeros(self.numberOfSlaves)
 		self.slave_q_sp = zeros(self.numberOfSlaves)
+		# Summary
+		self.total_pmax = 0 # MW
+		self.total_qmax = 0 # MVAR
+		self.total_qmin = 0 # MVAR
+		self.connect_to_slaves()
 		# --- Establish connection for transmission --------------
 		self.context_tx = zmq.Context()
 		self.socket_tx = self.context_tx.socket(zmq.PUSH)
@@ -61,6 +69,7 @@ class PPC_master_class:
 		self.f_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
 		self.v_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
 		self.auto_start_state = 0 # 0 = OFF / 1 = ON
+		self.main_switch_pos = 1 # 0 = Open / 1 = Closed
 		# Local setpoints (SCADA)
 		self.local_P_sp = float(json_obj["local_P_sp"])/self.S_nom
 		self.local_Q_sp = float(json_obj["local_Q_sp"])/self.S_nom
@@ -71,6 +80,9 @@ class PPC_master_class:
 		self.remote_Q_sp = float(json_obj["remote_Q_sp"])/self.S_nom
 		self.remote_PF_sp = float(json_obj["remote_PF_sp"])
 		self.remote_V_sp = float(json_obj["remote_V_sp"])/self.V_nom
+		# Network Operator setpoints (TSO)
+		self.tso_P_sp = float(json_obj["remote_P_sp"])/self.S_nom # Minimum p.u
+		self.tso_Q_sp = float(json_obj["remote_Q_sp"])/self.S_nom # Minimum p.u
 		# 3rd party setpoints (FOSE)
 		self.fose_P_sp = 1 # Maximum p.u
 		self.fose_Q_sp = 0.2 # Maximum p.u
@@ -148,18 +160,22 @@ class PPC_master_class:
     
 	def connect_to_slaves(self):
 		checksum = 0
+		index = 0
 		for i in self.slaves_data:
 			# print(i)
 			self.slave_id.append(int(self.slaves_data[i]["ID"]))
-			self.p_installed.append(int(self.slaves_data[i]["nominal_power"]))
-			self.contribution.append(float(self.slaves_data[i]["nominal_power"])/self.P_nom)
+			self.slaves_Pinst.append(int(self.slaves_data[i]["nominal_power"]))
+			self.pi_per[index] = float(self.slaves_data[i]["nominal_power"])/self.S_nom
+			self.qi_per[index] = float(self.slaves_data[i]["nominal_power"])/self.S_nom
+			self.qa_per[index] = float(self.slaves_data[i]["nominal_power"])/self.S_nom
 			checksum += (int(self.slaves_data[i]["nominal_power"]))
+			index += 1
         
 		print(self.slave_id)
-		print(self.p_installed)
-		print(self.contribution)
+		print(self.slaves_Pinst)
+		print(self.pi_per)
 
-		if checksum != self.P_nom:
+		if checksum != self.S_nom:
 			print("Error! Sum of inverter's nominal power ratings does not match Slave's nominal power")
 		else:
 			print("Checksum ok")
@@ -230,10 +246,12 @@ class PPC_master_class:
 			if self.p_mode == 3:
 				self.p_ex_sp = self.max_P_cap
 			else:
-				if self.remote_P_sp <= self.fose_P_sp: self.p_ex_sp = self.remote_P_sp
-				else: self.p_ex_sp = self.fose_P_sp
-			if self.remote_Q_sp <= self.fose_Q_sp: self.q_ex_sp = self.remote_Q_sp
-			else: self.q_ex_sp = self.fose_Q_sp
+				if self.tso_P_sp <= self.fose_P_sp: self.remote_P_sp = self.tso_P_sp
+				else: self.remote_P_sp = self.fose_P_sp
+			if self.tso_Q_sp <= self.fose_Q_sp: self.remote_Q_sp = self.tso_Q_sp
+			else: self.remote_Q_sp = self.fose_Q_sp
+			self.p_ex_sp = self.remote_P_sp
+			self.q_ex_sp = self.remote_Q_sp
 			self.pf_ex_sp = self.remote_PF_sp
         
 		# Check operational state

@@ -5,42 +5,50 @@ printMessages = False
 
 # Recalculate slaves contribution based on real time active power availability
 def recalc_contribution(ppc_master_obj, window_obj):
-	# Calculate new available
-	new_checksum = 0
-	for i in range(ppc_master_obj.numberOfSlaves):
-		new_checksum += ppc_master_obj.pmax_avail[i]
+	# Recalculate available power yield
+	ppc_master_obj.total_pmax = 0
+	ppc_master_obj.total_qmax = 0
+	ppc_master_obj.total_qmin = 0
+	for index in range(ppc_master_obj.numberOfSlaves):
+		ppc_master_obj.total_pmax += ppc_master_obj.slave_pmax[index]
+		ppc_master_obj.total_qmax += ppc_master_obj.slave_qmax[index]
+		ppc_master_obj.total_qmin += ppc_master_obj.slave_qmin[index]	
 
-	# for i in range(ppc_master_obj.numberOfSlaves):
-	#	ppc_master_obj.contribution[i] = ppc_master_obj.pmax_avail[i]/new_checksum
+	# Calculate new contribution
+	for index in range(ppc_master_obj.numberOfSlaves):
+		ppc_master_obj.pi_per[index] = 0.0
+		ppc_master_obj.qi_per[index] = 0.0
+		ppc_master_obj.qa_per[index] = 0.0
+		if True:
+			if ppc_master_obj.total_pmax != 0: ppc_master_obj.pi_per[index] = ppc_master_obj.slave_pmax[index]/ppc_master_obj.total_pmax
+			if ppc_master_obj.total_qmax != 0: ppc_master_obj.qi_per[index] = ppc_master_obj.slave_qmax[index]/ppc_master_obj.total_qmax
+			if ppc_master_obj.total_qmin != 0: ppc_master_obj.qa_per[index] = ppc_master_obj.slave_qmin[index]/ppc_master_obj.total_qmin
     
-	# Master 
-	production = round(ppc_master_obj.P_nom * ppc_master_obj.p_actual_hv, 2)
-	setpoint = round(ppc_master_obj.P_nom * ppc_master_obj.p_ex_sp, 2)
-	available = round(new_checksum, 2)
-	installed = round(ppc_master_obj.P_nom, 2)
-	# Slave 1
-	slave1_contribution = int(ppc_master_obj.contribution[0]*100)
-	slave1_setpoint = round(ppc_master_obj.P_nom * ppc_master_obj.slave_p_sp[0], 2)
-	slave1_available = round(ppc_master_obj.pmax_avail[0], 2)
-	slave1_installed = round(ppc_master_obj.p_installed[0], 2)
-	# Slave 2
-	slave2_contribution = int(ppc_master_obj.contribution[1]*100)
-	slave2_setpoint =  round(ppc_master_obj.P_nom * ppc_master_obj.slave_p_sp[1], 2)
-	slave2_available = round(ppc_master_obj.pmax_avail[1], 2)
-	slave2_installed = round(ppc_master_obj.p_installed[1], 2)
+	master_r = f'Master({ppc_master_obj.total_pmax}/{ppc_master_obj.total_qmax}/{ppc_master_obj.total_qmin})'
+	slave1_r = f'slave1({ppc_master_obj.slave_pmax[0]}/{ppc_master_obj.slave_qmax[0]}/{ppc_master_obj.slave_qmin[0]})'
+	slave2_r = f'slave2({ppc_master_obj.slave_pmax[1]}/{ppc_master_obj.slave_qmax[1]}/{ppc_master_obj.slave_qmin[1]})'
+	slave1_p = f'slave1({int(ppc_master_obj.pi_per[0]*100)}/{int(ppc_master_obj.qi_per[0]*100)}/{int(ppc_master_obj.qa_per[0]*100)})'
+	slave2_p = f'slave2({int(ppc_master_obj.pi_per[1]*100)}/{int(ppc_master_obj.qi_per[1]*100)}/{int(ppc_master_obj.qa_per[1]*100)})'
 
-	master_str = f'Master P={production} / S={setpoint} / A={available} / I={installed}'
-	slave1_str = f'Slave 1 ({slave1_contribution}%) P={slave1_setpoint} / A={slave1_available} / I={slave1_installed}'
-	slave2_str = f'Slave 2 ({slave2_contribution}%) P={slave2_setpoint} / A={slave2_available} / I={slave2_installed}'
-	if ppc_master_obj.operational_state == 0: window_obj.fig.suptitle(f'{master_str} \n {slave1_str} / {slave2_str}')
+	if ppc_master_obj.operational_state == 0:
+		window_obj.fig.suptitle(f'Availability (MW/MVAR): {master_r}, {slave1_r}, {slave2_r} \n Contribution (%): {slave1_p} {slave2_p}')
 
 # --- SLAVES ------------------------------------------------
 def send_internal_setpoints(ppc_master_obj, window_obj):
 	# Iterate through slaves
 	for i in range(ppc_master_obj.numberOfSlaves):
 		dest = "Slave_" + str(i+1)
-		ppc_master_obj.slave_p_sp[i] = ppc_master_obj.p_in_sp * ppc_master_obj.contribution[i]
-		ppc_master_obj.slave_q_sp[i] = ppc_master_obj.q_in_sp * ppc_master_obj.contribution[i]
+		# Distribution for p inj, q inj and q abs
+		ppc_master_obj.slave_p_sp[i] = ppc_master_obj.p_in_sp * ppc_master_obj.S_nom * ppc_master_obj.pi_per[i]
+		if ppc_master_obj.q_in_sp < 0:
+			ppc_master_obj.slave_q_sp[i] = ppc_master_obj.q_in_sp * ppc_master_obj.S_nom * ppc_master_obj.qa_per[i]
+		else:
+			ppc_master_obj.slave_q_sp[i] = ppc_master_obj.q_in_sp * ppc_master_obj.S_nom * ppc_master_obj.qi_per[i]
+		# Check limits
+		if ppc_master_obj.slave_p_sp[i] > ppc_master_obj.slave_pmax[i]: ppc_master_obj.slave_p_sp[i] = ppc_master_obj.slave_pmax[i]
+		if ppc_master_obj.slave_q_sp[i] > ppc_master_obj.slave_qmax[i]: ppc_master_obj.slave_q_sp[i] = ppc_master_obj.slave_qmax[i]
+		if ppc_master_obj.slave_q_sp[i] < ppc_master_obj.slave_qmin[i]: ppc_master_obj.slave_q_sp[i] = ppc_master_obj.slave_qmin[i]
+		# Send setponts
 		message1 = {"destination": dest, "value_name": "P_SP_master", "value": str(ppc_master_obj.slave_p_sp[i])}
 		message2 = {"destination": dest, "value_name": "Q_SP_master", "value": str(ppc_master_obj.slave_q_sp[i])}
 		try:

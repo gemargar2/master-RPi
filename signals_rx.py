@@ -86,27 +86,24 @@ def receive_signals(ppc_master_obj, window_obj):
 			elif message['origin'] == 'FOSE':
 				# print(message)
 				if message['value_name'] == 'SPMAX': remote_spmax(ppc_master_obj)
-				elif message['value_name'] == 'P_SP_FOSE': fose_P_setpoint(ppc_master_obj, window_obj, float(message["value"]))
-				elif message['value_name'] == 'Q_SP_FOSE': fose_Q_setpoint(ppc_master_obj, window_obj, float(message["value"]))
+				elif message['value_name'] == 'P_SP_TSO': fose_P_setpoint(ppc_master_obj, window_obj, float(message["value"]))
+				elif message['value_name'] == 'Q_SP_TSO': fose_Q_setpoint(ppc_master_obj, window_obj, float(message["value"]))
 				elif message['value_name'] == 'ENAP': remote_enap(ppc_master_obj, window_obj)
 				elif message['value_name'] == '10': remote_10min(ppc_master_obj, window_obj)
 
 		if message['origin'] == 'Slave_1':
 			if message['value_name'] == 'Total_Pmax_available':
-				print(message)
 				recalc_contribution(ppc_master_obj, window_obj)
-				ppc_master_obj.pmax_avail[0] = float(message["value"])
-				print(ppc_master_obj.pmax_avail[0])
-			if message['value_name'] == 'Total_Qmax_available': ppc_master_obj.qmax_avail[0] = float(message["value"])
-			if message['value_name'] == 'Total_Qmin_available': ppc_master_obj.qmin_avail[0] = float(message["value"])
+				ppc_master_obj.slave_pmax[0] = float(message["value"])
+			if message['value_name'] == 'Total_Qmax_available': ppc_master_obj.slave_qmax[0] = float(message["value"])
+			if message['value_name'] == 'Total_Qmin_available': ppc_master_obj.slave_qmin[0] = float(message["value"])
 
 		elif message['origin'] == 'Slave_2':
-			# print(message)
 			if message['value_name'] == 'Total_Pmax_available':
 				recalc_contribution(ppc_master_obj, window_obj)		
-				ppc_master_obj.pmax_avail[1] = float(message["value"])
-			if message['value_name'] == 'Total_Qmax_available': ppc_master_obj.qmax_avail[1] = float(message["value"])
-			if message['value_name'] == 'Total_Qmin_available': ppc_master_obj.qmin_avail[1] = float(message["value"])
+				ppc_master_obj.slave_pmax[1] = float(message["value"])
+			if message['value_name'] == 'Total_Qmax_available': ppc_master_obj.slave_qmax[1] = float(message["value"])
+			if message['value_name'] == 'Total_Qmin_available': ppc_master_obj.slave_qmin[1] = float(message["value"])
 
 		elif message['origin'] == 'HV_Meter':
 			# print(message)
