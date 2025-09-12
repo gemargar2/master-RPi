@@ -15,11 +15,11 @@ def operating_ranges(ppc_master_obj, window_obj):
 			f_counter = 0
 			ppc_master_obj.f_shutdown = 0 # Runninlng
 		elif 47.5 <= ppc_master_obj.f_actual < 49.0:
-			window_obj.ax2.set_title(u"Underfrequency: shutdown in {}".format(30-f_counter))
+			window_obj.ax2.set_title(u"Underfrequency: shutdown in {}".format(1800-f_counter))
 			f_counter += 1
 			ppc_master_obj.f_shutdown = 2 # Stopping
 		elif 51.0 < ppc_master_obj.f_actual <= 51.5:
-			window_obj.ax2.set_title(u"Overfrequency: shutdown in {}".format(30-f_counter))
+			window_obj.ax2.set_title(u"Overfrequency: shutdown in {}".format(1800-f_counter))
 			f_counter += 1
 			ppc_master_obj.f_shutdown = 2 # Stopping
 		elif ppc_master_obj.f_actual < 47.5 or ppc_master_obj.f_actual > 51.5:
@@ -37,11 +37,11 @@ def operating_ranges(ppc_master_obj, window_obj):
 			v_counter = 0
 			ppc_master_obj.v_shutdown = 0 # Runninng
 		elif 0.85 <= ppc_master_obj.v_actual < 0.90:
-			window_obj.ax4.set_title(u"Undervoltage: shutdown in {}".format(60-v_counter))
+			window_obj.ax4.set_title(u"Undervoltage: shutdown in {}".format(3600-v_counter))
 			v_counter += 1
 			ppc_master_obj.v_shutdown = 2 # Stopping
 		elif 1.118 < ppc_master_obj.v_actual <= 1.15:
-			window_obj.ax4.set_title(u"Overvoltage: shutdown in {}".format(60-v_counter))
+			window_obj.ax4.set_title(u"Overvoltage: shutdown in {}".format(3600-v_counter))
 			v_counter += 1
 			ppc_master_obj.v_shutdown = 2 # Stopping
 		elif ppc_master_obj.v_actual < 0.85 or ppc_master_obj.v_actual > 1.15:
@@ -50,13 +50,13 @@ def operating_ranges(ppc_master_obj, window_obj):
 			shutdown = True
 			ppc_master_obj.v_shutdown = 1 # Not Running
         
-		if f_counter > 30:
+		if f_counter > 1800:
 			window_obj.ax2.set_title("Frequency shutdown timeout")
 			print("Frequency shutdown timeout")
 			shutdown = True
 			ppc_master_obj.f_shutdown = 1 # Not Running
         
-		if v_counter > 60:
+		if v_counter > 3600:
 			window_obj.ax4.set_title("Voltage shutdown timeout")
 			print("Voltage shutdown timeout")
 			shutdown = True

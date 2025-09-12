@@ -93,11 +93,11 @@ def Q_control(q_grad_sp, prev_q_in_sp, ppc_master_obj):
 def QP_control(ppc_master_obj):
 	index = 0
 	for i in range(ppc_master_obj.numOfPoints-1):
-		if (ppc_master_obj.p_actual_hv < ppc_master_obj.P_points[i+1]) and (ppc_master_obj.p_actual_hv > ppc_master_obj.P_points[i]):
+		if (ppc_master_obj.p_actual_hv < float(ppc_master_obj.P_points[i+1])) and (ppc_master_obj.p_actual_hv > float(ppc_master_obj.P_points[i])):
 			index = i
 			break
 	# print(index)
-	q_in_sp = (ppc_master_obj.p_actual_hv - ppc_master_obj.P_points[index])*ppc_master_obj.m[i] + ppc_master_obj.Q_points[i]
+	q_in_sp = (ppc_master_obj.p_actual_hv - float(ppc_master_obj.P_points[index]))*ppc_master_obj.m[i] + float(ppc_master_obj.Q_points[i])
 	return q_in_sp
 
 # Q mode = 3

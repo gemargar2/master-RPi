@@ -68,26 +68,30 @@ def receive_signals(ppc_master_obj, window_obj):
 				elif message['value_name'] == 'voltage_disturbance': ppc_master_obj.v_disturbance = float(message['value'])
 				elif message['value_name'] == 'frequency_disturbance': ppc_master_obj.f_disturbance = float(message['value'])
 				elif message['value_name'] == 'simulation_duration': ppc_master_obj.simulation_duration = int(float(message['value']))
-        
+	
 		# Remote mode - only TSO commands are taken into account - SCADA can still change mode to local
 		elif ppc_master_obj.local_remote == 1:
 			if message['origin'] == 'localPlatform':
 				# print("You are in remote mode - SCADA messages are ignored (except for local_remote)")
 				pass
-            
+
 			elif message['origin'] == 'TSO':
 				# print(message)
 				if message['value_name'] == 'SPMAX': remote_spmax(ppc_master_obj)
 				elif message['value_name'] == 'P_SP_TSO': remote_P_setpoint(ppc_master_obj, window_obj, float(message["value"]))
 				elif message['value_name'] == 'Q_SP_TSO': remote_Q_setpoint(ppc_master_obj, window_obj, float(message["value"]))
+				elif message['value_name'] == 'V_SP_TSO': remote_V_setpoint(ppc_master_obj, window_obj, float(message["value"]))
+				elif message['value_name'] == 'PF_SP_TSO': remote_PF_setpoint(ppc_master_obj, window_obj, float(message["value"]))
 				elif message['value_name'] == 'ENAP': remote_enap(ppc_master_obj, window_obj)
 				elif message['value_name'] == '10': remote_10min(ppc_master_obj, window_obj)
 
 			elif message['origin'] == 'FOSE':
 				# print(message)
 				if message['value_name'] == 'SPMAX': remote_spmax(ppc_master_obj)
-				elif message['value_name'] == 'P_SP_TSO': fose_P_setpoint(ppc_master_obj, window_obj, float(message["value"]))
-				elif message['value_name'] == 'Q_SP_TSO': fose_Q_setpoint(ppc_master_obj, window_obj, float(message["value"]))
+				elif message['value_name'] == 'P_SP_FOSE': fose_P_setpoint(ppc_master_obj, window_obj, float(message["value"]))
+				elif message['value_name'] == 'Q_SP_FOSE': fose_Q_setpoint(ppc_master_obj, window_obj, float(message["value"]))
+				elif message['value_name'] == 'V_SP_FOSE': fose_V_setpoint(ppc_master_obj, window_obj, float(message["value"]))
+				elif message['value_name'] == 'PF_SP_FOSE': fose_PF_setpoint(ppc_master_obj, window_obj, float(message["value"]))
 				elif message['value_name'] == 'ENAP': remote_enap(ppc_master_obj, window_obj)
 				elif message['value_name'] == '10': remote_10min(ppc_master_obj, window_obj)
 
@@ -111,4 +115,5 @@ def receive_signals(ppc_master_obj, window_obj):
 			elif message['value_name'] == 'f': ppc_master_obj.f_actual = float(message["value"])
 			elif message['value_name'] == 'Pa': ppc_master_obj.p_actual_hv = float(message["value"])/ppc_master_obj.S_nom
 			elif message['value_name'] == 'Qa': ppc_master_obj.q_actual_hv = float(message["value"])/ppc_master_obj.S_nom
+			elif message['value_name'] == 'main_switch_position': ppc_master_obj.main_switch_pos = int(message["value"])
 

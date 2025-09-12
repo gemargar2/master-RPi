@@ -103,17 +103,17 @@ class Window_class:
         # U-Q
         # self.ln51, = self.ax5.plot([], [], "b-", label="Actual")
         # self.ln52, = self.ax5.plot([], [], "g-", label="Setpoint")
-        self.ln51, = self.ax5.plot([], [], "w-", label="Actual", marker='o', mec='b')
-        self.ln52, = self.ax5.plot([], [], "w-", label="Setpoint", marker='o', mec='g')
-        self.ln53, = self.ax5.plot([], [], "r-", label="Limit")
+        self.ln51, = self.ax5.plot([], [], "r-", label="Limit")
+        self.ln52, = self.ax5.plot([], [], "w-", label="Actual", marker='o', mec='b')
+        self.ln53, = self.ax5.plot([], [], "w-", label="Setpoint", marker='o', mec='g')
         self.ax5.legend(handles=[self.ln51, self.ln52, self.ln53])
         # P-Q
         # self.ln61, = self.ax6.plot([], [], "b-", label="Actual")
         # self.ln62, = self.ax6.plot([], [], "g-", label="Setpoint")
-        self.ln61, = self.ax6.plot([], [], "w-", label="Actual", marker='o', mec='b')
-        self.ln62, = self.ax6.plot([], [], "w-", label="Setpoint", marker='o', mec='g')
-        self.ln63, = self.ax6.plot([], [], "r-", label="Limit")
-        self.ln64, = self.ax6.plot([], [], "k-", label="Q(P)")
+        self.ln61, = self.ax6.plot([], [], "r-", label="Limit")
+        self.ln62, = self.ax6.plot([], [], "k-", label="Q(P)")
+        self.ln63, = self.ax6.plot([], [], "w-", label="Actual", marker='o', mec='b')
+        self.ln64, = self.ax6.plot([], [], "w-", label="Setpoint", marker='o', mec='g')
         # Q(U)
         self.ln71, = self.ax7.plot([], [], "r-", label="V control")
         self.ln72, = self.ax7.plot([], [], "g-", label="Q(U) w/limit")
@@ -128,12 +128,12 @@ class Window_class:
         # V-Q limits (fixed)
         q_vector = [-0.35, 0, 0.2, 0.2, 0, -0.35, -0.35]
         v_vector = [1.1, 1.1, 1, 0.9, 0.9, 1, 1.1]
-        self.ln53.set_data(q_vector, v_vector)
+        self.ln51.set_data(q_vector, v_vector)
 
         # P-Q limits (fixed)
         q_vector = [0, -0.35, -0.35, 0.2, 0.2, 0]
         p_vector = [0, 0.2, 1, 1, 0.2, 0]
-        self.ln63.set_data(q_vector, p_vector)
+        self.ln61.set_data(q_vector, p_vector)
 
         self.fig.tight_layout(pad=2.0)
         # self.fig.subplots_adjust(
@@ -198,13 +198,13 @@ class Window_class:
         # V-Q
         # self.ln51.set_data(self.q_data, self.v_data)
         # self.ln52.set_data(self.q_nsp_data, self.v_data)
-        self.ln51.set_data(ppc_master_obj.q_actual_hv, ppc_master_obj.v_actual)
-        self.ln52.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.v_actual)
+        self.ln52.set_data(ppc_master_obj.q_actual_hv, ppc_master_obj.v_actual)
+        self.ln53.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.v_actual)
         # P-Q
         # self.ln61.set_data(self.q_data, self.p_data)
         # self.ln62.set_data(self.q_nsp_data, self.p_nsp_data)
-        self.ln61.set_data(ppc_master_obj.q_actual_hv, ppc_master_obj.p_actual_hv)
-        self.ln62.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.p_in_sp)
+        self.ln63.set_data(ppc_master_obj.q_actual_hv, ppc_master_obj.p_actual_hv)
+        self.ln64.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.p_in_sp)
         self.ln73.set_data(ppc_master_obj.v_actual, ppc_master_obj.q_actual_hv)
         # P-f
         self.ln82.set_data(ppc_master_obj.f_actual, ppc_master_obj.p_in_sp)
@@ -313,4 +313,4 @@ class Window_class:
             
         # print(p_vector)
         # print(q_vector)
-        self.ln64.set_data(q_vector, p_vector)
+        self.ln62.set_data(q_vector, p_vector)

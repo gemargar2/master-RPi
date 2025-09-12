@@ -62,8 +62,8 @@ class PPC_master_class:
 		self.q_mode = 4 # 0 = Q control (PID) / 1 = Q(P) control / 2 = V control / 3 = PF control / 4 = Q Open Loop / 5 = Q(U) / 6 = Q(U) with limit
 		# Per unit values
 		self.max_P_cap = 1 # Max active power capability (meteo are ignored)
-		self.max_Q_cap = 0.2 # Max reactive power capability (meteo are ignored)
-		self.min_Q_cap = -0.35 # Max reactive power capability (meteo are ignored)
+		self.max_Q_cap = 0.2 # Max reactive power capability
+		self.min_Q_cap = -0.35 # Max reactive power capability
 		# Status
 		self.operational_state = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
 		self.f_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error

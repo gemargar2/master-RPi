@@ -22,8 +22,8 @@ def send_MV_quantities(ppc_master_obj):
 # --- HV quantities -------------------------------------------
 
 def send_HV_quantities(ppc_master_obj):
-	var1 = ppc_master_obj.p_actual_hv #*ppc_master_obj.S_nom
-	var2 = ppc_master_obj.q_actual_hv #*ppc_master_obj.S_nom
+	var1 = ppc_master_obj.p_actual_hv*ppc_master_obj.S_nom
+	var2 = ppc_master_obj.q_actual_hv*ppc_master_obj.S_nom
 	message1 = { "destination": "localPlatform", "value_name": "active_power_HV", "value": str(var1) }
 	message2 = { "destination": "localPlatform", "value_name": "reactive_power_HV", "value": str(var2) }
 	message3 = { "destination": "localPlatform", "value_name": "frequency_HV", "value": str(ppc_master_obj.f_actual) }
