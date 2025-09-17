@@ -37,7 +37,7 @@ class PPC_master_class:
 		self.pi_per = zeros(self.numberOfSlaves) # percentage of contribution to the injected active power
 		self.qi_per = zeros(self.numberOfSlaves) # percentage of contribution to the injected reactive power
 		self.qa_per = zeros(self.numberOfSlaves) # percentage of contribution to the absorbed reactive power
-		# Slave setpoints
+		# Slave internal setpoints
 		self.slave_p_sp = zeros(self.numberOfSlaves)
 		self.slave_q_sp = zeros(self.numberOfSlaves)
 		# Summary
@@ -157,6 +157,13 @@ class PPC_master_class:
 		self.mb = 0
 		self.dba = 0
 		self.dbb = 0
+		# Q(U) parameters
+		self.QU_params = self.configdata["device"]["curve_params"]
+		self.QU_db = float(self.QU_params["deadband"])
+		self.QU_s = float(self.QU_params["slope"])
+		self.QU_v = float(self.QU_params["v_ref"])
+		self.QU_q = float(self.QU_params["q_ref"])
+		self.PF_p = float(self.QU_params["p_ref"])
     
 	def connect_to_slaves(self):
 		checksum = 0
@@ -260,3 +267,4 @@ class PPC_master_class:
 			self.q_ex_sp = 0
 			self.p_mode = 0
 			self.q_mode = 0
+		

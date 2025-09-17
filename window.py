@@ -115,10 +115,11 @@ class Window_class:
         self.ln63, = self.ax6.plot([], [], "w-", label="Actual", marker='o', mec='b')
         self.ln64, = self.ax6.plot([], [], "w-", label="Setpoint", marker='o', mec='g')
         # Q(U)
-        self.ln71, = self.ax7.plot([], [], "r-", label="V control")
+        self.ln71, = self.ax7.plot([], [], "r-", label="Q(U)")
         self.ln72, = self.ax7.plot([], [], "g-", label="Q(U) w/limit")
-        self.ln73, = self.ax7.plot([], [], "w-", label="Actual", marker='o', mec='b')
-        self.ax7.legend(handles=[self.ln71, self.ln72])
+        self.ln73, = self.ax7.plot([], [], "b-", label="V control")
+        self.ln74, = self.ax7.plot([], [], "w-", label="Actual", marker='o', mec='k')
+        self.ax7.legend(handles=[self.ln71, self.ln72, self.ln73])
         # P(f)
         self.ln81, = self.ax8.plot([], [], "r-", label="limit")
         self.ln82, = self.ax8.plot([], [], "w-", label="Setpoint", marker='o', mec='g')
@@ -205,7 +206,7 @@ class Window_class:
         # self.ln62.set_data(self.q_nsp_data, self.p_nsp_data)
         self.ln63.set_data(ppc_master_obj.q_actual_hv, ppc_master_obj.p_actual_hv)
         self.ln64.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.p_in_sp)
-        self.ln73.set_data(ppc_master_obj.v_actual, ppc_master_obj.q_actual_hv)
+        self.ln74.set_data(ppc_master_obj.v_actual, ppc_master_obj.q_actual_hv)
         # P-f
         self.ln82.set_data(ppc_master_obj.f_actual, ppc_master_obj.p_in_sp)
         self.ln83.set_data(ppc_master_obj.f_actual, ppc_master_obj.p_actual_hv)
@@ -229,9 +230,7 @@ class Window_class:
         s_LFSMO = ppc_master_obj.s_LFSM_O
         s_LFSMU = ppc_master_obj.s_LFSM_U
         # Toggle setpoints
-        if ppc_master_obj.local_remote == 0: p_ref = ppc_master_obj.local_P_sp
-        else: p_ref = ppc_master_obj.remote_P_sp
-        # p_ref = ppc_master_obj.p_ex_sp
+        p_ref = ppc_master_obj.PF_p
         f_ref = 50
         f_vector = [47.5,
                     49.8 - (1 - (p_ref + 0.19/(s*f_ref)))*f_ref*s_LFSMU,
@@ -253,15 +252,12 @@ class Window_class:
 
     def plot_QU_curve(self, ppc_master_obj):
         # Q(U) curve (can be modified through the config tool)
-        s = ppc_master_obj.slope_sp
-        # Toggle setpoints
-        if ppc_master_obj.local_remote == 0: v_ref = ppc_master_obj.local_V_sp
-        else: v_ref = ppc_master_obj.remote_V_sp
-        # v_ref = 1
+        s = ppc_master_obj.QU_s
+        v_ref = ppc_master_obj.QU_v
         q_ref = 0
         q_max = ppc_master_obj.max_Q_cap
         q_min = ppc_master_obj.min_Q_cap
-        db = ppc_master_obj.V_deadband_sp
+        db = ppc_master_obj.QU_db
         v_vector = [1.15,
                     v_ref + db + (q_ref - q_min)*s,
                     v_ref + db,
@@ -278,9 +274,7 @@ class Window_class:
     
     def plot_QU_limit_curve(self, ppc_master_obj):
         # Q(U) with limit curve (can be modified through the config tool)
-        # Toggle setpoints
-        if ppc_master_obj.local_remote == 0: q_ref = ppc_master_obj.local_Q_sp
-        else: q_ref = ppc_master_obj.remote_Q_sp
+        q_ref = ppc_master_obj.QU_q
         q_max = ppc_master_obj.max_Q_cap
         q_min = ppc_master_obj.min_Q_cap
         # Deadband limits are affected by voltage setpoint
@@ -300,6 +294,32 @@ class Window_class:
                     q_max,
                     q_max]
         self.ln72.set_data(v_vector, q_vector)
+
+    def plot_V_control_curve(self, ppc_master_obj):
+        # Q(U) curve (can be modified through the config tool)
+        s = ppc_master_obj.slope_sp
+        # Toggle setpoints
+        if ppc_master_obj.local_remote == 0: v_ref = ppc_master_obj.local_V_sp
+        else: v_ref = ppc_master_obj.remote_V_sp
+        # v_ref = 1
+        q_ref = 0.0
+	# other limits
+        q_max = ppc_master_obj.max_Q_cap
+        q_min = ppc_master_obj.min_Q_cap
+        db = ppc_master_obj.V_deadband_sp
+        v_vector = [1.15,
+                    v_ref + db + (q_ref - q_min)*s,
+                    v_ref + db,
+                    v_ref - db,
+                    v_ref - db - (q_max - q_ref)*s,
+                    0.85]
+        q_vector = [q_min,
+                    q_min,
+                    q_ref,
+                    q_ref,
+                    q_max,
+                    q_max]
+        self.ln73.set_data(v_vector, q_vector)
     
     def plot_QP_curve(self, ppc_master_obj):
         p_vector = []

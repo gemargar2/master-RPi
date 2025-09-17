@@ -21,6 +21,7 @@ def receive_signals(ppc_master_obj, window_obj):
 			window_obj.plot_PF_curve(ppc_master_obj)
 			window_obj.plot_QU_curve(ppc_master_obj)
 			window_obj.plot_QU_limit_curve(ppc_master_obj)
+			window_obj.plot_V_control_curve(ppc_master_obj)
 		
 		# Local mode - only SCADA commands are taken into account
 		if ppc_master_obj.local_remote == 0:

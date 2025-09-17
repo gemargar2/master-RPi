@@ -39,8 +39,15 @@
 			"1.04": "0.0",
 			"1.06": "-0.41"
 		},
+		"curve_params": {
+			"deadband": "0.02",
+			"slope": "0.05",
+			"v_ref": "1.04",
+			"q_ref": "0.05",
+			"p_ref": "0.5"
+		},
 		"surface_type" : "grass",
-		"surface_tilt" :12,
+		"surface_tilt" : 12,
 		"surface_azimuth" : 10,
 		"solar_zenith" : 10,
 		"solar_azimuth" : 10,

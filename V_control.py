@@ -5,7 +5,7 @@ v_ref = 1.0 # Voltage setpoint is always 1.0 p.u
 
 # Q mode = 2
 def V_control(ppc_master_obj):
-    q_ref = ppc_master_obj.q_ex_sp
+    q_ref = 0 # ppc_master_obj.q_ex_sp
     v_actual = ppc_master_obj.v_actual
     
     if ppc_master_obj.local_remote == 0: v_sp = ppc_master_obj.local_V_sp # setpoint voltage
@@ -39,11 +39,11 @@ def V_control(ppc_master_obj):
 
 # Q mode = 5
 def QU_VDE(ppc_master_obj):
-    q_ref = ppc_master_obj.q_ex_sp
+    q_ref = 0 # ppc_master_obj.q_ex_sp
     v_actual = ppc_master_obj.v_actual
-    slope = 0.05 # Droop adjustable between 2-12%, default value 5%
-    v_sp = 1.0 # setpoint voltage
-    db = 0.02 # voltage deadband
+    slope = ppc_master_obj.QU_s# Droop adjustable between 2-12%, default value 5%
+    v_sp = ppc_master_obj.QU_v # setpoint voltage
+    db = ppc_master_obj.QU_db # voltage deadband
     m = 1/slope # gradient 7<m<24
 
     if (v_actual < v_sp - db):
@@ -67,7 +67,7 @@ def QU_VDE(ppc_master_obj):
 
 # Q mode = 6
 def V_Limit_VDE(ppc_master_obj):
-    q_ref = ppc_master_obj.q_ex_sp
+    q_ref = ppc_master_obj.QU_q
     v_actual = ppc_master_obj.v_actual
     if (v_actual < ppc_master_obj.dba):
         if printMessages:

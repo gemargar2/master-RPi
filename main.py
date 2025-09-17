@@ -30,6 +30,7 @@ def main():
 	window_obj.plot_PF_curve(ppc_master_obj)
 	window_obj.plot_QU_curve(ppc_master_obj)
 	window_obj.plot_QU_limit_curve(ppc_master_obj)
+	window_obj.plot_V_control_curve(ppc_master_obj)
 	window_obj.plot_QP_curve(ppc_master_obj)
 
 	# Start looping controller core

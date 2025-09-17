@@ -123,13 +123,13 @@ def send_operation_status(ppc_master_obj):
 def send_meteo(ppc_master_obj):
 	message1 = { "destination": "localPlatform", "value_name": "temperature", "value": str(round(ppc_master_obj.temp, 2)) }
 	message2 = { "destination": "localPlatform", "value_name": "total_irradiance", "value": str(round(ppc_master_obj.irradiance, 2)) }
-	message3 = { "destination": "localPlatform", "value_name": "sunrise", "value": str(ppc_master_obj.sunrise) }
-	message4 = { "destination": "localPlatform", "value_name": "sunset", "value": str(ppc_master_obj.sunset) }
+	# message3 = { "destination": "localPlatform", "value_name": "sunrise", "value": str(ppc_master_obj.sunrise) }
+	# message4 = { "destination": "localPlatform", "value_name": "sunset", "value": str(ppc_master_obj.sunset) }
 	try:
 		ppc_master_obj.socket_tx.send_json(message1, zmq.NOBLOCK)
 		ppc_master_obj.socket_tx.send_json(message2, zmq.NOBLOCK)
-		ppc_master_obj.socket_tx.send_json(message3, zmq.NOBLOCK)
-		ppc_master_obj.socket_tx.send_json(message4, zmq.NOBLOCK)
+		# ppc_master_obj.socket_tx.send_json(message3, zmq.NOBLOCK)
+		# ppc_master_obj.socket_tx.send_json(message4, zmq.NOBLOCK)
 	except:
         	print('Meteo Error')
 
