@@ -59,7 +59,7 @@ def LFSM_U(p_ref, ppc_master_obj, window_obj):
 	s2 = ppc_master_obj.s_LFSM_U # Droop default value 5%
 	f_1 = 49.8 # LFSM-U frequency threshold default 49.8Hz
 	delta_P = (f_1-ppc_master_obj.f_actual)/(f_ref*s2) # positive for f_actual<f_1 (underfrequency)
-	p_in_sp = (p_ref + 0.19/(ppc_master_obj.s_sp*f_ref)) + delta_P
+	p_in_sp = (p_ref + 0.19/(ppc_master_obj.s_FSM*f_ref)) + delta_P
 
 	return p_in_sp
 
@@ -69,14 +69,14 @@ def LFSM_O(p_ref, ppc_master_obj, window_obj):
 	s2 = ppc_master_obj.s_LFSM_O # Droop default value 5%
 	f_1 = 50.2 # LFSM-O frequency threshold default 50.2Hz
 	delta_P = (f_1-ppc_master_obj.f_actual)/(f_ref*s2) # negative for f_actual>f_1 (overfrequency)
-	p_in_sp = (p_ref - 0.19/(ppc_master_obj.s_sp*f_ref)) + delta_P
+	p_in_sp = (p_ref - 0.19/(ppc_master_obj.s_FSM*f_ref)) + delta_P
 
 	return p_in_sp
 
 def FSM(p_ref, ppc_master_obj, window_obj):
 	window_obj.ax8.set_xlim(49.6, 50.4)
 	window_obj.ax8.set_ylim(0.2, 0.8)
-	s = ppc_master_obj.s_sp # Droop adjustable between 2-12%, default value 5%
+	s = ppc_master_obj.s_FSM # Droop adjustable between 2-12%, default value 5%
 	delta_P = (f_ref-ppc_master_obj.f_actual)/(f_ref*s) # positive for f_actual<f_ref (underfrequency), negative for f_actual>f_ref (overfrequency)
 	p_in_sp = p_ref + delta_P
 

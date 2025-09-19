@@ -6,15 +6,11 @@ from class_def import *
 from limit import *
 
 def main():
-	# Load last setpoint values before shutting down
-	with open('setpoints.json', 'r') as openfile:
-		memory = json.load(openfile)
-    
 	with open('configfile.json', 'r') as openfile:
 		config = json.load(openfile)
 
 	# Create objects
-	ppc_master_obj = PPC_master_class(memory, config)
+	ppc_master_obj = PPC_master_class(config)
 	window_obj = Window_class()
 
 	# Start parallel processes
@@ -28,10 +24,10 @@ def main():
 	ppc_master_obj.V_Limit_VDE_init(q_ref=0.0)
 	ppc_master_obj.QP_init()
 	window_obj.plot_PF_curve(ppc_master_obj)
+	window_obj.plot_QP_curve(ppc_master_obj)
+	window_obj.plot_V_control_curve(ppc_master_obj)
 	window_obj.plot_QU_curve(ppc_master_obj)
 	window_obj.plot_QU_limit_curve(ppc_master_obj)
-	window_obj.plot_V_control_curve(ppc_master_obj)
-	window_obj.plot_QP_curve(ppc_master_obj)
 
 	# Start looping controller core
 	i = 0

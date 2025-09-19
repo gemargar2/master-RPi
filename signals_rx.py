@@ -17,11 +17,6 @@ def receive_signals(ppc_master_obj, window_obj):
 				ppc_master_obj.local_remote = int(message['value'])
 			if ppc_master_obj.local_remote == 0: window_obj.fig.suptitle('Master PPC: Local')
 			else: window_obj.fig.suptitle('Master PPC: Remote')
-			# Update plots to take into account the remote setpoints
-			window_obj.plot_PF_curve(ppc_master_obj)
-			window_obj.plot_QU_curve(ppc_master_obj)
-			window_obj.plot_QU_limit_curve(ppc_master_obj)
-			window_obj.plot_V_control_curve(ppc_master_obj)
 		
 		# Local mode - only SCADA commands are taken into account
 		if ppc_master_obj.local_remote == 0:
@@ -97,18 +92,16 @@ def receive_signals(ppc_master_obj, window_obj):
 				elif message['value_name'] == '10': remote_10min(ppc_master_obj, window_obj)
 
 		if message['origin'] == 'Slave_1':
-			if message['value_name'] == 'Total_Pmax_available':
-				recalc_contribution(ppc_master_obj, window_obj)
-				ppc_master_obj.slave_pmax[0] = float(message["value"])
+			if message['value_name'] == 'Total_Pmax_available': ppc_master_obj.slave_pmax[0] = float(message["value"])
 			if message['value_name'] == 'Total_Qmax_available': ppc_master_obj.slave_qmax[0] = float(message["value"])
 			if message['value_name'] == 'Total_Qmin_available': ppc_master_obj.slave_qmin[0] = float(message["value"])
+			recalc_contribution(ppc_master_obj, window_obj)
 
 		elif message['origin'] == 'Slave_2':
-			if message['value_name'] == 'Total_Pmax_available':
-				recalc_contribution(ppc_master_obj, window_obj)		
-				ppc_master_obj.slave_pmax[1] = float(message["value"])
+			if message['value_name'] == 'Total_Pmax_available': ppc_master_obj.slave_pmax[1] = float(message["value"])
 			if message['value_name'] == 'Total_Qmax_available': ppc_master_obj.slave_qmax[1] = float(message["value"])
 			if message['value_name'] == 'Total_Qmin_available': ppc_master_obj.slave_qmin[1] = float(message["value"])
+			recalc_contribution(ppc_master_obj, window_obj)	
 
 		elif message['origin'] == 'HV_Meter':
 			# print(message)

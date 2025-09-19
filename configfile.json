@@ -1,56 +1,86 @@
 {
-	"device": {
+	"master": {
 		"name": "Master1",
-		"description": "This is the one and only Power Park Controller (PPC) master for the whole site with project number 024455 in Meliti, Florina, Greece",
+		"description": "Project number 024455, Meliti, Florina, Greece",
 		"plant_type": "D",
-		"nominal_power": "50",
-		"nominal_voltage": "150",
-		"slaves": {
-			"Slave1": {
-				"ID": 13,
-				"name": "Slave_1",
-				"nominal_power": "20",
-				"has_solar_sensor": "False",
-				"has_temp_sensor": "False"
-			}, 
-			"Slave2": {
-				"ID": 14,
-				"name": "Slave_2",
-				"nominal_power": "30",
-				"has_solar_sensor": "False",
-				"has_temp_sensor": "False"
-			}
+		"nominal_power": 50,
+		"nominal_voltage": 150,
+		"surface_type": "grass",
+		"surface_tilt": 12,
+		"surface_azimuth": 10,
+		"solar_zenith": 10,
+		"solar_azimuth": 10,
+		"temp_coefficient_of_power": 0.3
+	},
+	"slave_tree": {
+		"Slave1": {
+			"ID": 13,
+			"name": "Slave_1",
+			"nominal_power": 20,
+			"has_solar_sensor": "False",
+			"has_temp_sensor": "False"
 		},
-		"PQ_points": {
-			"0": "0",
-			"0.001": "0",
-			"0.025": "0.15",
-			"0.07": "0.2",
-			"0.08": "0.5",
-			"0.1": "0.66",
-			"0.12": "0.75",
-			"0.15": "0.75",
-			"0.199": "0.95",
-			"0.2": "1.0"
+		"Slave2": {
+			"ID": 14,
+			"name": "Slave_2",
+			"nominal_power": 30,
+			"has_solar_sensor": "False",
+			"has_temp_sensor": "False"
+		}
+	},
+	"PPC_parameters": {
+		"local_setpoints": {
+			"local_P_sp": 40.0,
+			"local_Q_sp": -4.0,
+			"local_PF_sp": 0.95,
+			"local_V_sp": 148.0
 		},
-		"UQ_points": {
-			"0.94": "0.33",
-			"0.96": "0.0",
-			"1.04": "0.0",
-			"1.06": "-0.41"
+		"remote_setpoints": {
+			"remote_P_sp": 27.0,
+			"remote_Q_sp": 3.0,
+			"remote_PF_sp": 0.89,
+			"remote_V_sp": 150.0
 		},
-		"curve_params": {
-			"deadband": "0.02",
-			"slope": "0.05",
-			"v_ref": "1.04",
-			"q_ref": "0.05",
-			"p_ref": "0.5"
+		"power_gradients": {
+			"P_grad": 0.25,
+			"F_grad": 20,
+			"MPPT_grad": 0.25
 		},
-		"surface_type" : "grass",
-		"surface_tilt" : 12,
-		"surface_azimuth" : 10,
-		"solar_zenith" : 10,
-		"solar_azimuth" : 10,
-		"temp_coefficient_of_power" : 0.3
+		"P_PID_parameters": {
+			"p_kp": 2.0,
+			"p_ki": 0.1,
+			"p_kd": 0.05,
+			"p_dt": 0.1
+		},
+		"Q_PID_parameters": {
+			"q_kp": 2.0,
+			"q_ki": 0.1,
+			"q_kd": 0.05,
+			"q_dt": 0.1
+		},	
+		"P(f)_curve": {
+			"s_FSM": 0.07,
+			"s_LFSM_O": 0.02,
+			"s_LFSM_U": 0.02,
+			"p_ref": 0.5
+		},
+		"Q(P)_curve": {
+			"P_values": [0, 0, 0.15, 0.2, 0.5, 0.66, 0.75, 0.75, 0.95, 1.0],
+			"Q_values": [0, 0.001, 0.025, 0.07, 0.08, 0.1, 0.12, 0.15, 0.199, 0.2]
+		},
+		"V_control_curve": {
+			"slope_sp": 0.2,
+			"V_deadband_sp": 0.05
+		},
+		"Q(U)_curve": {
+			"deadband": 0.05,
+			"slope": 0.02,
+			"v_ref": 1.04
+		},
+		"Q(U)_Limit_curve": {
+			"U_values": [0.94, 0.96, 1.04, 1.06],
+			"Q_values": [0.33, 0.0, 0.0, -0.41],
+			"q_ref": -0.05 
+		}
 	}
 }
