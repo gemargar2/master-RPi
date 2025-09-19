@@ -229,8 +229,10 @@ class PPC_master_class:
 	def set_sp(self):
 		# Local setpoints
 		if self.local_remote == 0:
-			if self.p_mode == 3: self.p_ex_sp = self.max_P_cap
-			else: self.p_ex_sp = self.local_P_sp
+			if self.p_mode == 3:
+				self.p_ex_sp = self.max_P_cap
+			else:
+				self.p_ex_sp = self.local_P_sp
 			self.q_ex_sp = self.local_Q_sp
 			self.pf_ex_sp = self.local_PF_sp
 		# Remote setpoints
@@ -238,7 +240,13 @@ class PPC_master_class:
 			if self.p_mode == 3:
 				self.p_ex_sp = self.max_P_cap
 			else:
-				if self.tso_P_sp <= self.fose_P_sp: self.remote_P_sp = self.tso_P_sp
+				# Both setpoint are negative
+				if self.tso_P_sp < 0 and self.fose_P_sp < 0: self.remote_P_sp = 0
+				# One positive one negative
+				elif self.tso_P_sp < 0 and self.fose_P_sp > 0: self.remote_P_sp = self.fose_P_sp
+				elif self.tso_P_sp > 0 and self.fose_P_sp < 0: self.remote_P_sp = self.tso_P_sp
+				# Both setpoints are positive
+				elif self.tso_P_sp <= self.fose_P_sp: self.remote_P_sp = self.tso_P_sp
 				else: self.remote_P_sp = self.fose_P_sp
 			if self.tso_Q_sp <= self.fose_Q_sp: self.remote_Q_sp = self.tso_Q_sp
 			else: self.remote_Q_sp = self.fose_Q_sp
