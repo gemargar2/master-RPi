@@ -6,6 +6,8 @@ from distribution import *
 
 printMessages = False
 
+# --- localPlatform -------------------------------------------
+
 # --- MV quantities -------------------------------------------
 
 def send_MV_quantities(ppc_master_obj):

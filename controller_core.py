@@ -24,7 +24,6 @@ def controllerCore(i, window_obj, ppc_master_obj):
 	now = time.time()
 	time_elapsed = now - prev_time
 	# print(time_elapsed)
-	prev_time = now
 
 	# Local setpoints
 	ppc_master_obj.set_sp()
@@ -105,4 +104,5 @@ def controllerCore(i, window_obj, ppc_master_obj):
 	else:
 		# When window is not activated insert some delay
 		time.sleep(1)
+	prev_time = now
 

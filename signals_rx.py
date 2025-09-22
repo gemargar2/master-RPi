@@ -64,7 +64,7 @@ def receive_signals(ppc_master_obj, window_obj):
 				elif message['value_name'] == 'voltage_disturbance': ppc_master_obj.v_disturbance = float(message['value'])
 				elif message['value_name'] == 'frequency_disturbance': ppc_master_obj.f_disturbance = float(message['value'])
 				elif message['value_name'] == 'simulation_duration': ppc_master_obj.simulation_duration = int(float(message['value']))
-	
+		
 		# Remote mode - only TSO commands are taken into account - SCADA can still change mode to local
 		elif ppc_master_obj.local_remote == 1:
 			if message['origin'] == 'localPlatform':
@@ -72,38 +72,33 @@ def receive_signals(ppc_master_obj, window_obj):
 				pass
 
 			elif message['origin'] == 'TSO':
-				# print(message)
 				if message['value_name'] == 'SPMAX': remote_spmax(ppc_master_obj)
-				elif message['value_name'] == 'P_SP_TSO': remote_P_setpoint(ppc_master_obj, window_obj, float(message["value"]))
-				elif message['value_name'] == 'Q_SP_TSO': remote_Q_setpoint(ppc_master_obj, window_obj, float(message["value"]))
-				elif message['value_name'] == 'V_SP_TSO': remote_V_setpoint(ppc_master_obj, window_obj, float(message["value"]))
-				elif message['value_name'] == 'PF_SP_TSO': remote_PF_setpoint(ppc_master_obj, window_obj, float(message["value"]))
+				elif message['value_name'] == 'P_SP_TSO': ppc_master_obj.tso_P_sp = float(message["value"])
+				elif message['value_name'] == 'Q_SP_TSO': ppc_master_obj.tso_Q_sp = float(message["value"])
+				elif message['value_name'] == 'V_SP_TSO': ppc_master_obj.remote_V_sp = float(message["value"])
+				elif message['value_name'] == 'PF_SP_TSO': ppc_master_obj.remote_PF_sp = float(message["value"])
 				elif message['value_name'] == 'ENAP': remote_enap(ppc_master_obj, window_obj)
 				elif message['value_name'] == '10': remote_10min(ppc_master_obj, window_obj)
 
 			elif message['origin'] == 'FOSE':
-				# print(message)
 				if message['value_name'] == 'SPMAX': remote_spmax(ppc_master_obj)
-				elif message['value_name'] == 'P_SP_FOSE': fose_P_setpoint(ppc_master_obj, window_obj, float(message["value"]))
-				elif message['value_name'] == 'Q_SP_FOSE': fose_Q_setpoint(ppc_master_obj, window_obj, float(message["value"]))
-				elif message['value_name'] == 'V_SP_FOSE': fose_V_setpoint(ppc_master_obj, window_obj, float(message["value"]))
-				elif message['value_name'] == 'PF_SP_FOSE': fose_PF_setpoint(ppc_master_obj, window_obj, float(message["value"]))
+				elif message['value_name'] == 'P_SP_FOSE': ppc_master_obj.fose_P_sp = float(message["value"])
+				elif message['value_name'] == 'Q_SP_FOSE': ppc_master_obj.fose_Q_sp = float(message["value"])
+				elif message['value_name'] == 'V_SP_FOSE': ppc_master_obj.fose_V_sp = float(message["value"])
+				elif message['value_name'] == 'PF_SP_FOSE': ppc_master_obj.fose_PF_sp = float(message["value"])
 				elif message['value_name'] == 'ENAP': remote_enap(ppc_master_obj, window_obj)
 				elif message['value_name'] == '10': remote_10min(ppc_master_obj, window_obj)
 
-		if message['origin'] == 'Slave_1':
-			if message['value_name'] == 'Total_Pmax_available': ppc_master_obj.slave_pmax[0] = float(message["value"])
-			if message['value_name'] == 'Total_Qmax_available': ppc_master_obj.slave_qmax[0] = float(message["value"])
-			if message['value_name'] == 'Total_Qmin_available': ppc_master_obj.slave_qmin[0] = float(message["value"])
-			recalc_contribution(ppc_master_obj, window_obj)
-
-		elif message['origin'] == 'Slave_2':
-			if message['value_name'] == 'Total_Pmax_available': ppc_master_obj.slave_pmax[1] = float(message["value"])
-			if message['value_name'] == 'Total_Qmax_available': ppc_master_obj.slave_qmax[1] = float(message["value"])
-			if message['value_name'] == 'Total_Qmin_available': ppc_master_obj.slave_qmin[1] = float(message["value"])
-			recalc_contribution(ppc_master_obj, window_obj)	
-
-		elif message['origin'] == 'HV_Meter':
+		# Iterate through slaves
+		for i in range(ppc_master_obj.numberOfSlaves):
+			label = 'Slave_' + str(i+1)
+			if message['origin'] == label:
+				if message['value_name'] == 'Total_Pmax_available': ppc_master_obj.slave_pmax[i] = float(message["value"])
+				elif message['value_name'] == 'Total_Qmax_available': ppc_master_obj.slave_qmax[i] = float(message["value"])
+				elif message['value_name'] == 'Total_Qmin_available': ppc_master_obj.slave_qmin[i] = float(message["value"])
+				recalc_contribution(ppc_master_obj, window_obj)
+		
+		if message['origin'] == 'HV_Meter':
 			# print(message)
 			if message['value_name'] == 'VAC_ph': ppc_master_obj.v_actual = float(message["value"])
 			elif message['value_name'] == 'f': ppc_master_obj.f_actual = float(message["value"])

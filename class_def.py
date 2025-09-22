@@ -81,9 +81,13 @@ class PPC_master_class:
 		# Network Operator setpoints (TSO)
 		self.tso_P_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_P_sp"]/self.S_nom # Minimum p.u
 		self.tso_Q_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_Q_sp"]/self.S_nom # Minimum p.u
+		self.tso_V_sp = 0 # Maximum p.u
+		self.tso_PF_sp = 0 # Maximum p.u
 		# 3rd party setpoints (FOSE)
 		self.fose_P_sp = 1 # Maximum p.u
 		self.fose_Q_sp = 0.2 # Maximum p.u
+		self.fose_V_sp = 0 # Maximum p.u
+		self.fose_PF_sp = 0 # Maximum p.u
 		# Universal setpoints (configured by SCADA)
 		# Gradient values (setpoint rate of change MW/sec or p.u/sample)
 		self.P_grad = self.configdata["PPC_parameters"]["power_gradients"]["P_grad"]/self.S_nom # p.u/sample
@@ -229,10 +233,8 @@ class PPC_master_class:
 	def set_sp(self):
 		# Local setpoints
 		if self.local_remote == 0:
-			if self.p_mode == 3:
-				self.p_ex_sp = self.max_P_cap
-			else:
-				self.p_ex_sp = self.local_P_sp
+			if self.p_mode == 3: self.p_ex_sp = self.max_P_cap
+			else: self.p_ex_sp = self.local_P_sp
 			self.q_ex_sp = self.local_Q_sp
 			self.pf_ex_sp = self.local_PF_sp
 		# Remote setpoints
@@ -240,16 +242,28 @@ class PPC_master_class:
 			if self.p_mode == 3:
 				self.p_ex_sp = self.max_P_cap
 			else:
-				# Both setpoint are negative
-				if self.tso_P_sp < 0 and self.fose_P_sp < 0: self.remote_P_sp = 0
+				# Both negative
+				if self.tso_P_sp < 0 and self.fose_P_sp < 0:
+					print("Both negative")
+					self.remote_P_sp = 0
 				# One positive one negative
-				elif self.tso_P_sp < 0 and self.fose_P_sp > 0: self.remote_P_sp = self.fose_P_sp
-				elif self.tso_P_sp > 0 and self.fose_P_sp < 0: self.remote_P_sp = self.tso_P_sp
+				elif self.tso_P_sp < 0 and self.fose_P_sp > 0:
+					print(f"tso={self.tso_P_sp}<0 / fose={self.fose_P_sp}>0")
+					self.remote_P_sp = self.fose_P_sp/self.S_nom
+				elif self.tso_P_sp > 0 and self.fose_P_sp < 0:
+					print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}<0")
+					self.remote_P_sp = self.tso_P_sp/self.S_nom
 				# Both setpoints are positive
-				elif self.tso_P_sp <= self.fose_P_sp: self.remote_P_sp = self.tso_P_sp
-				else: self.remote_P_sp = self.fose_P_sp
-			if self.tso_Q_sp <= self.fose_Q_sp: self.remote_Q_sp = self.tso_Q_sp
-			else: self.remote_Q_sp = self.fose_Q_sp
+				elif self.tso_P_sp <= self.fose_P_sp:
+					print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}>0")
+					print("0<tso<fose")
+					self.remote_P_sp = self.tso_P_sp/self.S_nom
+				else:
+					print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}>0")
+					print("0<fose<tso")
+					self.remote_P_sp = self.fose_P_sp/self.S_nom
+			if self.tso_Q_sp <= self.fose_Q_sp: self.remote_Q_sp = self.tso_Q_sp/self.S_nom
+			else: self.remote_Q_sp = self.fose_Q_sp/self.S_nom
 			self.p_ex_sp = self.remote_P_sp
 			self.q_ex_sp = self.remote_Q_sp
 			self.pf_ex_sp = self.remote_PF_sp
@@ -260,3 +274,4 @@ class PPC_master_class:
 			self.q_ex_sp = 0
 			self.p_mode = 0
 			self.q_mode = 0
+			

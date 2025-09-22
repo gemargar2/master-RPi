@@ -19,41 +19,6 @@ def routine_10min(ppc_master_obj, window_obj):
 		sleep(1)
 	stop_command(ppc_master_obj, window_obj)
 
-# Fose setpoints
-
-def fose_P_setpoint(ppc_master_obj, window_obj, var):
-	# Update ppc_master_obj variable
-	ppc_master_obj.fose_P_sp = var/ppc_master_obj.S_nom # store as per-unit
-
-def fose_Q_setpoint(ppc_master_obj, window_obj, var):
-	# Update ppc_master_obj variable
-	ppc_master_obj.fose_Q_sp = var/ppc_master_obj.S_nom # store as per-unit
-    
-# Remote setpoints
-
-def remote_P_setpoint(ppc_master_obj, window_obj, var):
-	# Update ppc_master_obj variable
-	ppc_master_obj.tso_P_sp = var/ppc_master_obj.S_nom # store as per-unit
-	# Update plots 
-	window_obj.plot_PF_curve(ppc_master_obj)
-
-def remote_Q_setpoint(ppc_master_obj, window_obj, var):
-	# Update ppc_master_obj variable
-	ppc_master_obj.tso_Q_sp = var/ppc_master_obj.S_nom # store as per-unit
-	# Update plots
-	window_obj.plot_QU_limit_curve(ppc_master_obj)
-
-def remote_PF_setpoint(ppc_master_obj, var):
-	ppc_master_obj.remote_PF_sp = var
-
-def remote_V_setpoint(ppc_master_obj, window_obj, var):
-	# Update ppc_master_obj variable
-	ppc_master_obj.remote_V_sp = var/ppc_master_obj.V_nom
-	# Update plots
-	window_obj.plot_QU_curve(ppc_master_obj)
-
-# TSO commands
-
 def remote_spmax(ppc_master_obj):
 	print("SPMAX")
 	ppc_master_obj.p_mode = 3

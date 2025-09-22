@@ -322,4 +322,4 @@ class Window_class:
 		self.ln73.set_data(v_vector, q_vector)
     
 	def plot_QP_curve(self, ppc_master_obj):
-		self.ln62.set_data(ppc_master_obj.P_points, ppc_master_obj.Q_points)
+		self.ln62.set_data(ppc_master_obj.Q_points, ppc_master_obj.P_points)
