@@ -15,7 +15,7 @@ def start_command(ppc_master_obj, window_obj):
 def routine_10min(ppc_master_obj, window_obj):
 	ppc_master_obj.operational_state = 2
 	for counter in range(0,10):
-		window_obj.fig.suptitle(u"Master PPC: Shutdown in {} seconds".format(10-counter))
+		window_obj.fig.suptitle(u"Master PPC: Shutdown in {} seconds".format(10*60-counter))
 		sleep(1)
 	stop_command(ppc_master_obj, window_obj)
 

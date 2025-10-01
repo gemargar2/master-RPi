@@ -23,7 +23,7 @@ def recalc_contribution(ppc_master_obj, window_obj):
 			if ppc_master_obj.total_pmax != 0: ppc_master_obj.pi_per[index] = ppc_master_obj.slave_pmax[index]/ppc_master_obj.total_pmax
 			if ppc_master_obj.total_qmax != 0: ppc_master_obj.qi_per[index] = ppc_master_obj.slave_qmax[index]/ppc_master_obj.total_qmax
 			if ppc_master_obj.total_qmin != 0: ppc_master_obj.qa_per[index] = ppc_master_obj.slave_qmin[index]/ppc_master_obj.total_qmin
-    
+
 	master_r = f'Master({ppc_master_obj.total_pmax}/{ppc_master_obj.total_qmax}/{ppc_master_obj.total_qmin})'
 	slave1_r = f'slave1({ppc_master_obj.slave_pmax[0]}/{ppc_master_obj.slave_qmax[0]}/{ppc_master_obj.slave_qmin[0]})'
 	slave2_r = f'slave2({ppc_master_obj.slave_pmax[1]}/{ppc_master_obj.slave_qmax[1]}/{ppc_master_obj.slave_qmin[1]})'

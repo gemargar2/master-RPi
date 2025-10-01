@@ -45,20 +45,20 @@ def receive_signals(ppc_master_obj, window_obj):
 				elif message['value_name'] == 'F_control_gradient': local_F_gradient_setpoint(ppc_master_obj, float(message['value']))
 				elif message['value_name'] == 'MPPT_control_gradient': local_MPPT_gradient_setpoint(ppc_master_obj, float(message['value']))
 				# ----------------------------- P control PID parameter values ---------------------------------
-				elif message['value_name'] == 'Kp_Pcontrol': local_P_Kp(ppc_master_obj, float(message['value']))
-				elif message['value_name'] == 'Ki_Pcontrol': local_P_Ki(ppc_master_obj, float(message['value']))
-				elif message['value_name'] == 'Kd_Pcontrol': local_P_Kd(ppc_master_obj, float(message['value']))
-				elif message['value_name'] == 'Ti_Pcontrol': local_P_dt(ppc_master_obj, float(message['value']))
+				elif message['value_name'] == 'Kp_Pcontrol': ppc_master_obj.p_kp = float(message['value'])
+				elif message['value_name'] == 'Ki_Pcontrol': ppc_master_obj.p_ki = float(message['value'])
+				elif message['value_name'] == 'Kd_Pcontrol': ppc_master_obj.p_kd = float(message['value'])
+				elif message['value_name'] == 'Ti_Pcontrol': ppc_master_obj.p_dt = float(message['value'])
 				# ----------------------------- P control PID parameter values ---------------------------------
-				elif message['value_name'] == 'Kp_Qcontrol': local_Q_Kp(ppc_master_obj, float(message['value']))
-				elif message['value_name'] == 'Ki_Qcontrol': local_Q_Ki(ppc_master_obj, float(message['value']))
-				elif message['value_name'] == 'Kd_Qcontrol': local_Q_Kd(ppc_master_obj, float(message['value']))
-				elif message['value_name'] == 'Ti_Qcontrol': local_Q_dt(ppc_master_obj, float(message['value']))
+				elif message['value_name'] == 'Kp_Qcontrol': ppc_master_obj.q_kp = float(message['value'])
+				elif message['value_name'] == 'Ki_Qcontrol': ppc_master_obj.q_ki = float(message['value'])
+				elif message['value_name'] == 'Kd_Qcontrol': ppc_master_obj.q_kd = float(message['value'])
+				elif message['value_name'] == 'Ti_Qcontrol': ppc_master_obj.q_dt = float(message['value'])
 				# ----------------------------- Controls -------------------------------------------------------------------
 				elif message['value_name'] == 'Stop': stop_command(ppc_master_obj, window_obj)
 				elif message['value_name'] == 'Start': start_command(ppc_master_obj, window_obj) # start_command(ppc_master_obj)
 				elif message['value_name'] == 'Auto_Start_command': ppc_master_obj.auto_start_state = int(message['value'])
-				# ----------------------------- Simulation mode ------------------------------------------------------------
+				# ----------------------------- Simulation mode ----------------------------------l--------------------------
 				elif message['value_name'] == 'Simulation_mode_command': ppc_master_obj.simulation_mode = int(message['value'])
 				elif message['value_name'] == 'simulation_run_stop': ppc_master_obj.run_simulation(int(message['value']))
 				elif message['value_name'] == 'voltage_disturbance': ppc_master_obj.v_disturbance = float(message['value'])

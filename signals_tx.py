@@ -28,16 +28,26 @@ def send_HV_quantities(ppc_master_obj):
 	var2 = ppc_master_obj.q_actual_hv*ppc_master_obj.S_nom
 	message1 = { "destination": "localPlatform", "value_name": "active_power_HV", "value": str(var1) }
 	message2 = { "destination": "localPlatform", "value_name": "reactive_power_HV", "value": str(var2) }
-	message3 = { "destination": "localPlatform", "value_name": "frequency_HV", "value": str(ppc_master_obj.f_actual) }
+	if ppc_master_obj.simulation_run_stop:
+		if ppc_master_obj.simulation_mode:
+			f_value = ppc_master_obj.f_disturbance
+			v_value = ppc_master_obj.v_actual*150
+		else:
+			f_value = ppc_master_obj.f_actual
+			v_value = ppc_master_obj.v_disturbance
+	else:
+		f_value = ppc_master_obj.f_actual
+		v_value = ppc_master_obj.v_actual*150
+	
+	message3 = { "destination": "localPlatform", "value_name": "frequency_HV", "value": str(f_value) }
 	# Calculate current
-	if ppc_master_obj.v_actual > 0:
-		I = math.sqrt(ppc_master_obj.p_actual_hv**2 + ppc_master_obj.q_actual_hv**2)/ppc_master_obj.v_actual
+	if v_value > 0:
+		I = math.sqrt(ppc_master_obj.p_actual_hv**2 + ppc_master_obj.q_actual_hv**2)/v_value
 	else:
 		I = 0
 	I = I*ppc_master_obj.S_nom/0.15 # MVA/MV = A
-	V = ppc_master_obj.v_actual*150
 	message4 = { "destination": "localPlatform", "value_name": "current_HV", "value": str(I) }
-	message5 = { "destination": "localPlatform", "value_name": "voltage_HV", "value": str(V) }
+	message5 = { "destination": "localPlatform", "value_name": "voltage_HV", "value": str(v_value) }
 	if ppc_master_obj.p_actual_hv == 0: PF = 1
 	else: PF = math.cos(math.atan(ppc_master_obj.q_actual_hv/ppc_master_obj.p_actual_hv))
 	message6 = { "destination": "localPlatform", "value_name": "power_factor_HV", "value": str(PF) }
@@ -139,9 +149,9 @@ def send_meteo(ppc_master_obj):
 
 def send_TSO(ppc_master_obj):
 	message1 = { "destination": "TSO", "value_name": "L_R", "value": str(ppc_master_obj.local_remote) }
-	message2 = { "destination": "TSO", "value_name": "WDOG", "value": str(round(ppc_master_obj.irradiance, 2)) }
-	message3 = { "destination": "TSO", "value_name": "HLIM", "value": str(ppc_master_obj.sunrise) }
-	message4 = { "destination": "TSO", "value_name": "LLIM", "value": str(ppc_master_obj.sunset) }
+	message2 = { "destination": "TSO", "value_name": "WDOG", "value": str(ppc_master_obj.connection) }
+	message3 = { "destination": "TSO", "value_name": "HLIM", "value": str(ppc_master_obj.total_pmax) }
+	message4 = { "destination": "TSO", "value_name": "LLIM", "value": "0" }
 	try:
 		ppc_master_obj.socket_tx.send_json(message1, zmq.NOBLOCK)
 		ppc_master_obj.socket_tx.send_json(message2, zmq.NOBLOCK)

@@ -3,6 +3,7 @@ import time
 import threading
 from numpy import zeros
 from F_control import *
+from simulator_core import *
 
 class PPC_master_class:
 	def __init__(self, json_obj):
@@ -42,6 +43,7 @@ class PPC_master_class:
 		self.total_pmax = 0 # MW
 		self.total_qmax = 0 # MVAR
 		self.total_qmin = 0 # MVAR
+		self.connection = 0 # connection status
 		self.connect_to_slaves()
 		# --- Establish connection for transmission --------------
 		self.context_tx = zmq.Context()
@@ -57,7 +59,7 @@ class PPC_master_class:
 		self.local_remote = 0 # 0 = Local / 1 = Remote
 		# Mode of operation for active and reactive control
 		self.p_mode = 2 # 0 = P control (PID) / 1 = F control (FSM) / 2 = P Open Loop / 3 = MPPT control
-		self.q_mode = 4 # 0 = Q control (PID) / 1 = Q(P) control / 2 = V control / 3 = PF control / 4 = Q Open Loop / 5 = Q(U) / 6 = Q(U) with limit
+		self.q_mode = 4 # 0 = Q control (PID) / 1 = Q(P) control / 2 = V control / 3 = PF control / 4 = Q Open Loop / 5 = Q(U) / 6 = Q(U) with limit	
 		# Per unit values
 		self.max_P_cap = 1 # Max active power capability (meteo are ignored)
 		self.max_Q_cap = 0.2 # Max reactive power capability
@@ -144,8 +146,9 @@ class PPC_master_class:
 		# Q(P)
 		self.numOfPoints = len(self.configdata["PPC_parameters"]["Q(P)_curve"]["P_values"])
 		self.P_points = self.configdata["PPC_parameters"]["Q(P)_curve"]["P_values"]
-		self.Q_points = self.configdata["PPC_parameters"]["Q(P)_curve"]["Q_values"]	
+		self.Q_points = self.configdata["PPC_parameters"]["Q(P)_curve"]["Q_values"]
 		self.m = []
+		self.QP_init()
 		# V control
 		self.slope_sp = self.configdata["PPC_parameters"]["V_control_curve"]["slope_sp"]
 		self.V_deadband_sp = self.configdata["PPC_parameters"]["V_control_curve"]["V_deadband_sp"]
@@ -166,7 +169,8 @@ class PPC_master_class:
 		self.mb = 0
 		self.dba = 0
 		self.dbb = 0
-    
+		self.V_Limit_VDE_init(self.QU_q)
+	
 	def connect_to_slaves(self):
 		checksum = 0
 		index = 0
@@ -179,20 +183,26 @@ class PPC_master_class:
 			self.qa_per[index] = float(self.slaves_data[i]["nominal_power"])/self.S_nom
 			checksum += (int(self.slaves_data[i]["nominal_power"]))
 			index += 1
-        
+		
 		print(self.slave_id)
 		print(self.slaves_Pinst)
 		print(self.pi_per)
-
+		
 		if checksum != self.S_nom:
 			print("Error! Sum of inverter's nominal power ratings does not match Slave's nominal power")
 		else:
 			print("Checksum ok")
 
 	def simulation_countdown(self):
-		for i in range(self.simulation_duration):
-			if not (self.simulation_start_stop): break
-			time.sleep(1)
+		start = time.time()
+		while self.simulation_start_stop:
+			time.sleep(0.1)
+			end = time.time()
+			# print(f'{end-start} > {self.simulation_duration}')
+			if end-start >= self.simulation_duration:
+				# print("Hello")
+				self.simulation_start_stop = False
+				break
 		self.simulation_run_stop = 0
 		self.simulation_start_stop = False
     
@@ -204,7 +214,7 @@ class PPC_master_class:
 			clock.start()
 		elif self.simulation_run_stop == 0:
 			self.simulation_start_stop = False
-    
+	
 	def V_Limit_VDE_init(self, q_ref):
 		# Slopes are not affected by voltage setpoint
 		self.ma = (self.P2[1] - self.P1[1]) / (self.P2[0] - self.P1[0])
@@ -231,6 +241,7 @@ class PPC_master_class:
 			self.m.append(slope)
     
 	def set_sp(self):
+		printMessages = False
 		# Local setpoints
 		if self.local_remote == 0:
 			if self.p_mode == 3: self.p_ex_sp = self.max_P_cap
@@ -244,23 +255,23 @@ class PPC_master_class:
 			else:
 				# Both negative
 				if self.tso_P_sp < 0 and self.fose_P_sp < 0:
-					print("Both negative")
+					if printMessages: print("Both negative")
 					self.remote_P_sp = 0
 				# One positive one negative
 				elif self.tso_P_sp < 0 and self.fose_P_sp > 0:
-					print(f"tso={self.tso_P_sp}<0 / fose={self.fose_P_sp}>0")
+					if printMessages: print(f"tso={self.tso_P_sp}<0 / fose={self.fose_P_sp}>0")
 					self.remote_P_sp = self.fose_P_sp/self.S_nom
 				elif self.tso_P_sp > 0 and self.fose_P_sp < 0:
-					print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}<0")
+					if printMessages: print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}<0")
 					self.remote_P_sp = self.tso_P_sp/self.S_nom
 				# Both setpoints are positive
 				elif self.tso_P_sp <= self.fose_P_sp:
-					print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}>0")
-					print("0<tso<fose")
+					if printMessages: print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}>0")
+					if printMessages: print("0<tso<fose")
 					self.remote_P_sp = self.tso_P_sp/self.S_nom
 				else:
-					print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}>0")
-					print("0<fose<tso")
+					if printMessages: print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}>0")
+					if printMessages: print("0<fose<tso")
 					self.remote_P_sp = self.fose_P_sp/self.S_nom
 			if self.tso_Q_sp <= self.fose_Q_sp: self.remote_Q_sp = self.tso_Q_sp/self.S_nom
 			else: self.remote_Q_sp = self.fose_Q_sp/self.S_nom

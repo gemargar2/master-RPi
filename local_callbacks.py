@@ -66,30 +66,3 @@ def local_F_gradient_setpoint(ppc_master_obj, var):
 def local_MPPT_gradient_setpoint(ppc_master_obj, var):
 	ppc_master_obj.MPPT_grad = var/ppc_master_obj.S_nom
 
-# Active Power PID params
-
-def local_P_Kp(ppc_master_obj, var):
-	ppc_master_obj.p_kp = var
-
-def local_P_Ki(ppc_master_obj, var):
-	ppc_master_obj.p_ki = var
-
-def local_P_Kd(ppc_master_obj, var):
-	ppc_master_obj.p_kd = var
-
-def local_P_dt(ppc_master_obj, var):
-	ppc_master_obj.p_dt = var
-
-# Rective Power PID params
-
-def local_Q_Kp(ppc_master_obj, var):
-	ppc_master_obj.q_kp = var
-
-def local_Q_Ki(ppc_master_obj, var):
-	ppc_master_obj.q_ki = var
-
-def local_Q_Kd(ppc_master_obj, var):
-	ppc_master_obj.q_kd = var
-
-def local_Q_dt(ppc_master_obj, var):
-	ppc_master_obj.q_dt = var
