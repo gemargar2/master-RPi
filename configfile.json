@@ -30,7 +30,7 @@
 	},
 	"PPC_parameters": {
 		"local_setpoints": {
-			"local_P_sp": 40.0,
+			"local_P_sp": 20.0,
 			"local_Q_sp": -4.0,
 			"local_PF_sp": 0.95,
 			"local_V_sp": 148.0

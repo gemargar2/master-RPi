@@ -3,6 +3,8 @@ from signals_rx import *
 from signals_tx import *
 from controller_core import *
 from class_def import *
+from window import *
+from logfile import *
 from limit import *
 
 def main():
@@ -12,6 +14,7 @@ def main():
 	# Create objects
 	ppc_master_obj = PPC_master_class(config)
 	window_obj = Window_class()
+	logfile_obj = logFile_class()
 
 	# Start parallel processes
 	receive_messages = threading.Thread(target = receive_signals, args=(ppc_master_obj, window_obj))
@@ -30,6 +33,7 @@ def main():
 	i = 0
 	while True:
 		controllerCore(i, window_obj, ppc_master_obj)
+		logfile_obj.write_data(ppc_master_obj)
 		i += 1
 
 if __name__ == "__main__":

@@ -88,7 +88,7 @@ def receive_signals(ppc_master_obj, window_obj):
 				elif message['value_name'] == 'PF_SP_FOSE': ppc_master_obj.fose_PF_sp = float(message["value"])
 				elif message['value_name'] == 'ENAP': remote_enap(ppc_master_obj, window_obj)
 				elif message['value_name'] == '10': remote_10min(ppc_master_obj, window_obj)
-
+		
 		# Iterate through slaves
 		for i in range(ppc_master_obj.numberOfSlaves):
 			label = 'Slave_' + str(i+1)
@@ -96,7 +96,7 @@ def receive_signals(ppc_master_obj, window_obj):
 				if message['value_name'] == 'Total_Pmax_available': ppc_master_obj.slave_pmax[i] = float(message["value"])
 				elif message['value_name'] == 'Total_Qmax_available': ppc_master_obj.slave_qmax[i] = float(message["value"])
 				elif message['value_name'] == 'Total_Qmin_available': ppc_master_obj.slave_qmin[i] = float(message["value"])
-				recalc_contribution(ppc_master_obj, window_obj)
+		recalc_contribution(ppc_master_obj, window_obj)
 		
 		if message['origin'] == 'HV_Meter':
 			# print(message)

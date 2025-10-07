@@ -3,7 +3,6 @@ import time
 import threading
 from numpy import zeros
 from F_control import *
-from simulator_core import *
 
 class PPC_master_class:
 	def __init__(self, json_obj):

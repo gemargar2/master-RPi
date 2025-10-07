@@ -1,4 +1,3 @@
-from window import *
 from distribution import *
 from F_control import *
 from V_control import *
