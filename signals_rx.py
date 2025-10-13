@@ -56,7 +56,7 @@ def receive_signals(ppc_master_obj, window_obj):
 				elif message['value_name'] == 'Ti_Qcontrol': ppc_master_obj.q_dt = float(message['value'])
 				# ----------------------------- Controls -------------------------------------------------------------------
 				elif message['value_name'] == 'Stop': stop_command(ppc_master_obj, window_obj)
-				elif message['value_name'] == 'Start': start_command(ppc_master_obj, window_obj) # start_command(ppc_master_obj)
+				elif message['value_name'] == 'Start': start_command(ppc_master_obj, window_obj)
 				elif message['value_name'] == 'Auto_Start_command': ppc_master_obj.auto_start_state = int(message['value'])
 				# ----------------------------- Simulation mode ----------------------------------l--------------------------
 				elif message['value_name'] == 'Simulation_mode_command': ppc_master_obj.simulation_mode = int(message['value'])

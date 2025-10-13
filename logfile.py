@@ -18,7 +18,7 @@ class logFile_class():
 		with open('data.csv', 'a', newline='') as csvfile:
 			self.writer = csv.writer(csvfile, delimiter=',', escapechar=' ', quoting=csv.QUOTE_NONE)
 			self.writer.writerow([
-				str(round(time.time(), 1)),
+				str(round(time.time(), 2)),
 				str(round(obj.local_P_sp, 3)),
 				str(round(obj.local_Q_sp, 3)),
 				str(round(obj.p_actual_hv, 3)),

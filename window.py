@@ -222,7 +222,7 @@ class Window_class:
 			self.ln41.axes.set_xlim(x-xmax, x)
         
 		# Emulate FuncAnimation
-		plt.pause(0.05) # 1/20Hz = 0.05 s (TG3, section 6.1.1, p.132)
+		plt.pause(1/ppc_master_obj.sampling_rate) # 1/20Hz = 0.05 s (TG3, section 6.1.1, p.132)
     
 	def plot_PF_curve(self, ppc_master_obj):
 		# P(f) curve (limits fixed / slopes modifiable)

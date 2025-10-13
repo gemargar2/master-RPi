@@ -58,11 +58,12 @@ def local_V_deadband_setpoint(ppc_master_obj, window_obj, var):
 # Gradients
 
 def local_P_gradient_setpoint(ppc_master_obj, var):
-	ppc_master_obj.P_grad = var/ppc_master_obj.S_nom
+	# Convert MW/second to p.u/sample = (MW/S_nominal)/(second/sampling_period) = var/(S_nom*samplig_period)
+	ppc_master_obj.P_grad = var/(ppc_master_obj.S_nom*ppc_master_obj.sampling_rate)
 
 def local_F_gradient_setpoint(ppc_master_obj, var):
-	ppc_master_obj.F_grad = var/ppc_master_obj.S_nom
+	ppc_master_obj.F_grad = var/(ppc_master_obj.S_nom*ppc_master_obj.sampling_rate)
 
 def local_MPPT_gradient_setpoint(ppc_master_obj, var):
-	ppc_master_obj.MPPT_grad = var/ppc_master_obj.S_nom
+	ppc_master_obj.MPPT_grad = var/(ppc_master_obj.S_nom*ppc_master_obj.sampling_rate)
 

@@ -2,7 +2,7 @@ import zmq
 import time
 import threading
 from numpy import zeros
-from F_control import *
+# from F_control import *
 
 class PPC_master_class:
 	def __init__(self, json_obj):
@@ -22,6 +22,7 @@ class PPC_master_class:
 		self.S_nom = float(self.configdata["master"]["nominal_power"]) # Nominal apparent power in MVA
 		self.P_nom = float(self.configdata["master"]["nominal_power"]) # Nominal active power in MW
 		self.V_nom = float(self.configdata["master"]["nominal_voltage"]) # Nominal voltage in kV
+		self.sampling_rate = 20 # Hz = 20 samples/second
 		# Slave PPCs management
 		self.slaves_data = self.configdata["slave_tree"]
 		self.numberOfSlaves = len(self.slaves_data) # number of slaves
@@ -65,6 +66,8 @@ class PPC_master_class:
 		self.min_Q_cap = -0.35 # Max reactive power capability
 		# Status
 		self.operational_state = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
+		self.rehab = False # True = PPC has been shutdown and now is trying to reconnect to the grid (rehabilitation)
+		self.start_enable = False # False = PPC is ok to start / True = PCC start disabled
 		self.f_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
 		self.v_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
 		self.auto_start_state = 0 # 0 = OFF / 1 = ON
@@ -119,7 +122,7 @@ class PPC_master_class:
 		# Setpoints with gradient
 		self.p_grad_sp = 0
 		self.q_grad_sp = 0
-		# Setpoints with gradient
+		# Internal setpoints
 		self.p_in_sp = 0
 		self.q_in_sp = 0
 		# HV meter
@@ -239,7 +242,7 @@ class PPC_master_class:
 			else: slope = num/den
 			self.m.append(slope)
     
-	def set_sp(self):
+	def setpoint_priority(self):
 		printMessages = False
 		# Local setpoints
 		if self.local_remote == 0:

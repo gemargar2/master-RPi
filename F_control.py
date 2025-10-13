@@ -27,30 +27,6 @@ def F_ramp_control(ppc_master_obj, p_in_sp, prev_p_in_sp):
 
 	return res
 
-def f_pid_controller(setpoint, pv, previous_error, integral, dt):
-	kp = 2    # Proportional gain
-	ki = 0.1  # Integral gain
-	kd = 0.05 # Derivative gain
-	dt = 0.1  # 100 ms
-    
-	error = setpoint - pv
-	integral += error * dt
-	derivative = 0 # (error - previous_error) / dt
-	control = kp * error + ki * integral + kd * derivative
-
-	return control, error, integral
-
-def F_control_pid(p_in_sp, prev_p_in_sp, ppc_master_obj):
-	global f_integral, f_prev_error
-	# Parameters
-
-	# Power control model
-	f_control, f_error, f_integral = f_pid_controller(p_in_sp, ppc_master_obj.p_actual_hv, f_prev_error, f_integral, dt)
-	p_in_sp = prev_p_in_sp + f_control * dt
-	f_prev_error = f_error
-    
-	return p_in_sp
-
 # --- F control -------------------------------------
 
 def LFSM_U(p_ref, ppc_master_obj, window_obj):
@@ -101,6 +77,8 @@ def F_control(prev_p_in_sp, ppc_master_obj, window_obj):
 	# around 50.0Hz or the PGM reaches its maximum capacity (Pmax).
 	elif (49.99 <= ppc_master_obj.f_actual < 50.0):
 		window_obj.ax8.set_title('P(f): Deadband')
+		window_obj.ax8.set_xlim(49.6, 50.4)
+		window_obj.ax8.set_ylim(0.2, 0.8)
 		if printMessages and f_mode != 1:
 			print("Deadband")
 			f_mode = 1
@@ -135,6 +113,8 @@ def F_control(prev_p_in_sp, ppc_master_obj, window_obj):
 	# around 50.0Hz or the PGM reaches its active power minimum regulating level.
 	elif (50.0 <= ppc_master_obj.f_actual <= 50.01):
 		window_obj.ax8.set_title('P(f): Deadband')
+		window_obj.ax8.set_xlim(49.6, 50.4)
+		window_obj.ax8.set_ylim(0.2, 0.8)
 		if printMessages and f_mode != 1:
 			print("Deadband")
 			f_mode = 1
@@ -161,7 +141,5 @@ def F_control(prev_p_in_sp, ppc_master_obj, window_obj):
 	# Ramp BEFORE PID = avoid integral error overflow
 	# Ramp AFTER PID = avoid output changing to steeply
 	p_in_sp1 = F_ramp_control(ppc_master_obj, p_in_sp, prev_p_in_sp)
-	# p_in_sp2 = F_control_pid(p_in_sp, prev_p_in_sp, ppc_master_obj)
-
 
 	return p_in_sp1
