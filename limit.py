@@ -23,7 +23,7 @@ def operating_ranges(ppc_master_obj, window_obj):
 		window_obj.ax2.set_title(u"Overfrequency: shutdown in {}".format(f_timer-f_counter))
 		f_counter += 1
 		ppc_master_obj.f_shutdown = 2 # Stopping
-	elif ppc_master_obj.f_actual < 47.5 or ppc_mlaster_obj.f_actual > 51.5:
+	elif ppc_master_obj.f_actual < 47.5 or ppc_master_obj.f_actual > 51.5:
 		window_obj.ax2.set_title('Frequency out of range!')
 		ppc_master_obj.f_shutdown = 1 # Not Running
         
@@ -66,13 +66,26 @@ def operating_ranges(ppc_master_obj, window_obj):
 		# If you reach here it means that both f and v are still in range
 		elif ppc_master_obj.f_shutdown == 2: ppc_master_obj.operational_state = 2
 		elif ppc_master_obj.v_shutdown == 2: ppc_master_obj.operational_state = 2
+		else: ppc_master_obj.operational_state = 0
 	# PPC is coming out of a shutdown
 	else:
 		# If either f or v is still out of range
-		if (ppc_master_obj.f_shutdown == 1 or ppc_master_obj.v_shutdown == 1): pass
-		# If you reach here it means that both f and v have return in range
-		elif ppc_master_obj.f_shutdown != 1: ppc_master_obj.start_enable = True
-		elif ppc_master_obj.v_shutdown != 1: ppc_master_obj.start_enable = True
+		if (ppc_master_obj.f_shutdown == 1 or ppc_master_obj.v_shutdown == 1):
+			# ppc_master_obj.rehab = True
+			pass
+		else: # If you reach here it means that both f and v have return in range
+			# ppc_master_obj.rehab = False
+			if ppc_master_obj.auto_start_state == 0:
+				# If auto start is off, set start_enable to true
+				if ppc_master_obj.f_shutdown != 1: ppc_master_obj.start_enable = True
+				elif ppc_master_obj.v_shutdown != 1: ppc_master_obj.start_enable = True
+			else:
+				ppc_master_obj.rehab = False
+				# If auto start is on, restart the park
+				if ppc_master_obj.f_shutdown == 2: ppc_master_obj.operational_state = 2
+				elif ppc_master_obj.v_shutdown == 2: ppc_master_obj.operational_state = 2
+				else: ppc_master_obj.operational_state = 0
+					
 	
 	# print(ppc_master_obj.operational_state)	
 

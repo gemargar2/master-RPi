@@ -66,11 +66,11 @@ class Window_class:
 		self.ax1.set_xlim(0, xmax)
 		self.ax1.set_ylim(-0.1, 1.1)
 		self.ax2.set_xlim(0, xmax)
-		self.ax2.set_ylim(47.5, 52.5)
+		self.ax2.set_ylim(46.5, 52.5)
 		self.ax3.set_xlim(0, xmax)
 		self.ax3.set_ylim(-0.6, 0.4)
 		self.ax4.set_xlim(0, xmax)
-		self.ax4.set_ylim(0.85, 1.15)
+		self.ax4.set_ylim(0.8, 1.2)
 		self.ax5.set_xlim(-0.6, 0.4)
 		self.ax5.set_ylim(0.85, 1.15)
 		self.ax6.set_xlim(-0.6, 0.4)
@@ -91,6 +91,8 @@ class Window_class:
 		self.ln21, = self.ax2.plot([], [], "b-", label="Actual")
 		self.ln22, = self.ax2.plot([], [], "r--", label="49Hz")
 		self.ln23, = self.ax2.plot([], [], "r--", label="51Hz")
+		self.ln24, = self.ax2.plot([], [], "k--", label="47.5Hz")
+		self.ln25, = self.ax2.plot([], [], "k--", label="51.5Hz")
 		# Q plots
 		self.ln31, = self.ax3.plot([], [], "b-", label="Actual")
 		self.ln32, = self.ax3.plot([], [], "r-", label='ex_sp')
@@ -99,7 +101,9 @@ class Window_class:
 		# V plot
 		self.ln41, = self.ax4.plot([], [], "b-", label="Actual")
 		self.ln42, = self.ax4.plot([], [], "r--", label="0.9pu")
-		self.ln43, = self.ax4.plot([], [], "r--", label="1.18pu")
+		self.ln43, = self.ax4.plot([], [], "r--", label="1.118pu")
+		self.ln44, = self.ax4.plot([], [], "k--", label="0.85pu")
+		self.ln45, = self.ax4.plot([], [], "k--", label="1.15pu")
 		# U-Q
 		# self.ln51, = self.ax5.plot([], [], "b-", label="Actual")
 		# self.ln52, = self.ax5.plot([], [], "g-", label="Setpoint")
@@ -152,12 +156,16 @@ class Window_class:
 	f_data = deque([], maxlen=smax)
 	f_up = deque([], maxlen=smax)
 	f_dn = deque([], maxlen=smax)
+	f_up2 = deque([], maxlen=smax)
+	f_dn2 = deque([], maxlen=smax)
 	q_data = deque([], maxlen=smax)
 	q_sp_data = deque([], maxlen=smax)
 	q_nsp_data = deque([], maxlen=smax)
 	v_data = deque([], maxlen=smax)
 	v_up = deque([], maxlen=smax)
 	v_dn = deque([], maxlen=smax)
+	v_up2 = deque([], maxlen=smax)
+	v_dn2 = deque([], maxlen=smax)
 	x_data = deque([], maxlen=smax)
 
 	def plot_data(self, x, ppc_master_obj):
@@ -170,6 +178,8 @@ class Window_class:
 		self.f_data.append(ppc_master_obj.f_actual)
 		self.f_up.append(51)
 		self.f_dn.append(49)
+		self.f_up2.append(51.5)
+		self.f_dn2.append(47.5)
 		# Q plots
 		self.q_data.append(ppc_master_obj.q_actual_hv)
 		self.q_sp_data.append(ppc_master_obj.q_ex_sp)
@@ -178,6 +188,8 @@ class Window_class:
 		self.v_data.append(ppc_master_obj.v_actual)
 		self.v_up.append(1.118)
 		self.v_dn.append(0.9)
+		self.v_up2.append(1.15)
+		self.v_dn2.append(0.85)
 
 		# Plot stuff
 		# P plot
@@ -188,6 +200,8 @@ class Window_class:
 		self.ln21.set_data(self.x_data, self.f_data)
 		self.ln22.set_data(self.x_data, self.f_up)
 		self.ln23.set_data(self.x_data, self.f_dn)
+		self.ln24.set_data(self.x_data, self.f_up2)
+		self.ln25.set_data(self.x_data, self.f_dn2)
 		# Q plot
 		self.ln31.set_data(self.x_data, self.q_data)
 		self.ln32.set_data(self.x_data, self.q_sp_data)
@@ -196,6 +210,8 @@ class Window_class:
 		self.ln41.set_data(self.x_data, self.v_data)
 		self.ln42.set_data(self.x_data, self.v_up)
 		self.ln43.set_data(self.x_data, self.v_dn)
+		self.ln44.set_data(self.x_data, self.v_up2)
+		self.ln45.set_data(self.x_data, self.v_dn2)
 		# V-Q
 		# self.ln51.set_data(self.q_data, self.v_data)
 		# self.ln52.set_data(self.q_nsp_data, self.v_data)

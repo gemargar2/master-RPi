@@ -10,7 +10,9 @@ def stop_command(ppc_master_obj, window_obj):
 
 def start_command(ppc_master_obj, window_obj):
 	window_obj.fig.suptitle('Master PPC: Local')
-	if ppc_master_obj.start_enable == True: ppc_master_obj.operational_state = 0
+	if ppc_master_obj.start_enable == True:
+		ppc_master_obj.rehab = False
+		ppc_master_obj.operational_state = 0
 	else: print("Problem! PPC can't start")
 
 def routine_10min(ppc_master_obj, window_obj):
