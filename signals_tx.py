@@ -120,6 +120,7 @@ def send_operation_status(ppc_master_obj):
 	message4 = { "destination": "localPlatform", "value_name": "operational_state", "value": str(ppc_master_obj.operational_state) }
 	message5 = { "destination": "localPlatform", "value_name": "Auto_Start_state", "value": str(ppc_master_obj.auto_start_state) }
 	message6 = { "destination": "localPlatform", "value_name": "main_switch_position", "value": str(ppc_master_obj.main_switch_pos) }
+	# message7 = { "destination": "localPlatform", "value_name": "Local_Remote", "value": str(ppc_master_obj.local_remote) }
 	try:
 		ppc_master_obj.socket_tx.send_json(message1, zmq.NOBLOCK)
 		ppc_master_obj.socket_tx.send_json(message2, zmq.NOBLOCK)
@@ -127,6 +128,7 @@ def send_operation_status(ppc_master_obj):
 		ppc_master_obj.socket_tx.send_json(message4, zmq.NOBLOCK)
 		ppc_master_obj.socket_tx.send_json(message5, zmq.NOBLOCK)
 		ppc_master_obj.socket_tx.send_json(message6, zmq.NOBLOCK)
+		# ppc_master_obj.socket_tx.send_json(message7, zmq.NOBLOCK)
 	except:
         	print('Operation status Error')
 

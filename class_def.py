@@ -88,8 +88,8 @@ class PPC_master_class:
 		self.tso_V_sp = 0 # Maximum p.u
 		self.tso_PF_sp = 0 # Maximum p.u
 		# 3rd party setpoints (FOSE)
-		self.fose_P_sp = 1 # Maximum p.u
-		self.fose_Q_sp = 0.2 # Maximum p.u
+		self.fose_P_sp = -0.1 # Maximum p.u
+		self.fose_Q_sp = 0.05 # Maximum p.u
 		self.fose_V_sp = 0 # Maximum p.u
 		self.fose_PF_sp = 0 # Maximum p.u
 		# Universal setpoints (configured by SCADA)
@@ -262,21 +262,21 @@ class PPC_master_class:
 				# One positive one negative
 				elif self.tso_P_sp < 0 and self.fose_P_sp > 0:
 					if printMessages: print(f"tso={self.tso_P_sp}<0 / fose={self.fose_P_sp}>0")
-					self.remote_P_sp = self.fose_P_sp/self.S_nom
+					self.remote_P_sp = self.fose_P_sp #/self.S_nom
 				elif self.tso_P_sp > 0 and self.fose_P_sp < 0:
 					if printMessages: print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}<0")
-					self.remote_P_sp = self.tso_P_sp/self.S_nom
+					self.remote_P_sp = self.tso_P_sp #/self.S_nom
 				# Both setpoints are positive
 				elif self.tso_P_sp <= self.fose_P_sp:
 					if printMessages: print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}>0")
 					if printMessages: print("0<tso<fose")
-					self.remote_P_sp = self.tso_P_sp/self.S_nom
+					self.remote_P_sp = self.tso_P_sp #/self.S_nom
 				else:
 					if printMessages: print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}>0")
 					if printMessages: print("0<fose<tso")
-					self.remote_P_sp = self.fose_P_sp/self.S_nom
-			if self.tso_Q_sp <= self.fose_Q_sp: self.remote_Q_sp = self.tso_Q_sp/self.S_nom
-			else: self.remote_Q_sp = self.fose_Q_sp/self.S_nom
+					self.remote_P_sp = self.fose_P_sp #/self.S_nom
+			if self.tso_Q_sp <= self.fose_Q_sp: self.remote_Q_sp = self.tso_Q_sp #/self.S_nom
+			else: self.remote_Q_sp = self.fose_Q_sp #/self.S_nom
 			self.p_ex_sp = self.remote_P_sp
 			self.q_ex_sp = self.remote_Q_sp
 			self.pf_ex_sp = self.remote_PF_sp

@@ -12,7 +12,7 @@ class logFile_class():
 				"total_pac",
 				"total_qac"
 			])
-    
+	
 	def write_data(self, obj):
 		# Write to csv
 		with open('data.csv', 'a', newline='') as csvfile:

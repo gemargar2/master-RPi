@@ -9,7 +9,6 @@ def operating_ranges(ppc_master_obj, window_obj):
 	global f_counter, v_counter
 	
 	# print(f'freq = {ppc_master_obj.f_actual}')
-
 	# Frequency ranges
 	if 49.0 <= ppc_master_obj.f_actual <= 51.0:
 		window_obj.ax2.set_title("Frequency")

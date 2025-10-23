@@ -84,9 +84,12 @@ class Window_class:
 
 		# P plot
 		self.ln11, = self.ax1.plot([], [], "b-", label='Actual')
-		self.ln12, = self.ax1.plot([], [], "r-", label='ex_sp')
-		self.ln13, = self.ax1.plot([], [], "g-", label='in_sp')
-		self.ax1.legend(handles=[self.ln11, self.ln12, self.ln13])
+		self.ln12, = self.ax1.plot([], [], "m--", label='scada')
+		self.ln13, = self.ax1.plot([], [], "c--", label='tso')
+		self.ln14, = self.ax1.plot([], [], "y--", label='fose')
+		self.ln15, = self.ax1.plot([], [], "r-", label='ex_sp')
+		self.ln16, = self.ax1.plot([], [], "g-", label='in_sp')
+		self.ax1.legend(handles=[self.ln11, self.ln12, self.ln13, self.ln14, self.ln15, self.ln16])
 		# F plot
 		self.ln21, = self.ax2.plot([], [], "b-", label="Actual")
 		self.ln22, = self.ax2.plot([], [], "r--", label="49Hz")
@@ -95,9 +98,12 @@ class Window_class:
 		self.ln25, = self.ax2.plot([], [], "k--", label="51.5Hz")
 		# Q plots
 		self.ln31, = self.ax3.plot([], [], "b-", label="Actual")
-		self.ln32, = self.ax3.plot([], [], "r-", label='ex_sp')
-		self.ln33, = self.ax3.plot([], [], "g-", label='in_sp')
-		self.ax3.legend(handles=[self.ln31, self.ln32, self.ln33])
+		self.ln32, = self.ax3.plot([], [], "m--", label='scada')
+		self.ln33, = self.ax3.plot([], [], "c--", label='tso')
+		self.ln34, = self.ax3.plot([], [], "y--", label='fose')
+		self.ln35, = self.ax3.plot([], [], "r-", label='ex_sp')
+		self.ln36, = self.ax3.plot([], [], "g-", label='in_sp')
+		self.ax3.legend(handles=[self.ln31, self.ln32, self.ln33, self.ln34, self.ln35, self.ln36])
 		# V plot
 		self.ln41, = self.ax4.plot([], [], "b-", label="Actual")
 		self.ln42, = self.ax4.plot([], [], "r--", label="0.9pu")
@@ -152,6 +158,9 @@ class Window_class:
     
 	p_data = deque([], maxlen=smax)
 	p_sp_data = deque([], maxlen=smax)
+	p_scada_sp = deque([], maxlen=smax)
+	p_tso_sp = deque([], maxlen=smax)
+	p_fose_sp = deque([], maxlen=smax)
 	p_nsp_data = deque([], maxlen=smax)
 	f_data = deque([], maxlen=smax)
 	f_up = deque([], maxlen=smax)
@@ -159,6 +168,9 @@ class Window_class:
 	f_up2 = deque([], maxlen=smax)
 	f_dn2 = deque([], maxlen=smax)
 	q_data = deque([], maxlen=smax)
+	q_scada_sp = deque([], maxlen=smax)
+	q_tso_sp = deque([], maxlen=smax)
+	q_fose_sp = deque([], maxlen=smax)
 	q_sp_data = deque([], maxlen=smax)
 	q_nsp_data = deque([], maxlen=smax)
 	v_data = deque([], maxlen=smax)
@@ -172,6 +184,9 @@ class Window_class:
 		self.x_data.append(x)
 		# P plot
 		self.p_data.append(ppc_master_obj.p_actual_hv)
+		self.p_scada_sp.append(ppc_master_obj.local_P_sp)
+		self.p_tso_sp.append(ppc_master_obj.tso_P_sp)
+		self.p_fose_sp.append(ppc_master_obj.fose_P_sp)
 		self.p_sp_data.append(ppc_master_obj.p_ex_sp)
 		self.p_nsp_data.append(ppc_master_obj.p_in_sp)
 		# F plot
@@ -182,6 +197,9 @@ class Window_class:
 		self.f_dn2.append(47.5)
 		# Q plots
 		self.q_data.append(ppc_master_obj.q_actual_hv)
+		self.q_scada_sp.append(ppc_master_obj.local_Q_sp)
+		self.q_tso_sp.append(ppc_master_obj.tso_Q_sp)
+		self.q_fose_sp.append(ppc_master_obj.fose_Q_sp)
 		self.q_sp_data.append(ppc_master_obj.q_ex_sp)
 		self.q_nsp_data.append(ppc_master_obj.q_in_sp)
 		# V plots
@@ -194,8 +212,11 @@ class Window_class:
 		# Plot stuff
 		# P plot
 		self.ln11.set_data(self.x_data, self.p_data)
-		self.ln12.set_data(self.x_data, self.p_sp_data)
-		self.ln13.set_data(self.x_data, self.p_nsp_data)
+		self.ln12.set_data(self.x_data, self.p_scada_sp)
+		self.ln13.set_data(self.x_data, self.p_tso_sp)
+		self.ln14.set_data(self.x_data, self.p_fose_sp)
+		self.ln15.set_data(self.x_data, self.p_sp_data)
+		self.ln16.set_data(self.x_data, self.p_nsp_data)
 		# F plot
 		self.ln21.set_data(self.x_data, self.f_data)
 		self.ln22.set_data(self.x_data, self.f_up)
@@ -204,8 +225,11 @@ class Window_class:
 		self.ln25.set_data(self.x_data, self.f_dn2)
 		# Q plot
 		self.ln31.set_data(self.x_data, self.q_data)
-		self.ln32.set_data(self.x_data, self.q_sp_data)
-		self.ln33.set_data(self.x_data, self.q_nsp_data)
+		self.ln32.set_data(self.x_data, self.q_scada_sp)
+		self.ln33.set_data(self.x_data, self.q_tso_sp)
+		self.ln34.set_data(self.x_data, self.q_fose_sp)
+		self.ln35.set_data(self.x_data, self.q_sp_data)
+		self.ln36.set_data(self.x_data, self.q_nsp_data)
 		# V plot
 		self.ln41.set_data(self.x_data, self.v_data)
 		self.ln42.set_data(self.x_data, self.v_up)
@@ -232,10 +256,25 @@ class Window_class:
 			self.ln11.axes.set_xlim(x-xmax, x)
 			self.ln12.axes.set_xlim(x-xmax, x)
 			self.ln13.axes.set_xlim(x-xmax, x)
+			self.ln14.axes.set_xlim(x-xmax, x)
+			self.ln15.axes.set_xlim(x-xmax, x)
+			self.ln16.axes.set_xlim(x-xmax, x)
 			self.ln21.axes.set_xlim(x-xmax, x)
+			self.ln22.axes.set_xlim(x-xmax, x)
+			self.ln23.axes.set_xlim(x-xmax, x)
+			self.ln24.axes.set_xlim(x-xmax, x)
+			self.ln25.axes.set_xlim(x-xmax, x)
 			self.ln31.axes.set_xlim(x-xmax, x)
 			self.ln32.axes.set_xlim(x-xmax, x)
+			self.ln33.axes.set_xlim(x-xmax, x)
+			self.ln34.axes.set_xlim(x-xmax, x)
+			self.ln35.axes.set_xlim(x-xmax, x)
+			self.ln36.axes.set_xlim(x-xmax, x)
 			self.ln41.axes.set_xlim(x-xmax, x)
+			self.ln42.axes.set_xlim(x-xmax, x)
+			self.ln43.axes.set_xlim(x-xmax, x)
+			self.ln44.axes.set_xlim(x-xmax, x)
+			self.ln45.axes.set_xlim(x-xmax, x)
         
 		# Emulate FuncAnimation
 		plt.pause(1/ppc_master_obj.sampling_rate) # 1/20Hz = 0.05 s (TG3, section 6.1.1, p.132)

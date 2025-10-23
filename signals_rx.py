@@ -12,9 +12,7 @@ def receive_signals(ppc_master_obj, window_obj):
 		
 		# Check for local / remote signal
 		if message['origin'] == 'localPlatform':
-			if message['value_name'] == 'Local_Remote':
-				# print(message)
-				ppc_master_obj.local_remote = int(message['value'])
+			if message['value_name'] == 'Local_Remote': ppc_master_obj.local_remote = int(message['value'])
 			if ppc_master_obj.local_remote == 0: window_obj.fig.suptitle('Master PPC: Local')
 			else: window_obj.fig.suptitle('Master PPC: Remote')
 		
@@ -73,8 +71,8 @@ def receive_signals(ppc_master_obj, window_obj):
 
 			elif message['origin'] == 'TSO':
 				if message['value_name'] == 'SPMAX': remote_spmax(ppc_master_obj)
-				elif message['value_name'] == 'P_SP_TSO': ppc_master_obj.tso_P_sp = float(message["value"])
-				elif message['value_name'] == 'Q_SP_TSO': ppc_master_obj.tso_Q_sp = float(message["value"])
+				elif message['value_name'] == 'P_SP_TSO': ppc_master_obj.tso_P_sp = float(message["value"])/ppc_master_obj.S_nom
+				elif message['value_name'] == 'Q_SP_TSO': ppc_master_obj.tso_Q_sp = float(message["value"])/ppc_master_obj.S_nom
 				elif message['value_name'] == 'V_SP_TSO': ppc_master_obj.remote_V_sp = float(message["value"])
 				elif message['value_name'] == 'PF_SP_TSO': ppc_master_obj.remote_PF_sp = float(message["value"])
 				elif message['value_name'] == 'ENAP': remote_enap(ppc_master_obj, window_obj)
@@ -82,7 +80,7 @@ def receive_signals(ppc_master_obj, window_obj):
 
 			elif message['origin'] == 'FOSE':
 				if message['value_name'] == 'SPMAX': remote_spmax(ppc_master_obj)
-				elif message['value_name'] == 'P_SP_FOSE': ppc_master_obj.fose_P_sp = float(message["value"])
+				elif message['value_name'] == 'P_SP_FOSE': ppc_master_obj.fose_P_sp = float(message["value"])/ppc_master_obj.S_nom
 				elif message['value_name'] == 'Q_SP_FOSE': ppc_master_obj.fose_Q_sp = float(message["value"])
 				elif message['value_name'] == 'V_SP_FOSE': ppc_master_obj.fose_V_sp = float(message["value"])
 				elif message['value_name'] == 'PF_SP_FOSE': ppc_master_obj.fose_PF_sp = float(message["value"])
