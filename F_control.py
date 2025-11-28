@@ -1,4 +1,3 @@
-from ramp_control import *
 
 printMessages = True
 
@@ -15,18 +14,6 @@ f_mode = 0
 f_integral = 0
 f_prev_error = 0
 
-def F_ramp_control(ppc_master_obj, p_in_sp, prev_p_in_sp):
-	grad = ppc_master_obj.F_grad
-
-	if (p_in_sp - prev_p_in_sp > grad):
-		res = prev_p_in_sp + grad
-	elif (prev_p_in_sp - p_in_sp > grad):
-		res = prev_p_in_sp - grad
-	else:
-		res = p_in_sp
-
-	return res
-
 # --- F control -------------------------------------
 
 def LFSM_U(p_ref, ppc_master_obj, window_obj):
@@ -35,7 +22,7 @@ def LFSM_U(p_ref, ppc_master_obj, window_obj):
 	s2 = ppc_master_obj.s_LFSM_U # Droop default value 5%
 	f_1 = 49.8 # LFSM-U frequency threshold default 49.8Hz
 	delta_P = (f_1-ppc_master_obj.f_actual)/(f_ref*s2) # positive for f_actual<f_1 (underfrequency)
-	p_in_sp = (p_ref + 0.19/(ppc_master_obj.s_FSM*f_ref)) + delta_P
+	p_in_sp = (p_ref + 0.19/(ppc_master_obj.s_FSM*f_ref)) + delta_P # 49.99Hz - 49.8Hz = 0.19Hz (10mHz deadband + 200mHz range)
 
 	return p_in_sp
 
@@ -45,7 +32,7 @@ def LFSM_O(p_ref, ppc_master_obj, window_obj):
 	s2 = ppc_master_obj.s_LFSM_O # Droop default value 5%
 	f_1 = 50.2 # LFSM-O frequency threshold default 50.2Hz
 	delta_P = (f_1-ppc_master_obj.f_actual)/(f_ref*s2) # negative for f_actual>f_1 (overfrequency)
-	p_in_sp = (p_ref - 0.19/(ppc_master_obj.s_FSM*f_ref)) + delta_P
+	p_in_sp = (p_ref - 0.19/(ppc_master_obj.s_FSM*f_ref)) + delta_P # 50.2Hz - 50.01Hz = 0.19Hz (10mHz deadband + 200mHz range)
 
 	return p_in_sp
 
@@ -58,7 +45,8 @@ def FSM(p_ref, ppc_master_obj, window_obj):
 
 	return p_in_sp
 
-def F_control(prev_p_in_sp, ppc_master_obj, window_obj):
+# def F_control(prev_p_in_sp, ppc_master_obj, window_obj):
+def F_control(ppc_master_obj, window_obj):
 	global f_mode
 	p_ref = ppc_master_obj.PF_p
     
@@ -136,10 +124,10 @@ def F_control(prev_p_in_sp, ppc_master_obj, window_obj):
 		p_in_sp = LFSM_O(p_ref, ppc_master_obj, window_obj)
 	# Default value to avoid error "p_in_sp referenced before assignment"
 	else:
-		p_in_sp = 0.5
+		p_in_sp = p_ref
 
 	# Ramp BEFORE PID = avoid integral error overflow
 	# Ramp AFTER PID = avoid output changing to steeply
-	p_in_sp1 = F_ramp_control(ppc_master_obj, p_in_sp, prev_p_in_sp)
+	# p_in_sp1 = F_ramp_control(ppc_master_obj, p_in_sp, prev_p_in_sp)
 
-	return p_in_sp1
+	return p_in_sp

@@ -24,40 +24,36 @@ def send_MV_quantities(ppc_master_obj):
 # --- HV quantities -------------------------------------------
 
 def send_HV_quantities(ppc_master_obj):
-	var1 = ppc_master_obj.p_actual_hv*ppc_master_obj.S_nom
-	var2 = ppc_master_obj.q_actual_hv*ppc_master_obj.S_nom
+	var1 = ppc_master_obj.p_actual_hv * ppc_master_obj.S_nom
+	var2 = ppc_master_obj.q_actual_hv * ppc_master_obj.S_nom
 	message1 = { "destination": "localPlatform", "value_name": "active_power_HV", "value": str(var1) }
 	message2 = { "destination": "localPlatform", "value_name": "reactive_power_HV", "value": str(var2) }
 	if ppc_master_obj.simulation_run_stop:
 		if ppc_master_obj.simulation_mode:
 			f_value = ppc_master_obj.f_disturbance
-			v_value = ppc_master_obj.v_actual*150
+			v_value = ppc_master_obj.v_actual * 150
 		else:
 			f_value = ppc_master_obj.f_actual
 			v_value = ppc_master_obj.v_disturbance
 	else:
 		f_value = ppc_master_obj.f_actual
-		v_value = ppc_master_obj.v_actual*150
+		v_value = ppc_master_obj.v_actual * 150
 	
 	message3 = { "destination": "localPlatform", "value_name": "frequency_HV", "value": str(f_value) }
 	# Calculate current
-	if v_value > 0:
-		I = math.sqrt(ppc_master_obj.p_actual_hv**2 + ppc_master_obj.q_actual_hv**2)/v_value
-	else:
-		I = 0
+	if v_value > 0: I = math.sqrt(ppc_master_obj.p_actual_hv**2 + ppc_master_obj.q_actual_hv**2)/v_value
+	else: I = 0
 	I = I*ppc_master_obj.S_nom/0.15 # MVA/MV = A
 	message4 = { "destination": "localPlatform", "value_name": "current_HV", "value": str(I) }
 	message5 = { "destination": "localPlatform", "value_name": "voltage_HV", "value": str(v_value) }
-	if ppc_master_obj.p_actual_hv == 0: PF = 1
-	else: PF = math.cos(math.atan(ppc_master_obj.q_actual_hv/ppc_master_obj.p_actual_hv))
-	message6 = { "destination": "localPlatform", "value_name": "power_factor_HV", "value": str(PF) }
+	message6 = { "destination": "localPlatform", "value_name": "PF", "value": str(ppc_master_obj.pf_actual) }
 	try:
 		ppc_master_obj.socket_tx.send_json(message1, zmq.NOBLOCK)
 		ppc_master_obj.socket_tx.send_json(message2, zmq.NOBLOCK)
 		ppc_master_obj.socket_tx.send_json(message3, zmq.NOBLOCK)
 		ppc_master_obj.socket_tx.send_json(message4, zmq.NOBLOCK)
 		ppc_master_obj.socket_tx.send_json(message5, zmq.NOBLOCK)
-        	# ppc_master_obj.socket_tx.send_json(message6, zmq.NOBLOCK)
+		ppc_master_obj.socket_tx.send_json(message6, zmq.NOBLOCK)
 	except:
 		print('HV quantities Error')
 
@@ -137,8 +133,8 @@ def send_operation_status(ppc_master_obj):
 def send_meteo(ppc_master_obj):
 	message1 = { "destination": "localPlatform", "value_name": "temperature", "value": str(round(ppc_master_obj.temp, 2)) }
 	message2 = { "destination": "localPlatform", "value_name": "total_irradiance", "value": str(round(ppc_master_obj.irradiance, 2)) }
-	# message3 = { "destination": "localPlatform", "value_name": "sunrise", "value": str(ppc_master_obj.sunrise) }
-	# message4 = { "destination": "localPlatform", "value_name": "sunset", "value": str(ppc_master_obj.sunset) }
+	# message3 = { "destination": "localPlatform", "value_name": "sunrise", "value": str(sunrise) }
+	# message4 = { "destination": "localPlatform", "value_name": "sunset", "value": str(sunset) }
 	try:
 		ppc_master_obj.socket_tx.send_json(message1, zmq.NOBLOCK)
 		ppc_master_obj.socket_tx.send_json(message2, zmq.NOBLOCK)

@@ -1,90 +1,91 @@
-f_counter = 0
-v_counter = 0
-
+# Timeouts in seconds for testing
+# For real-life multiply by 60 to get minutes
 f_timer = 30
 v_timer = 60
+release_timer = 10
 
-# Check if frequency and voltage are within limits
-def operating_ranges(ppc_master_obj, window_obj):
-	global f_counter, v_counter
-	
+def normal_op_limits(ppc_master_obj, window_obj):
 	# print(f'freq = {ppc_master_obj.f_actual}')
 	# Frequency ranges
 	if 49.0 <= ppc_master_obj.f_actual <= 51.0:
 		window_obj.ax2.set_title("Frequency")
-		f_counter = 0
+		ppc_master_obj.f_counter = 0
 		ppc_master_obj.f_shutdown = 0 # Runninng
 	elif 47.5 <= ppc_master_obj.f_actual < 49.0:
-		window_obj.ax2.set_title(u"Underfrequency: shutdown in {}".format(f_timer-f_counter))
-		f_counter += 1
+		window_obj.ax2.set_title(u"Underfrequency: shutdown in {}".format(f_timer-ppc_master_obj.f_counter))
+		ppc_master_obj.f_counter += 1
 		ppc_master_obj.f_shutdown = 2 # Stopping
 	elif 51.0 < ppc_master_obj.f_actual <= 51.5:
-		window_obj.ax2.set_title(u"Overfrequency: shutdown in {}".format(f_timer-f_counter))
-		f_counter += 1
+		window_obj.ax2.set_title(u"Overfrequency: shutdown in {}".format(f_timer-ppc_master_obj.f_counter))
+		ppc_master_obj.f_counter += 1
 		ppc_master_obj.f_shutdown = 2 # Stopping
 	elif ppc_master_obj.f_actual < 47.5 or ppc_master_obj.f_actual > 51.5:
 		window_obj.ax2.set_title('Frequency out of range!')
 		ppc_master_obj.f_shutdown = 1 # Not Running
-        
-	#if ppc_master_obj.f_actual < 49.8 or ppc_master_obj.f_actual > 50.2:
+	
+	# if ppc_master_obj.f_actual < 49.8 or ppc_master_obj.f_actual > 50.2:
 	if ppc_master_obj.f_actual > 50.2:
 		ppc_master_obj.p_mode = 1
 
 	# Voltage ranges
 	if 0.90 <= ppc_master_obj.v_actual <= 1.118:
 		window_obj.ax4.set_title('Voltage')
-		v_counter = 0
+		ppc_master_obj.v_counter = 0
 		ppc_master_obj.v_shutdown = 0 # Running
 	elif 0.85 <= ppc_master_obj.v_actual < 0.90:
-		window_obj.ax4.set_title(u"Undervoltage: shutdown in {}".format(v_timer-v_counter))
-		v_counter += 1
+		window_obj.ax4.set_title(u"Undervoltage: shutdown in {}".format(v_timer-ppc_master_obj.v_counter))
+		ppc_master_obj.v_counter += 1
 		ppc_master_obj.v_shutdown = 2 # Stopping
 	elif 1.118 < ppc_master_obj.v_actual <= 1.15:
-		window_obj.ax4.set_title(u"Overvoltage: shutdown in {}".format(v_timer-v_counter))
-		v_counter += 1
+		window_obj.ax4.set_title(u"Overvoltage: shutdown in {}".format(v_timer-ppc_master_obj.v_counter))
+		ppc_master_obj.v_counter += 1
 		ppc_master_obj.v_shutdown = 2 # Stopping
 	elif ppc_master_obj.v_actual < 0.85 or ppc_master_obj.v_actual > 1.15:
 		window_obj.ax4.set_title('Voltage out of range!')
 		ppc_master_obj.v_shutdown = 1 # Not Running
-        
-	if f_counter > f_timer:
-		window_obj.ax2.set_title("Frequency shutdown timeout")
-		ppc_master_obj.f_shutdown = 1 # Not Running
-        
-	if v_counter > v_timer:
-		window_obj.ax4.set_title("Voltage shutdown timeout")
-		ppc_master_obj.v_shutdown = 1 # Not Running
+
+# Check if frequency and voltage are within limits
+def operating_ranges(ppc_master_obj, window_obj):
 	
-	# PPC is not coming out of a shutdown
-	if not (ppc_master_obj.rehab):
+	if (ppc_master_obj.release):
+		# Check limits for normal operation
+		normal_op_limits(ppc_master_obj, window_obj)
+		
+		# Check counters for timeouts
+		if ppc_master_obj.f_counter > f_timer:
+			window_obj.ax2.set_title("Frequency shutdown timeout")
+			ppc_master_obj.f_shutdown = 1 # Timeout = PPC Not Running
+		if ppc_master_obj.v_counter > v_timer:
+			window_obj.ax4.set_title("Voltage shutdown timeout")
+			ppc_master_obj.v_shutdown = 1 # Timeout = PPC Not Running
+		
 		# If either f or v has gone out of range
 		if (ppc_master_obj.f_shutdown == 1 or ppc_master_obj.v_shutdown == 1):
 			ppc_master_obj.operational_state = 1
-			ppc_master_obj.start_enable = False
-			ppc_master_obj.rehab = True
+			ppc_master_obj.release = True
 		# If you reach here it means that both f and v are still in range
-		elif ppc_master_obj.f_shutdown == 2: ppc_master_obj.operational_state = 2
-		elif ppc_master_obj.v_shutdown == 2: ppc_master_obj.operational_state = 2
-		else: ppc_master_obj.operational_state = 0
+		elif ppc_master_obj.f_shutdown == 2 or ppc_master_obj.v_shutdown == 2:
+			ppc_master_obj.operational_state = 2
+		# No problem with f and v -> prioritize start/stop SCADA button
+		else: 
+			window_obj.ax2.set_title("Frequency ok")
+			if ppc_master_obj.start_stop == 1 or ppc_master_obj.auto_start_state == 1:
+				ppc_master_obj.operational_state = 0
+
 	# PPC is coming out of a shutdown
 	else:
-		# If either f or v is still out of range
-		if (ppc_master_obj.f_shutdown == 1 or ppc_master_obj.v_shutdown == 1):
-			# ppc_master_obj.rehab = True
-			pass
-		else: # If you reach here it means that both f and v have return in range
-			# ppc_master_obj.rehab = False
-			if ppc_master_obj.auto_start_state == 0:
-				# If auto start is off, set start_enable to true
-				if ppc_master_obj.f_shutdown != 1: ppc_master_obj.start_enable = True
-				elif ppc_master_obj.v_shutdown != 1: ppc_master_obj.start_enable = True
+		# Frequency ranges
+		if 49.9 <= ppc_master_obj.f_actual <= 50.1 and ppc_master_obj.v_actual >= 0.95:
+			if ppc_master_obj.release_counter >= release_timer:
+				ppc_master_obj.release = True
+				ppc_master_obj.release_counter = 0
+				ppc_master_obj.set_start_zero()
 			else:
-				ppc_master_obj.rehab = False
-				# If auto start is on, restart the park
-				if ppc_master_obj.f_shutdown == 2: ppc_master_obj.operational_state = 2
-				elif ppc_master_obj.v_shutdown == 2: ppc_master_obj.operational_state = 2
-				else: ppc_master_obj.operational_state = 0
-					
+				ppc_master_obj.release_counter += 1
+				window_obj.ax2.set_title(u"Enable in {}".format(release_timer-ppc_master_obj.release_counter))
+		else:
+			ppc_master_obj.release_counter = 0
+			ppc_master_obj.release = False # Not Running					
 	
 	# print(ppc_master_obj.operational_state)	
 

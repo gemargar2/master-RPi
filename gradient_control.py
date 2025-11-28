@@ -23,29 +23,32 @@ def q_pid_controller(setpoint, pv, kp, ki, kd, previous_error, integral, dt):
 prev_p_sp = 0
 prev_q_sp = 0
 
-def ramp_rate(ppc_master_obj):
+def gradient_control(ppc_master_obj, p_in_sp, q_in_sp):
 	global prev_p_sp , prev_q_sp
 
-	ppc_master_obj.Q_grad = ppc_master_obj.P_grad
-
+	# Active power gradient
 	if ppc_master_obj.p_mode == 3: # MPPT
 		grad = ppc_master_obj.MPPT_grad
 	else: # P Control or P Open Loop
 		grad = ppc_master_obj.P_grad
 
-	if (ppc_master_obj.p_ex_sp - prev_p_sp > grad):
+	if (p_in_sp - prev_p_sp > grad):
 		prev_p_sp += grad
-	elif (prev_p_sp - ppc_master_obj.p_ex_sp > grad):
+	elif (prev_p_sp - p_in_sp > grad):
 		prev_p_sp -= grad
 	else:
-		prev_p_sp = ppc_master_obj.p_ex_sp
+		prev_p_sp = p_in_sp
 
+	# Reactive power gradient (optional)
+	'''
 	if (ppc_master_obj.q_ex_sp - prev_q_sp > ppc_master_obj.Q_grad):
 		prev_q_sp += ppc_master_obj.Q_grad
 	elif (prev_q_sp - ppc_master_obj.q_ex_sp> ppc_master_obj.Q_grad):
 		prev_q_sp -= ppc_master_obj.Q_grad
 	else:
 		prev_q_sp = ppc_master_obj.q_ex_sp
+	'''
+	prev_q_sp = q_in_sp
 
 	return prev_p_sp, prev_q_sp
 
@@ -58,7 +61,7 @@ p_integral = 0
 q_integral = 0
 
 # P mode = 0
-def P_control(p_grad_sp, prev_p_in_sp, ppc_master_obj):
+def P_control(p_grad_sp, prev_p_grad_sp, ppc_master_obj):
 	global p_integral, p_prev_error
 	# Parameters
 	kp = ppc_master_obj.p_kp   # Proportional gain
@@ -67,16 +70,16 @@ def P_control(p_grad_sp, prev_p_in_sp, ppc_master_obj):
 	dt = ppc_master_obj.p_dt   # 100 ms
 	# Power control model
 	p_control, p_error, p_integral = p_pid_controller(p_grad_sp, ppc_master_obj.p_actual_hv, kp, ki, kd, p_prev_error, p_integral, dt)
-	p_in_sp = prev_p_in_sp + p_control * dt
+	p_pid_sp = prev_p_grad_sp + p_control * dt
 	p_prev_error = p_error
 
-	return p_in_sp
+	return p_pid_sp
 
 # --- Rective power ---------------------------------
 
 # Q mode = 0
-def Q_control(q_grad_sp, prev_q_in_sp, ppc_master_obj):
-	global q_integral, q_prev_error, q_in_sp
+def Q_control(q_grad_sp, prev_q_grad_sp, ppc_master_obj):
+	global q_integral, q_prev_error
 	# Parameters
 	kp = ppc_master_obj.q_kp   # Proportional gain
 	ki = ppc_master_obj.q_ki   # Integral gain
@@ -84,10 +87,10 @@ def Q_control(q_grad_sp, prev_q_in_sp, ppc_master_obj):
 	dt = ppc_master_obj.q_dt   # 100 ms
 	# Power control model
 	q_control, q_error, q_integral = q_pid_controller(q_grad_sp, ppc_master_obj.q_actual_hv, kp, ki, kd, q_prev_error, q_integral, dt)
-	q_in_sp = prev_q_in_sp + q_control * dt
+	q_pid_sp = prev_q_grad_sp + q_control * dt
 	q_prev_error = q_error
 
-	return q_in_sp
+	return q_pid_sp
 
 # Q mode = 1
 def QP_control(ppc_master_obj):
@@ -102,8 +105,7 @@ def QP_control(ppc_master_obj):
 
 # Q mode = 3
 def PF_control(ppc_master_obj):
-	q_in_sp = ppc_master_obj.p_actual_hv * math.tan(math.acos(ppc_master_obj.pf_ex_sp))
+	if ppc_master_obj.pf_ex_sp > 0: q_in_sp = ppc_master_obj.p_actual_hv * math.tan(math.acos(ppc_master_obj.pf_ex_sp))
+	else: q_in_sp = -ppc_master_obj.p_actual_hv * math.tan(math.acos(ppc_master_obj.pf_ex_sp))
 	return q_in_sp
-
-
 

@@ -87,9 +87,10 @@ class Window_class:
 		self.ln12, = self.ax1.plot([], [], "m--", label='scada')
 		self.ln13, = self.ax1.plot([], [], "c--", label='tso')
 		self.ln14, = self.ax1.plot([], [], "y--", label='fose')
-		self.ln15, = self.ax1.plot([], [], "r-", label='ex_sp')
-		self.ln16, = self.ax1.plot([], [], "g-", label='in_sp')
-		self.ax1.legend(handles=[self.ln11, self.ln12, self.ln13, self.ln14, self.ln15, self.ln16])
+		self.ln15, = self.ax1.plot([], [], "r-", label='in_sp')
+		self.ln16, = self.ax1.plot([], [], "g-", label='grad_sp')
+		self.ln17, = self.ax1.plot([], [], "k-", label='pid_sp')
+		self.ax1.legend(handles=[self.ln11, self.ln12, self.ln13, self.ln14, self.ln15, self.ln16, self.ln17])
 		# F plot
 		self.ln21, = self.ax2.plot([], [], "b-", label="Actual")
 		self.ln22, = self.ax2.plot([], [], "r--", label="49Hz")
@@ -101,9 +102,10 @@ class Window_class:
 		self.ln32, = self.ax3.plot([], [], "m--", label='scada')
 		self.ln33, = self.ax3.plot([], [], "c--", label='tso')
 		self.ln34, = self.ax3.plot([], [], "y--", label='fose')
-		self.ln35, = self.ax3.plot([], [], "r-", label='ex_sp')
-		self.ln36, = self.ax3.plot([], [], "g-", label='in_sp')
-		self.ax3.legend(handles=[self.ln31, self.ln32, self.ln33, self.ln34, self.ln35, self.ln36])
+		self.ln35, = self.ax3.plot([], [], "r-", label='in_sp')
+		self.ln36, = self.ax3.plot([], [], "g-", label='grad_sp')
+		self.ln37, = self.ax1.plot([], [], "k-", label='pid_sp')
+		self.ax3.legend(handles=[self.ln31, self.ln32, self.ln33, self.ln34, self.ln35, self.ln36, self.ln37])
 		# V plot
 		self.ln41, = self.ax4.plot([], [], "b-", label="Actual")
 		self.ln42, = self.ax4.plot([], [], "r--", label="0.9pu")
@@ -119,7 +121,7 @@ class Window_class:
 		self.ax5.legend(handles=[self.ln51, self.ln52, self.ln53])
 		# P-Q
 		# self.ln61, = self.ax6.plot([], [], "b-", label="Actual")
-		# self.ln62, = self.ax6.plot([], [], "g-", label="Setpoint")
+		# self.ln62, = self.ax6.plot([], [], "g-", label="Setpoint")l
 		self.ln61, = self.ax6.plot([], [], "r-", label="Limit")
 		self.ln62, = self.ax6.plot([], [], "k-", label="Q(P)")
 		self.ln63, = self.ax6.plot([], [], "w-", label="Actual", marker='o', mec='b')
@@ -155,53 +157,82 @@ class Window_class:
 		#     hspace=0.2,
 		#     wspace=0.2
 		# )
-    
-	p_data = deque([], maxlen=smax)
-	p_sp_data = deque([], maxlen=smax)
+	
+	# Samples/timestamps
+	x_data = deque([], maxlen=smax)
+	
+	# P remote setpoints
 	p_scada_sp = deque([], maxlen=smax)
 	p_tso_sp = deque([], maxlen=smax)
 	p_fose_sp = deque([], maxlen=smax)
-	p_nsp_data = deque([], maxlen=smax)
+	# P internal setpoints
+	p_in_sp_data = deque([], maxlen=smax)
+	p_grad_sp_data = deque([], maxlen=smax)
+	p_pid_sp_data = deque([], maxlen=smax)
+	# P measurement
+	p_actual_data = deque([], maxlen=smax)
+	
+	# F setpoint
 	f_data = deque([], maxlen=smax)
 	f_up = deque([], maxlen=smax)
 	f_dn = deque([], maxlen=smax)
 	f_up2 = deque([], maxlen=smax)
 	f_dn2 = deque([], maxlen=smax)
-	q_data = deque([], maxlen=smax)
+	
+	# Q remote setpoints
 	q_scada_sp = deque([], maxlen=smax)
 	q_tso_sp = deque([], maxlen=smax)
 	q_fose_sp = deque([], maxlen=smax)
-	q_sp_data = deque([], maxlen=smax)
-	q_nsp_data = deque([], maxlen=smax)
+	# Q internal setpoints
+	q_in_sp_data = deque([], maxlen=smax)
+	q_grad_sp_data = deque([], maxlen=smax)
+	q_pid_sp_data = deque([], maxlen=smax)
+	# Q measurement
+	q_actual_data = deque([], maxlen=smax)
+	
+	# V setpoint
 	v_data = deque([], maxlen=smax)
 	v_up = deque([], maxlen=smax)
 	v_dn = deque([], maxlen=smax)
 	v_up2 = deque([], maxlen=smax)
 	v_dn2 = deque([], maxlen=smax)
-	x_data = deque([], maxlen=smax)
-
+	
+	# Plot data
 	def plot_data(self, x, ppc_master_obj):
+		# samples/timestamp
 		self.x_data.append(x)
-		# P plot
-		self.p_data.append(ppc_master_obj.p_actual_hv)
+		
+		# ------ P plot -------
+		# P remote setpoints
 		self.p_scada_sp.append(ppc_master_obj.local_P_sp)
 		self.p_tso_sp.append(ppc_master_obj.tso_P_sp)
 		self.p_fose_sp.append(ppc_master_obj.fose_P_sp)
-		self.p_sp_data.append(ppc_master_obj.p_ex_sp)
-		self.p_nsp_data.append(ppc_master_obj.p_in_sp)
+		# P internal setpoints
+		self.p_in_sp_data.append(ppc_master_obj.p_in_sp)
+		self.p_grad_sp_data.append(ppc_master_obj.p_grad_sp)
+		self.p_pid_sp_data.append(ppc_master_obj.p_pid_sp)
+		# P measurement
+		self.p_actual_data.append(ppc_master_obj.p_actual_hv)
+		
 		# F plot
 		self.f_data.append(ppc_master_obj.f_actual)
 		self.f_up.append(51)
 		self.f_dn.append(49)
 		self.f_up2.append(51.5)
 		self.f_dn2.append(47.5)
-		# Q plots
-		self.q_data.append(ppc_master_obj.q_actual_hv)
+		
+		# ------ Q plot -------
+		# Q remote setpoints
 		self.q_scada_sp.append(ppc_master_obj.local_Q_sp)
 		self.q_tso_sp.append(ppc_master_obj.tso_Q_sp)
 		self.q_fose_sp.append(ppc_master_obj.fose_Q_sp)
-		self.q_sp_data.append(ppc_master_obj.q_ex_sp)
-		self.q_nsp_data.append(ppc_master_obj.q_in_sp)
+		# Q internal setpoints
+		self.q_in_sp_data.append(ppc_master_obj.q_in_sp)
+		self.q_grad_sp_data.append(ppc_master_obj.q_grad_sp)
+		self.q_pid_sp_data.append(ppc_master_obj.q_pid_sp)
+		# Q measurement
+		self.q_actual_data.append(ppc_master_obj.q_actual_hv)
+		
 		# V plots
 		self.v_data.append(ppc_master_obj.v_actual)
 		self.v_up.append(1.118)
@@ -211,12 +242,13 @@ class Window_class:
 
 		# Plot stuff
 		# P plot
-		self.ln11.set_data(self.x_data, self.p_data)
+		self.ln11.set_data(self.x_data, self.p_actual_data)
 		self.ln12.set_data(self.x_data, self.p_scada_sp)
 		self.ln13.set_data(self.x_data, self.p_tso_sp)
 		self.ln14.set_data(self.x_data, self.p_fose_sp)
-		self.ln15.set_data(self.x_data, self.p_sp_data)
-		self.ln16.set_data(self.x_data, self.p_nsp_data)
+		self.ln15.set_data(self.x_data, self.p_in_sp_data)
+		self.ln16.set_data(self.x_data, self.p_grad_sp_data)
+		self.ln17.set_data(self.x_data, self.p_pid_sp_data)
 		# F plot
 		self.ln21.set_data(self.x_data, self.f_data)
 		self.ln22.set_data(self.x_data, self.f_up)
@@ -224,12 +256,13 @@ class Window_class:
 		self.ln24.set_data(self.x_data, self.f_up2)
 		self.ln25.set_data(self.x_data, self.f_dn2)
 		# Q plot
-		self.ln31.set_data(self.x_data, self.q_data)
+		self.ln31.set_data(self.x_data, self.q_actual_data)
 		self.ln32.set_data(self.x_data, self.q_scada_sp)
 		self.ln33.set_data(self.x_data, self.q_tso_sp)
 		self.ln34.set_data(self.x_data, self.q_fose_sp)
-		self.ln35.set_data(self.x_data, self.q_sp_data)
-		self.ln36.set_data(self.x_data, self.q_nsp_data)
+		self.ln35.set_data(self.x_data, self.q_in_sp_data)
+		self.ln36.set_data(self.x_data, self.q_grad_sp_data)
+		self.ln37.set_data(self.x_data, self.p_pid_sp_data)
 		# V plot
 		self.ln41.set_data(self.x_data, self.v_data)
 		self.ln42.set_data(self.x_data, self.v_up)

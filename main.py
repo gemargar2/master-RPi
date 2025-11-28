@@ -3,20 +3,30 @@ from signals_rx import *
 from signals_tx import *
 from controller_core import *
 from class_def import *
-from window import *
+from window import * 
 from logfile import *
 
 plotFlag = True
 logFlag = False
 
 def main():
+	# Configuration file = initialize PPC
 	with open('configfile.json', 'r') as openfile:
 		config = json.load(openfile)
 	
+	# Memory file = remember setpoints in case of power supply fault
+	with open('memory.json', 'r') as openfile:
+		memory = json.load(openfile)
+	
 	# Create objects
-	ppc_master_obj = PPC_master_class(config)
+	ppc_master_obj = PPC_master_class(config, memory)
 	window_obj = Window_class()
 	logfile_obj = logFile_class()
+	
+	# When initialization is over, change boot flag to zero
+	ppc_master_obj.memory["boot_flag"] = 0
+	with open("memory.json", "w") as f:
+		json.dump(ppc_master_obj.memory, f)
 
 	# Start parallel processes
 	receive_messages = threading.Thread(target = receive_signals, args=(ppc_master_obj, window_obj))
@@ -30,6 +40,8 @@ def main():
 	window_obj.plot_V_control_curve(ppc_master_obj)
 	window_obj.plot_QU_curve(ppc_master_obj)
 	window_obj.plot_QU_limit_curve(ppc_master_obj)
+	
+	# when
 	
 	# Start looping controller core
 	i = 0

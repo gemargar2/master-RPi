@@ -12,7 +12,7 @@ def recalc_contribution(ppc_master_obj, window_obj):
 	for index in range(ppc_master_obj.numberOfSlaves):
 		ppc_master_obj.total_pmax += ppc_master_obj.slave_pmax[index]
 		ppc_master_obj.total_qmax += ppc_master_obj.slave_qmax[index]
-		ppc_master_obj.total_qmin += ppc_master_obj.slave_qmin[index]	
+		ppc_master_obj.total_qmin += ppc_master_obj.slave_qmin[index]
 
 	# Calculate new contribution
 	for index in range(ppc_master_obj.numberOfSlaves):
@@ -39,11 +39,11 @@ def send_internal_setpoints(ppc_master_obj, window_obj):
 	for i in range(ppc_master_obj.numberOfSlaves):
 		dest = "Slave_" + str(i+1)
 		# Distribution for p inj, q inj and q abs
-		ppc_master_obj.slave_p_sp[i] = ppc_master_obj.p_in_sp * ppc_master_obj.S_nom * ppc_master_obj.pi_per[i]
+		ppc_master_obj.slave_p_sp[i] = ppc_master_obj.p_pid_sp * ppc_master_obj.S_nom * ppc_master_obj.pi_per[i]
 		if ppc_master_obj.q_in_sp < 0:
-			ppc_master_obj.slave_q_sp[i] = ppc_master_obj.q_in_sp * ppc_master_obj.S_nom * ppc_master_obj.qa_per[i]
+			ppc_master_obj.slave_q_sp[i] = ppc_master_obj.q_pid_sp * ppc_master_obj.S_nom * ppc_master_obj.qa_per[i]
 		else:
-			ppc_master_obj.slave_q_sp[i] = ppc_master_obj.q_in_sp * ppc_master_obj.S_nom * ppc_master_obj.qi_per[i]
+			ppc_master_obj.slave_q_sp[i] = ppc_master_obj.q_pid_sp * ppc_master_obj.S_nom * ppc_master_obj.qi_per[i]
 		# Check limits
 		if ppc_master_obj.slave_p_sp[i] > ppc_master_obj.slave_pmax[i]: ppc_master_obj.slave_p_sp[i] = ppc_master_obj.slave_pmax[i]
 		if ppc_master_obj.slave_q_sp[i] > ppc_master_obj.slave_qmax[i]: ppc_master_obj.slave_q_sp[i] = ppc_master_obj.slave_qmax[i]
