@@ -119,6 +119,8 @@ def receive_signals(ppc_master_obj, window_obj):
 		
 		if message['origin'] == 'HV_Meter':
 			if message['value_name'] == 'VAC_ph': ppc_master_obj.v_actual = float(message["value"])
+			elif message['value_name'] == 'VAC_ph2': ppc_master_obj.v2_actual = float(message["value"])
+			elif message['value_name'] == 'VAC_ph3': ppc_master_obj.v3_actual = float(message["value"])
 			elif message['value_name'] == 'f': ppc_master_obj.f_actual = float(message["value"])
 			elif message['value_name'] == 'Pa': ppc_master_obj.p_actual_hv = float(message["value"])/ppc_master_obj.S_nom
 			elif message['value_name'] == 'Qa': ppc_master_obj.q_actual_hv = float(message["value"])/ppc_master_obj.S_nom

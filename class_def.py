@@ -72,12 +72,16 @@ class PPC_master_class:
 		self.release = True # False = PPC has turned off due to grid imbalance / True = PPC is ready to reconnect
 		self.f_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
 		self.v_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
+		self.v2_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
+		self.v3_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
 		self.auto_start_state = 0 # 0 = OFF / 1 = ON
 		# Main switch
 		self.main_switch_pos = 1 # 0 = Open / 1 = Closed
 		# Timers / coutners
 		self.f_counter = 0
 		self.v_counter = 0
+		self.v2_counter = 0
+		self.v3_counter = 0
 		self.release_counter = 0
 		# Local setpoints (SCADA)
 		self.local_P_sp = self.configdata["PPC_parameters"]["local_setpoints"]["local_P_sp"]/self.S_nom
@@ -142,6 +146,8 @@ class PPC_master_class:
 		self.q_actual_hv = 0
 		self.f_actual = 50
 		self.v_actual = 1
+		self.v2_actual = 1
+		self.v3_actual = 1
 		self.pf_actual = 1
 		# MV meter main
 		self.p_actual_mv = 0

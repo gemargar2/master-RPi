@@ -107,7 +107,9 @@ class Window_class:
 		self.ln37, = self.ax1.plot([], [], "k-", label='pid_sp')
 		self.ax3.legend(handles=[self.ln31, self.ln32, self.ln33, self.ln34, self.ln35, self.ln36, self.ln37])
 		# V plot
-		self.ln41, = self.ax4.plot([], [], "b-", label="Actual")
+		self.ln41, = self.ax4.plot([], [], "b-", label="ph1")
+		self.ln41, = self.ax4.plot([], [], "g-", label="ph1")
+		self.ln41, = self.ax4.plot([], [], "m-", label="ph1")
 		self.ln42, = self.ax4.plot([], [], "r--", label="0.9pu")
 		self.ln43, = self.ax4.plot([], [], "r--", label="1.118pu")
 		self.ln44, = self.ax4.plot([], [], "k--", label="0.85pu")
