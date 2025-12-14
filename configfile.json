@@ -47,21 +47,21 @@
 			"MPPT_grad": 0.25
 		},
 		"P_PID_parameters": {
-			"p_kp": 2.0,
-			"p_ki": 0.1,
+			"p_kp": 0.5,
+			"p_ki": 0.0,
 			"p_kd": 0.05,
-			"p_dt": 0.1
+			"p_dt": 0.05
 		},
 		"Q_PID_parameters": {
-			"q_kp": 2.0,
-			"q_ki": 0.1,
+			"q_kp": 0.666,
+			"q_ki": 0.0,
 			"q_kd": 0.05,
-			"q_dt": 0.1
+			"q_dt": 0.05
 		},	
 		"P(f)_curve": {
-			"s_FSM": 0.07,
-			"s_LFSM_O": 0.02,
-			"s_LFSM_U": 0.02,
+			"s_FSM": 0.05,
+			"s_LFSM_O": 0.05,
+			"s_LFSM_U": 0.05,
 			"p_ref": 0.5
 		},
 		"Q(P)_curve": {
@@ -73,14 +73,14 @@
 			"V_deadband_sp": 0.05
 		},
 		"Q(U)_curve": {
-			"deadband": 0.05,
-			"slope": 0.02,
-			"v_ref": 1.04
+			"deadband": 0.01,
+			"slope": 0.07,
+			"v_ref": 1.00
 		},
 		"Q(U)_Limit_curve": {
 			"U_values": [0.94, 0.96, 1.04, 1.06],
-			"Q_values": [0.33, 0.0, 0.0, -0.41],
-			"q_ref": -0.05 
+			"Q_values": [0.33, 0.0, 0.0, -0.33],
+			"q_ref": 0.0
 		}
 	}
 }

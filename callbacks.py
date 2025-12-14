@@ -13,28 +13,18 @@ def local_P_setpoint(ppc_master_obj, window_obj, var):
 	ppc_master_obj.memory["local_setpoints"]["local_P_sp"] = var
 	with open("memory.json", "w") as f:
 		json.dump(ppc_master_obj.memory, f)
-	# Update plots
-	window_obj.plot_PF_curve(ppc_master_obj)
  
 def local_Q_setpoint(ppc_master_obj, window_obj, var):
 	# Update ppc_master_obj variable
 	ppc_master_obj.local_Q_sp = var/ppc_master_obj.S_nom # store as per-unit
 	# Store the last setpoint to memory
 	ppc_master_obj.memory["local_setpoints"]["local_Q_sp"] = var
-	with open("memory.json", "w") as f:
+	with open("memory.json", "w") as f: 
 		json.dump(ppc_master_obj.memory, f)
 	# Update plots
 	window_obj.plot_QU_limit_curve(ppc_master_obj)
 
 def local_PF_setpoint(ppc_master_obj, var):
-	# Set timer
-	'''
-	if var != ppc_master_obj.local_PF_sp:
-		ppc_master_obj.start = time.time()
-		print(f"PF setpoint changed! Start timer")
-		time_calc = threading.Thread(target = settling_time_pf, args=(ppc_master_obj, ))
-		time_calc.start()
-	'''
 	# Set new setpoint
 	ppc_master_obj.local_PF_sp = var
 	# Store the last setpoint to memory
@@ -55,15 +45,15 @@ def local_V_setpoint(ppc_master_obj, window_obj, var):
 # Universal setpoints
 def local_s_setpoint(ppc_master_obj, window_obj, var):
 	# Update ppc_master_obj variable
-	ppc_master_obj.s_sp = var/100
+	ppc_master_obj.s_FSM = var/100
 	# Update plots
-	window_obj.plot_PF_curve(ppc_master_obj)
+	# window_obj.plot_FSM_curve(ppc_master_obj)
 
 def local_s_LFSM_O_setpoint(ppc_master_obj, window_obj, var):
 	# Update ppc_master_obj variable
 	ppc_master_obj.s_LFSM_O = var/100
 	# Update plotsl
-	window_obj.plot_PF_curve(ppc_master_obj)
+	# window_obj.plot_PF_curve(ppc_master_obj)
 
 def local_s_LFSM_U_setpoint(ppc_master_obj, window_obj, var):
 	# Update ppc_master_obj variable
@@ -75,7 +65,7 @@ def local_slope_setpoint(ppc_master_obj, window_obj, var):
 	# Update ppc_master_obj variable
 	ppc_master_obj.slope_sp = var/100
 	# Update plots
-	window_obj.plot_QU_curve(ppc_master_obj)
+	# window_obj.plot_QU_curve(ppc_master_obj)
 
 def local_V_deadband_setpoint(ppc_master_obj, window_obj, var):
 	# Update ppc_master_obj variable

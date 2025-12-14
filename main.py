@@ -7,7 +7,6 @@ from window import *
 from logfile import *
 
 plotFlag = True
-logFlag = False
 
 def main():
 	# Configuration file = initialize PPC
@@ -41,16 +40,13 @@ def main():
 	window_obj.plot_QU_curve(ppc_master_obj)
 	window_obj.plot_QU_limit_curve(ppc_master_obj)
 	
-	# when
-	
 	# Start looping controller core
 	i = 0
 	while True:
 		controllerCore(i, window_obj, ppc_master_obj)
-		if logFlag: logfile_obj.write_data(ppc_master_obj)
 		x = i/10 # convert samples to seconds
 		if plotFlag: window_obj.plot_data(x, ppc_master_obj)
-		else: time.sleep(1/ppc_master_obj.sampling_rate)
+		else: time.sleep(0.05)
 		i += 1
 
 if __name__ == "__main__":

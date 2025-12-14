@@ -26,19 +26,10 @@ def send_MV_quantities(ppc_master_obj):
 def send_HV_quantities(ppc_master_obj):
 	var1 = ppc_master_obj.p_actual_hv * ppc_master_obj.S_nom
 	var2 = ppc_master_obj.q_actual_hv * ppc_master_obj.S_nom
+	f_value = ppc_master_obj.f_actual
+	v_value = ppc_master_obj.v_actual * 150
 	message1 = { "destination": "localPlatform", "value_name": "active_power_HV", "value": str(var1) }
-	message2 = { "destination": "localPlatform", "value_name": "reactive_power_HV", "value": str(var2) }
-	if ppc_master_obj.simulation_run_stop:
-		if ppc_master_obj.simulation_mode:
-			f_value = ppc_master_obj.f_disturbance
-			v_value = ppc_master_obj.v_actual * 150
-		else:
-			f_value = ppc_master_obj.f_actual
-			v_value = ppc_master_obj.v_disturbance
-	else:
-		f_value = ppc_master_obj.f_actual
-		v_value = ppc_master_obj.v_actual * 150
-	
+	message2 = { "destination": "localPlatform", "value_name": "reactive_power_HV", "value": str(var2) }	
 	message3 = { "destination": "localPlatform", "value_name": "frequency_HV", "value": str(f_value) }
 	# Calculate current
 	if v_value > 0: I = math.sqrt(ppc_master_obj.p_actual_hv**2 + ppc_master_obj.q_actual_hv**2)/v_value
@@ -93,8 +84,7 @@ def send_remote_setpoints(ppc_master_obj):
 # --- Max capability base on meteo ---------------------------
 
 def send_max_capability(ppc_master_obj):
-	# var1 = ppc_master_obj.max_P_cap*ppc_master_obj.S_nom
-	var1 = ppc_master_obj.S_nom
+	var1 = ppc_master_obj.max_P_cap*ppc_master_obj.S_nom
 	var2 = ppc_master_obj.max_Q_cap*ppc_master_obj.S_nom
 	var3 = ppc_master_obj.min_Q_cap*ppc_master_obj.S_nom
 	message1 = { "destination": "localPlatform", "value_name": "max_active_capability", "value": str(var1) }
@@ -116,7 +106,7 @@ def send_operation_status(ppc_master_obj):
 	message4 = { "destination": "localPlatform", "value_name": "operational_state", "value": str(ppc_master_obj.operational_state) }
 	message5 = { "destination": "localPlatform", "value_name": "Auto_Start_state", "value": str(ppc_master_obj.auto_start_state) }
 	message6 = { "destination": "localPlatform", "value_name": "main_switch_position", "value": str(ppc_master_obj.main_switch_pos) }
-	# message7 = { "destination": "localPlatform", "value_name": "Local_Remote", "value": str(ppc_master_obj.local_remote) }
+	message7 = { "destination": "localPlatform", "value_name": "Local_Remote", "value": str(ppc_master_obj.local_remote) }
 	try:
 		ppc_master_obj.socket_tx.send_json(message1, zmq.NOBLOCK)
 		ppc_master_obj.socket_tx.send_json(message2, zmq.NOBLOCK)
@@ -124,7 +114,7 @@ def send_operation_status(ppc_master_obj):
 		ppc_master_obj.socket_tx.send_json(message4, zmq.NOBLOCK)
 		ppc_master_obj.socket_tx.send_json(message5, zmq.NOBLOCK)
 		ppc_master_obj.socket_tx.send_json(message6, zmq.NOBLOCK)
-		# ppc_master_obj.socket_tx.send_json(message7, zmq.NOBLOCK)
+		ppc_master_obj.socket_tx.send_json(message7, zmq.NOBLOCK)
 	except:
         	print('Operation status Error')
 

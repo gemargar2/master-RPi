@@ -31,23 +31,41 @@ def controllerCore(i, window_obj, ppc_master_obj):
 		p_in_sp = 0
 		q_in_sp = 0
 	else:
-		# Select active power control strategy
-		if ppc_master_obj.p_mode == 0:
-			window_obj.ax1.set_title('Active power: P control')
-			p_in_sp = ppc_master_obj.p_ex_sp
-			p_pid_flag = True
-		elif ppc_master_obj.p_mode == 1:
-			window_obj.ax1.set_title('Active power: F control')
-			p_in_sp = F_control(ppc_master_obj, window_obj)
-			p_pid_flag = True
-		elif ppc_master_obj.p_mode == 2: # P Open Loop
-			window_obj.ax1.set_title('Active power: P open loop')
-			p_in_sp = ppc_master_obj.p_ex_sp
-			p_pid_flag = False
-		elif ppc_master_obj.p_mode == 3: # MPPT
-			window_obj.ax1.set_title('Active power: MPPT')
-			p_in_sp = ppc_master_obj.total_pmax/ppc_master_obj.S_nom
-			p_pid_flag = False
+		if ppc_master_obj.lfsm_flag:
+			if ppc_master_obj.lfsm_pref_flag:
+				print("LFSM First time")
+				ppc_master_obj.lfsm_pref = ppc_master_obj.p_actual_hv
+				ppc_master_obj.lfsm_pref_flag = False
+				print(f'LFSM Pref = {ppc_master_obj.lfsm_pref}')
+			p_in_sp = LFSM_VDE(ppc_master_obj.lfsm_pref, ppc_master_obj, window_obj)
+		else:
+			ppc_master_obj.lfsm_pref_flag = True
+			# Select active power control strategy
+			if ppc_master_obj.p_mode == 0:
+				window_obj.ax1.set_title('Active power: P control')
+				p_in_sp = ppc_master_obj.p_ex_sp
+				p_pid_flag = True
+				ppc_master_obj.fsm_pref_flag = True
+			elif ppc_master_obj.p_mode == 1:
+				if ppc_master_obj.fsm_pref_flag:
+					print("FSM First time")
+					ppc_master_obj.fsm_pref = ppc_master_obj.p_actual_hv
+					ppc_master_obj.fsm_pref_flag = False
+					print(f'FSM Pref = {ppc_master_obj.fsm_pref}')
+				window_obj.ax1.set_title('Active power: F control')
+				# p_in_sp = F_Control(ppc_master_obj, window_obj)
+				p_in_sp = FSM_VDE(ppc_master_obj.fsm_pref, ppc_master_obj, window_obj)
+				p_pid_flag = True
+			elif ppc_master_obj.p_mode == 2: # P Open Loop
+				window_obj.ax1.set_title('Active power: P open loop')
+				p_in_sp = ppc_master_obj.p_ex_sp
+				p_pid_flag = False
+				ppc_master_obj.fsm_pref_flag = True
+			elif ppc_master_obj.p_mode == 3: # MPPT
+				window_obj.ax1.set_title('Active power: MPPT')
+				p_in_sp = ppc_master_obj.total_pmax/ppc_master_obj.S_nom
+				p_pid_flag = False
+				ppc_master_obj.fsm_pref_flag = True
 	    
 		# Select reactive power control strategy
 		if ppc_master_obj.q_mode == 0:

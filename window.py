@@ -71,16 +71,14 @@ class Window_class:
 		self.ax3.set_ylim(-0.6, 0.4)
 		self.ax4.set_xlim(0, xmax)
 		self.ax4.set_ylim(0.8, 1.2)
-		self.ax5.set_xlim(-0.6, 0.4)
+		self.ax5.set_xlim(-0.4, 0.4)
 		self.ax5.set_ylim(0.85, 1.15)
-		self.ax6.set_xlim(-0.6, 0.4)
+		self.ax6.set_xlim(-0.4, 0.4)
 		self.ax6.set_ylim(-0.1, 1.15)
 		self.ax7.set_xlim(0.85, 1.15)
-		self.ax7.set_ylim(-0.6, 0.4)
+		self.ax7.set_ylim(-0.4, 0.4)
 		self.ax8.set_xlim(49.6, 50.4)
-		self.ax8.set_ylim(0.2, 0.8)
-		# self.ax8.set_xlim(47.5, 51.5)
-		# self.ax8.set_ylim(-0.1, 1.1)
+		self.ax8.set_ylim(0.1, 0.9)
 
 		# P plot
 		self.ln11, = self.ax1.plot([], [], "b-", label='Actual')
@@ -107,38 +105,34 @@ class Window_class:
 		self.ln37, = self.ax1.plot([], [], "k-", label='pid_sp')
 		self.ax3.legend(handles=[self.ln31, self.ln32, self.ln33, self.ln34, self.ln35, self.ln36, self.ln37])
 		# V plot
-		self.ln41, = self.ax4.plot([], [], "b-", label="ph1")
-		self.ln41, = self.ax4.plot([], [], "g-", label="ph1")
-		self.ln41, = self.ax4.plot([], [], "m-", label="ph1")
-		self.ln42, = self.ax4.plot([], [], "r--", label="0.9pu")
-		self.ln43, = self.ax4.plot([], [], "r--", label="1.118pu")
-		self.ln44, = self.ax4.plot([], [], "k--", label="0.85pu")
-		self.ln45, = self.ax4.plot([], [], "k--", label="1.15pu")
+		self.ln41, = self.ax4.plot([], [], "b-", label="vab")
+		self.ln42, = self.ax4.plot([], [], "g-", label="vbc")
+		self.ln43, = self.ax4.plot([], [], "m-", label="vca")
+		self.ln44, = self.ax4.plot([], [], "r--", label="0.9pu")
+		self.ln45, = self.ax4.plot([], [], "r--", label="1.118pu")
+		self.ln46, = self.ax4.plot([], [], "k--", label="0.85pu")
+		self.ln47, = self.ax4.plot([], [], "k--", label="1.15pu")
+		self.ax4.legend(handles=[self.ln41, self.ln42, self.ln43])
 		# U-Q
-		# self.ln51, = self.ax5.plot([], [], "b-", label="Actual")
-		# self.ln52, = self.ax5.plot([], [], "g-", label="Setpoint")
 		self.ln51, = self.ax5.plot([], [], "r-", label="Limit")
-		self.ln52, = self.ax5.plot([], [], "w-", label="Actual", marker='o', mec='b')
-		self.ln53, = self.ax5.plot([], [], "w-", label="Setpoint", marker='o', mec='g')
-		self.ax5.legend(handles=[self.ln51, self.ln52, self.ln53])
+		self.ln52, = self.ax5.plot([], [], "w-", label="Setpoint", marker='o', mec='k')
+		self.ax5.legend(handles=[self.ln51, self.ln52])
 		# P-Q
-		# self.ln61, = self.ax6.plot([], [], "b-", label="Actual")
-		# self.ln62, = self.ax6.plot([], [], "g-", label="Setpoint")l
 		self.ln61, = self.ax6.plot([], [], "r-", label="Limit")
-		self.ln62, = self.ax6.plot([], [], "k-", label="Q(P)")
-		self.ln63, = self.ax6.plot([], [], "w-", label="Actual", marker='o', mec='b')
-		self.ln64, = self.ax6.plot([], [], "w-", label="Setpoint", marker='o', mec='g')
+		self.ln62, = self.ax6.plot([], [], "b-", label="Q(P)")
+		self.ln63, = self.ax6.plot([], [], "w-", label="Setpoint", marker='o', mec='k')
+		self.ax6.legend(handles=[self.ln61, self.ln62, self.ln63])
 		# Q(U)
 		self.ln71, = self.ax7.plot([], [], "r-", label="Q(U)")
 		self.ln72, = self.ax7.plot([], [], "g-", label="Q(U) w/limit")
 		self.ln73, = self.ax7.plot([], [], "b-", label="V control")
-		self.ln74, = self.ax7.plot([], [], "w-", label="Actual", marker='o', mec='k')
-		self.ax7.legend(handles=[self.ln71, self.ln72, self.ln73])
+		self.ln74, = self.ax7.plot([], [], "w-", label="Setpoint", marker='o', mec='k')
+		self.ax7.legend(handles=[self.ln71, self.ln72, self.ln73, self.ln74])
 		# P(f)
-		self.ln81, = self.ax8.plot([], [], "r-", label="limit")
-		self.ln82, = self.ax8.plot([], [], "w-", label="Setpoint", marker='o', mec='g')
-		self.ln83, = self.ax8.plot([], [], "w-", label="Actual", marker='o', mec='b')
-		self.ax8.legend(handles=[self.ln82, self.ln83])
+		self.ln81, = self.ax8.plot([], [], "g-", label="LFSM")
+		self.ln82, = self.ax8.plot([], [], "r-", label="FSM")
+		self.ln83, = self.ax8.plot([], [], "w-", label="Setpoint", marker='o', mec='k')
+		self.ax8.legend(handles=[self.ln81, self.ln82, self.ln83])
 
 		# V-Q limits (fixed)
 		q_vector = [-0.35, 0, 0.2, 0.2, 0, -0.35, -0.35]
@@ -193,7 +187,9 @@ class Window_class:
 	q_actual_data = deque([], maxlen=smax)
 	
 	# V setpoint
-	v_data = deque([], maxlen=smax)
+	vab_data = deque([], maxlen=smax)
+	vbc_data = deque([], maxlen=smax)
+	vca_data = deque([], maxlen=smax)
 	v_up = deque([], maxlen=smax)
 	v_dn = deque([], maxlen=smax)
 	v_up2 = deque([], maxlen=smax)
@@ -201,6 +197,9 @@ class Window_class:
 	
 	# Plot data
 	def plot_data(self, x, ppc_master_obj):
+		# Update FSM Characteristic
+		if ppc_master_obj.fsm_pref_flag: self.plot_FSM_curve(ppc_master_obj)
+		if ppc_master_obj.lfsm_pref_flag: self.plot_LFSM_curve(ppc_master_obj)
 		# samples/timestamp
 		self.x_data.append(x)
 		
@@ -236,7 +235,9 @@ class Window_class:
 		self.q_actual_data.append(ppc_master_obj.q_actual_hv)
 		
 		# V plots
-		self.v_data.append(ppc_master_obj.v_actual)
+		self.vab_data.append(ppc_master_obj.vab_actual)
+		self.vbc_data.append(ppc_master_obj.vbc_actual)
+		self.vca_data.append(ppc_master_obj.vca_actual)
 		self.v_up.append(1.118)
 		self.v_dn.append(0.9)
 		self.v_up2.append(1.15)
@@ -266,25 +267,21 @@ class Window_class:
 		self.ln36.set_data(self.x_data, self.q_grad_sp_data)
 		self.ln37.set_data(self.x_data, self.p_pid_sp_data)
 		# V plot
-		self.ln41.set_data(self.x_data, self.v_data)
-		self.ln42.set_data(self.x_data, self.v_up)
-		self.ln43.set_data(self.x_data, self.v_dn)
-		self.ln44.set_data(self.x_data, self.v_up2)
-		self.ln45.set_data(self.x_data, self.v_dn2)
+		self.ln41.set_data(self.x_data, self.vab_data)
+		self.ln42.set_data(self.x_data, self.vbc_data)
+		self.ln43.set_data(self.x_data, self.vca_data)
+		self.ln44.set_data(self.x_data, self.v_up)
+		self.ln45.set_data(self.x_data, self.v_dn)
+		self.ln46.set_data(self.x_data, self.v_up2)
+		self.ln47.set_data(self.x_data, self.v_dn2)
 		# V-Q
-		# self.ln51.set_data(self.q_data, self.v_data)
-		# self.ln52.set_data(self.q_nsp_data, self.v_data)
-		self.ln52.set_data(ppc_master_obj.q_actual_hv, ppc_master_obj.v_actual)
-		self.ln53.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.v_actual)
+		self.ln52.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.v_actual)
 		# P-Q
-		# self.ln61.set_data(self.q_data, self.p_data)
-		# self.ln62.set_data(self.q_nsp_data, self.p_nsp_data)
-		self.ln63.set_data(ppc_master_obj.q_actual_hv, ppc_master_obj.p_actual_hv)
-		self.ln64.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.p_in_sp)
-		self.ln74.set_data(ppc_master_obj.v_actual, ppc_master_obj.q_actual_hv)
+		self.ln63.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.p_in_sp)
+		# Q_U characteristics
+		self.ln74.set_data(ppc_master_obj.v_actual, ppc_master_obj.q_in_sp)
 		# P-f
-		self.ln82.set_data(ppc_master_obj.f_actual, ppc_master_obj.p_in_sp)
-		self.ln83.set_data(ppc_master_obj.f_actual, ppc_master_obj.p_actual_hv)
+		self.ln83.set_data(ppc_master_obj.f_actual, ppc_master_obj.p_in_sp)
 
 		# Slide window
 		if x>=xmax:
@@ -310,6 +307,8 @@ class Window_class:
 			self.ln43.axes.set_xlim(x-xmax, x)
 			self.ln44.axes.set_xlim(x-xmax, x)
 			self.ln45.axes.set_xlim(x-xmax, x)
+			self.ln46.axes.set_xlim(x-xmax, x)
+			self.ln47.axes.set_xlim(x-xmax, x)
         
 		# Emulate FuncAnimation
 		plt.pause(1/ppc_master_obj.sampling_rate) # 1/20Hz = 0.05 s (TG3, section 6.1.1, p.132)
@@ -320,7 +319,7 @@ class Window_class:
 		s_LFSMO = ppc_master_obj.s_LFSM_O
 		s_LFSMU = ppc_master_obj.s_LFSM_U
 		# Toggle setpoints
-		p_ref = ppc_master_obj.PF_p
+		p_ref = ppc_master_obj.p_grad_sp
 		f_ref = 50
 		f_vector = [47.5,
                 	49.8 - (1 - (p_ref + 0.19/(s*f_ref)))*f_ref*s_LFSMU,
@@ -330,14 +329,55 @@ class Window_class:
                 	50.2,
                 	50.2 + (1 - (p_ref + 0.19/(s*f_ref)))*f_ref*s_LFSMO,
                 	51.5]
+                
 		p_vector = [1,
-                	1,
+                	1, 
                 	p_ref + 0.19/(s*f_ref),
                 	p_ref,
                 	p_ref,
                 	p_ref - 0.19/(s*f_ref),
                 	0,
                 	0]
+		self.ln81.set_data(f_vector, p_vector)
+	
+	def plot_FSM_curve(self, ppc_master_obj):
+		# P(f) curve (limits fixed / slopes modifiable)
+		s = ppc_master_obj.s_FSM
+		# Toggle setpoints
+		p_ref = ppc_master_obj.p_actual_hv
+		f_ref = 50
+		f_vector = [
+			47.5,
+                	49.8,
+                	49.99,
+                	50.01,
+                	50.2,
+                	51.5]
+                
+		p_vector = [
+			p_ref + 0.19/(s*f_ref),
+                	p_ref + 0.19/(s*f_ref),
+                	p_ref,
+                	p_ref,
+                	p_ref - 0.19/(s*f_ref),
+                	p_ref - 0.19/(s*f_ref)]
+                
+		self.ln82.set_data(f_vector, p_vector)
+
+	def plot_LFSM_curve(self, ppc_master_obj):
+		p_ref = ppc_master_obj.p_actual_hv
+		f_vector = [
+			47.5,
+                	49.8,
+                	50.2,
+                	51.5]
+                
+		p_vector = [
+                	p_ref + 2.3*0.4*p_ref,
+                	p_ref,
+                	p_ref,
+                	p_ref - 1.3*0.4*p_ref]
+                
 		self.ln81.set_data(f_vector, p_vector)
 
 	def plot_QU_curve(self, ppc_master_obj):
@@ -348,13 +388,15 @@ class Window_class:
 		q_max = ppc_master_obj.max_Q_cap
 		q_min = ppc_master_obj.min_Q_cap
 		db = ppc_master_obj.QU_db
-		v_vector = [1.15,
+		v_vector = [
+			1.15,
 			v_ref + db + (q_ref - q_min)*s,
 			v_ref + db,
 			v_ref - db,
 			v_ref - db - (q_max - q_ref)*s,
 			0.85]
-		q_vector = [q_min,
+		q_vector = [
+			q_min,
 			q_min,
 			0,
 			0,

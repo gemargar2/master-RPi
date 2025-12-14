@@ -32,6 +32,8 @@ def V_control(ppc_master_obj):
 	else:
 		q_in_sp = q_ref
 	
+	if q_in_sp >= 0.33: q_in_sp = 0.33
+	elif q_in_sp <= -0.33: q_in_sp = -0.33
 	return q_in_sp
 
 # Q mode = 3 (PF Control)
@@ -41,10 +43,11 @@ def V_control(ppc_master_obj):
 def QU_VDE(ppc_master_obj):
 	q_ref = 0 # ppc_master_obj.q_ex_sp
 	v_actual = ppc_master_obj.v_actual
-	slope = ppc_master_obj.QU_s# Droop adjustable between 2-12%, default value 5%
+	slope = ppc_master_obj.QU_s # Droop adjustable between 2-12%, default value 5%
 	v_sp = ppc_master_obj.QU_v # setpoint voltage
 	db = ppc_master_obj.QU_db # voltage deadband
 	m = 1/slope # gradient 7<m<24
+	#print(f'slope = {slope}, v_sp = {v_sp}, db = {db}, m = {m}')
 
 	if (v_actual < v_sp - db):
 		if printMessages:
@@ -63,6 +66,10 @@ def QU_VDE(ppc_master_obj):
 	else:
 		q_in_sp = q_ref
 
+	if q_in_sp >= 0.33: q_in_sp = 0.33
+	elif q_in_sp <= -0.33: q_in_sp = -0.33
+	#print(f'Q({v_actual}) = {q_in_sp}')	
+	
 	return q_in_sp
 
 # Q mode = 6
@@ -85,23 +92,27 @@ def V_Limit_VDE(ppc_master_obj):
 		q_in_sp = q_ref - delta_Q
 	else:
 		q_in_sp = q_ref
-
+	
+	if q_in_sp >= 0.33: q_in_sp = 0.33
+	elif q_in_sp <= -0.33: q_in_sp = -0.33
+	#print(f'Q({v_actual}) = {q_in_sp}')
 	return q_in_sp
 
 # V limit VDE init
 def V_Limit_VDE_init(self, q_ref):
+	#print(f'P1=({self.P1[0]}, {self.P1[1]}), P2=({self.P2[0]}, {self.P2[1]}), P3=({self.P3[0]}, {self.P3[1]}), P4=({self.P4[0]}, {self.P4[1]})')
 	# Slopes are not affected by voltage setpoint
 	self.ma = (self.P2[1] - self.P1[1]) / (self.P2[0] - self.P1[0])
 	self.mb = (self.P4[1] - self.P3[1]) / (self.P4[0] - self.P3[0])
 	# Deadband limits are affected by voltage setpoint
 	self.dba = self.P2[0] + q_ref / self.ma
 	self.dbb = self.P3[0] + q_ref / self.mb
-	# print(f'ma = {round(self.ma, 2)}')
-	# print(f'mb = {round(self.mb, 2)}')
-	# print(f'dba = {round(self.dba, 2)}')
-	# print(f'dbb = {round(self.dbb, 2)}')
-	# print(f'qmax = {round(self.qmax, 2)}')
-	# print(f'qmax = {round(self.qmin, 2)}')
+	#print(f'ma = {round(self.ma, 2)}')
+	#print(f'mb = {round(self.mb, 2)}')
+	#print(f'dba = {round(self.dba, 2)}')
+	#print(f'dbb = {round(self.dbb, 2)}')
+	#print(f'qmax = {round(self.max_Q_cap, 2)}')
+	#print(f'qmax = {round(self.min_Q_cap, 2)}')
 
 # Q(P) init
 def QP_init(self):

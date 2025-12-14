@@ -118,12 +118,14 @@ def receive_signals(ppc_master_obj, window_obj):
 		recalc_contribution(ppc_master_obj, window_obj)
 		
 		if message['origin'] == 'HV_Meter':
-			if message['value_name'] == 'VAC_ph': ppc_master_obj.v_actual = float(message["value"])
-			elif message['value_name'] == 'VAC_ph2': ppc_master_obj.v2_actual = float(message["value"])
-			elif message['value_name'] == 'VAC_ph3': ppc_master_obj.v3_actual = float(message["value"])
+			if message['value_name'] == 'V1': ppc_master_obj.vl_actual = float(message["value"])
+			elif message['value_name'] == 'Vab': ppc_master_obj.vab_actual = float(message["value"])
+			elif message['value_name'] == 'Vbc': ppc_master_obj.vbc_actual = float(message["value"])
+			elif message['value_name'] == 'Vca': ppc_master_obj.vca_actual = float(message["value"])
 			elif message['value_name'] == 'f': ppc_master_obj.f_actual = float(message["value"])
 			elif message['value_name'] == 'Pa': ppc_master_obj.p_actual_hv = float(message["value"])/ppc_master_obj.S_nom
 			elif message['value_name'] == 'Qa': ppc_master_obj.q_actual_hv = float(message["value"])/ppc_master_obj.S_nom
+			elif message['value_name'] == 'S': ppc_master_obj.s_actual_hv = float(message["value"])/ppc_master_obj.S_nom
 			elif message['value_name'] == 'main_switch_position': ppc_master_obj.main_switch_pos = int(message["value"])
 		
 		recalc_pf(ppc_master_obj)

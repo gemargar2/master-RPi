@@ -72,6 +72,9 @@ def P_control(p_grad_sp, prev_p_grad_sp, ppc_master_obj):
 	p_control, p_error, p_integral = p_pid_controller(p_grad_sp, ppc_master_obj.p_actual_hv, kp, ki, kd, p_prev_error, p_integral, dt)
 	p_pid_sp = prev_p_grad_sp + p_control * dt
 	p_prev_error = p_error
+	
+	if p_pid_sp >= 1: p_pid_sp = 1
+	if p_pid_sp <= 0: p_pid_sp = 0
 
 	return p_pid_sp
 
@@ -89,6 +92,9 @@ def Q_control(q_grad_sp, prev_q_grad_sp, ppc_master_obj):
 	q_control, q_error, q_integral = q_pid_controller(q_grad_sp, ppc_master_obj.q_actual_hv, kp, ki, kd, q_prev_error, q_integral, dt)
 	q_pid_sp = prev_q_grad_sp + q_control * dt
 	q_prev_error = q_error
+	
+	if q_pid_sp >= 1: q_pid_sp = 1
+	if q_pid_sp <= -1: q_pid_sp = -1
 
 	return q_pid_sp
 
@@ -96,11 +102,11 @@ def Q_control(q_grad_sp, prev_q_grad_sp, ppc_master_obj):
 def QP_control(ppc_master_obj):
 	index = 0
 	for i in range(ppc_master_obj.numOfPoints-1):
-		if (ppc_master_obj.p_actual_hv < float(ppc_master_obj.P_points[i+1])) and (ppc_master_obj.p_actual_hv > float(ppc_master_obj.P_points[i])):
+		if (ppc_master_obj.p_in_sp < float(ppc_master_obj.P_points[i+1])) and (ppc_master_obj.p_in_sp > float(ppc_master_obj.P_points[i])):
 			index = i
 			break
 	# print(index)
-	q_in_sp = (ppc_master_obj.p_actual_hv - float(ppc_master_obj.P_points[index]))*ppc_master_obj.m[i] + float(ppc_master_obj.Q_points[i])
+	q_in_sp = (ppc_master_obj.p_in_sp - float(ppc_master_obj.P_points[index]))*ppc_master_obj.m[i] + float(ppc_master_obj.Q_points[i])
 	return q_in_sp
 
 # Q mode = 3

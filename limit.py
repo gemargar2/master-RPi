@@ -5,7 +5,10 @@ v_timer = 60
 release_timer = 10
 
 def normal_op_limits(ppc_master_obj, window_obj):
-	# print(f'freq = {ppc_master_obj.f_actual}')
+	# Check frequency to activate LFSM-O/U
+	if ppc_master_obj.f_actual>50.2 or ppc_master_obj.f_actual<49.8: ppc_master_obj.lfsm_flag = True
+	else: ppc_master_obj.lfsm_flag = False
+	
 	# Frequency ranges
 	if 49.0 <= ppc_master_obj.f_actual <= 51.0:
 		window_obj.ax2.set_title("Frequency")
@@ -27,48 +30,48 @@ def normal_op_limits(ppc_master_obj, window_obj):
 	if ppc_master_obj.f_actual > 50.2:
 		ppc_master_obj.p_mode = 1
 
-	# Voltage ranges phase 1
-	if 0.90 <= ppc_master_obj.v_actual <= 1.118:
+	# Vab voltage ranges
+	if 0.90 <= ppc_master_obj.vab_actual <= 1.118:
 		window_obj.ax4.set_title('Voltage')
-		ppc_master_obj.v_counter = 0
-		ppc_master_obj.v_shutdown = 0 # Running
-	elif 0.85 <= ppc_master_obj.v_actual < 0.90:
+		ppc_master_obj.vab_counter = 0
+		ppc_master_obj.vab_shutdown = 0 # Running
+	elif 0.85 <= ppc_master_obj.vab_actual < 0.90:
 		window_obj.ax4.set_title(u"Undervoltage: shutdown in {}".format(v_timer-ppc_master_obj.v_counter))
-		ppc_master_obj.v_counter += 1
-		ppc_master_obj.v_shutdown = 2 # Stopping
-	elif 1.118 < ppc_master_obj.v_actual <= 1.15:
+		ppc_master_obj.vab_counter += 1
+		ppc_master_obj.vab_shutdown = 2 # Stopping
+	elif 1.118 < ppc_master_obj.vab_actual <= 1.15:
 		window_obj.ax4.set_title(u"Overvoltage: shutdown in {}".format(v_timer-ppc_master_obj.v_counter))
-		ppc_master_obj.v_counter += 1
-		ppc_master_obj.v_shutdown = 2 # Stopping
-	elif ppc_master_obj.v_actual < 0.85 or ppc_master_obj.v_actual > 1.15:
+		ppc_master_obj.vab_counter += 1
+		ppc_master_obj.vab_shutdown = 2 # Stopping
+	elif ppc_master_obj.vab_actual < 0.85 or ppc_master_obj.vab_actual > 1.15:
 		window_obj.ax4.set_title('Voltage out of range!')
 		ppc_master_obj.v_shutdown = 1 # Not Running
 
-	# Voltage ranges phase 2
-	if 0.90 <= ppc_master_obj.v2_actual <= 1.118:
-		ppc_master_obj.v2_counter = 0
-		ppc_master_obj.v2_shutdown = 0 # Running
-	elif 0.85 <= ppc_master_obj.v2_actual < 0.90:
-		ppc_master_obj.v2_counter += 1
-		ppc_master_obj.v2_shutdown = 2 # Stopping
-	elif 1.118 < ppc_master_obj.v2_actual <= 1.15:
-		ppc_master_obj.v2_counter += 1
-		ppc_master_obj.v2_shutdown = 2 # Stopping
-	elif ppc_master_obj.v2_actual < 0.85 or ppc_master_obj.v2_actual > 1.15:
-		ppc_master_obj.v2_shutdown = 1 # Not Running
+	# Vbc Voltage ranges
+	if 0.90 <= ppc_master_obj.vbc_actual <= 1.118:
+		ppc_master_obj.vbc_counter = 0
+		ppc_master_obj.vbc_shutdown = 0 # Running
+	elif 0.85 <= ppc_master_obj.vbc_actual < 0.90:
+		ppc_master_obj.vbc_counter += 1
+		ppc_master_obj.vbc_shutdown = 2 # Stopping
+	elif 1.118 < ppc_master_obj.vbc_actual <= 1.15:
+		ppc_master_obj.vbc_counter += 1
+		ppc_master_obj.vbc_shutdown = 2 # Stopping
+	elif ppc_master_obj.vbc_actual < 0.85 or ppc_master_obj.vbc_actual > 1.15:
+		ppc_master_obj.vbc_shutdown = 1 # Not Running
 
-	# Voltage ranges phase 3
-	if 0.90 <= ppc_master_obj.v3_actual <= 1.118:
-		ppc_master_obj.v3_counter = 0
-		ppc_master_obj.v3_shutdown = 0 # Running
-	elif 0.85 <= ppc_master_obj.v3_actual < 0.90:
-		ppc_master_obj.v3_counter += 1
-		ppc_master_obj.v3_shutdown = 2 # Stopping
-	elif 1.118 < ppc_master_obj.v3_actual <= 1.15:
-		ppc_master_obj.v3_counter += 1
-		ppc_master_obj.v3_shutdown = 2 # Stopping
-	elif ppc_master_obj.v3_actual < 0.85 or ppc_master_obj.v3_actual > 1.15:
-		ppc_master_obj.v3_shutdown = 1 # Not Running
+	# Vca Voltage ranges
+	if 0.90 <= ppc_master_obj.vca_actual <= 1.118:
+		ppc_master_obj.vca_counter = 0
+		ppc_master_obj.vca_shutdown = 0 # Running
+	elif 0.85 <= ppc_master_obj.vca_actual < 0.90:
+		ppc_master_obj.vca_counter += 1
+		ppc_master_obj.vca_shutdown = 2 # Stopping
+	elif 1.118 < ppc_master_obj.vca_actual <= 1.15:
+		ppc_master_obj.vca_counter += 1
+		ppc_master_obj.vca_shutdown = 2 # Stopping
+	elif ppc_master_obj.vca_actual < 0.85 or ppc_master_obj.vca_actual > 1.15:
+		ppc_master_obj.vca_shutdown = 1 # Not Running
 
 # Check if frequency and voltage are within limits
 def operating_ranges(ppc_master_obj, window_obj):
@@ -81,22 +84,22 @@ def operating_ranges(ppc_master_obj, window_obj):
 		if ppc_master_obj.f_counter > f_timer:
 			window_obj.ax2.set_title("Frequency shutdown timeout")
 			ppc_master_obj.f_shutdown = 1 # Timeout = PPC Not Running
-		if ppc_master_obj.v_counter > v_timer:
+		if ppc_master_obj.vab_counter > v_timer:
 			window_obj.ax4.set_title("Voltage shutdown timeout")
-			ppc_master_obj.v_shutdown = 1 # Timeout = PPC Not Running
-		if ppc_master_obj.v2_counter > v_timer:
+			ppc_master_obj.vab_shutdown = 1 # Timeout = PPC Not Running
+		if ppc_master_obj.vbc_counter > v_timer:
 			window_obj.ax4.set_title("Voltage shutdown timeout")
-			ppc_master_obj.v2_shutdown = 1 # Timeout = PPC Not Running
-		if ppc_master_obj.v3_counter > v_timer:
+			ppc_master_obj.vbc_shutdown = 1 # Timeout = PPC Not Running
+		if ppc_master_obj.vca_counter > v_timer:
 			window_obj.ax4.set_title("Voltage shutdown timeout")
-			ppc_master_obj.v3_shutdown = 1 # Timeout = PPC Not Running
+			ppc_master_obj.vca_shutdown = 1 # Timeout = PPC Not Running
 		
 		# If either f or v has gone out of range
-		if (ppc_master_obj.f_shutdown == 1 or ppc_master_obj.v_shutdown == 1 or ppc_master_obj.v2_shutdown == 1 or ppc_master_obj.v3_shutdown == 1):
+		if (ppc_master_obj.f_shutdown == 1 or ppc_master_obj.vab_shutdown == 1 or ppc_master_obj.vbc_shutdown == 1 or ppc_master_obj.vca_shutdown == 1):
 			ppc_master_obj.operational_state = 1
 			ppc_master_obj.release = True
 		# If you reach here it means that both f and v are still in range
-		elif (ppc_master_obj.f_shutdown == 2 or ppc_master_obj.v_shutdown == 2 or ppc_master_obj.v2_shutdown == 2 or ppc_master_obj.v3_shutdown == 2):
+		elif (ppc_master_obj.f_shutdown == 2 or ppc_master_obj.vab_shutdown == 2 or ppc_master_obj.vbc_shutdown == 2 or ppc_master_obj.vca_shutdown == 2):
 			ppc_master_obj.operational_state = 2
 		# No problem with f and v -> prioritize start/stop SCADA button
 		else: 
@@ -107,7 +110,7 @@ def operating_ranges(ppc_master_obj, window_obj):
 	# Reconnection process
 	else:
 		# Frequency ranges
-		if 49.9 <= ppc_master_obj.f_actual <= 50.1 and ppc_master_obj.v_actual >= 0.95 and ppc_master_obj.v2_actual >= 0.95 and ppc_master_obj.v3_actual >= 0.95:
+		if 49.9 <= ppc_master_obj.f_actual <= 50.1 and ppc_master_obj.vab_actual >= 0.95 and ppc_master_obj.vbc_actual >= 0.95 and ppc_master_obj.vca_actual >= 0.95:
 			if ppc_master_obj.release_counter >= release_timer:
 				ppc_master_obj.release = True
 				ppc_master_obj.release_counter = 0

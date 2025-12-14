@@ -14,7 +14,7 @@ f_mode = 0
 f_integral = 0
 f_prev_error = 0
 
-# --- F control -------------------------------------
+# --- F control IPTO -------------------------------------
 
 def LFSM_U(p_ref, ppc_master_obj, window_obj):
 	window_obj.ax8.set_xlim(47.5, 50)
@@ -36,19 +36,60 @@ def LFSM_O(p_ref, ppc_master_obj, window_obj):
 
 	return p_in_sp
 
-def FSM(p_ref, ppc_master_obj, window_obj):
+def FSM(f_ref, ppc_master_obj, window_obj):
+	p_ref = ppc_master_obj.PF_p
 	window_obj.ax8.set_xlim(49.6, 50.4)
 	window_obj.ax8.set_ylim(0.2, 0.8)
 	s = ppc_master_obj.s_FSM # Droop adjustable between 2-12%, default value 5%
 	delta_P = (f_ref-ppc_master_obj.f_actual)/(f_ref*s) # positive for f_actual<f_ref (underfrequency), negative for f_actual>f_ref (overfrequency)
 	p_in_sp = p_ref + delta_P
+	
+	print(f's = {s}, delta_P = {delta_P}')
+	print(f'P({ppc_master_obj.f_actual}) = {p_in_sp}')
 
 	return p_in_sp
 
-# def F_control(prev_p_in_sp, ppc_master_obj, window_obj):
+# --- F control VDE -------------------------------------
+
+def LFSM_VDE(p_ref, ppc_master_obj, window_obj):
+	if ppc_master_obj.f_actual > 50.2:
+		f_1 = 50.2 # LFSM-O frequency threshold default 50.2Hz
+	elif ppc_master_obj.f_actual < 49.8:
+		f_1 = 49.8 # LFSM-U frequency threshold default 49.8Hz
+
+	delta_f = f_1-ppc_master_obj.f_actual # positive for f_actual<f_1 (underfrequency)
+	delta_P = delta_f*0.4*p_ref # delta_P/delta_f = 40% * Pref/Hz
+	p_in_sp = p_ref + delta_P
+
+	return p_in_sp
+
+def FSM_VDE(p_ref, ppc_master_obj, window_obj):
+	s = ppc_master_obj.s_FSM # Droop adjustable between 2-12%, default value 5%
+	if ppc_master_obj.f_actual > 50.01:
+		delta_P = (50.01 - ppc_master_obj.f_actual)/(50*s) # negative for f_actual>f_ref (overfrequency)
+	elif ppc_master_obj.f_actual < 49.99:
+		delta_P = (49.99 - ppc_master_obj.f_actual)/(50*s) # positive for f_actual<f_ref (underfrequency)
+	else:
+		delta_P = 0
+	
+	p_in_sp = p_ref + delta_P
+	
+	#print(f's = {s}, delta_P = {delta_P}')
+	#print(f'P({ppc_master_obj.f_actual}) = {p_in_sp}')
+
+	return p_in_sp
+
+# --- F control if tree -------------------------------------
+
 def F_control(ppc_master_obj, window_obj):
+	f_ref = 50.01
+	p_in_sp = FSM(f_ref, ppc_master_obj, window_obj)
+	return p_in_sp
+ 
+def F_control2(ppc_master_obj, window_obj):
 	global f_mode
 	p_ref = ppc_master_obj.PF_p
+	f_ref = 50
     
 	# ---------------
 	# Under frequency
@@ -56,11 +97,12 @@ def F_control(ppc_master_obj, window_obj):
 	# While frequency remains below 50.0Hz the PGM should be capable of continuously
 	# increasing its active power generation under a steady active power – frequency droop (s1)
 	if (49.8 <= ppc_master_obj.f_actual < 49.99) and (ppc_master_obj.p_actual_hv < 1.0):
+		f_ref = 49.99
 		window_obj.ax8.set_title('P(f): FSM underfrequency')
 		if printMessages and f_mode != 0:
 			print("FSM underfrequency")
 			f_mode = 0
-		p_in_sp = FSM(p_ref, ppc_master_obj, window_obj)
+		p_in_sp = FSM(f_ref, ppc_master_obj, window_obj)
 	# This increase should last until either system frequency restores at a value within a -10mHz dead band
 	# around 50.0Hz or the PGM reaches its maximum capacity (Pmax).
 	elif (49.99 <= ppc_master_obj.f_actual < 50.0):
@@ -92,11 +134,12 @@ def F_control(ppc_master_obj, window_obj):
 	# While frequency remains above 50.0Hz the PGM should be capable of continuously
 	# decreasing its active power generation under a steady active power – frequency droop (s1).
 	elif (50.01 <= ppc_master_obj.f_actual < 50.2) and (ppc_master_obj.p_actual_hv > 0.0):
+		f_ref = 50.01
 		window_obj.ax8.set_title('P(f): FSM overfrequency')
 		if printMessages and f_mode != 0:
 			print("FSM overfrequency")
 			f_mode = 0
-		p_in_sp = FSM(p_ref, ppc_master_obj, window_obj)
+		p_in_sp = FSM(f_ref, ppc_master_obj, window_obj)
 	# This increase should last until either system frequency reduces at a value within a +10mHz dead band
 	# around 50.0Hz or the PGM reaches its active power minimum regulating level.
 	elif (50.0 <= ppc_master_obj.f_actual <= 50.01):
@@ -126,8 +169,6 @@ def F_control(ppc_master_obj, window_obj):
 	else:
 		p_in_sp = p_ref
 
-	# Ramp BEFORE PID = avoid integral error overflow
-	# Ramp AFTER PID = avoid output changing to steeply
-	# p_in_sp1 = F_ramp_control(ppc_master_obj, p_in_sp, prev_p_in_sp)
+	# print(f'P({ppc_master_obj.f_actual}) = {p_in_sp}')
 
 	return p_in_sp

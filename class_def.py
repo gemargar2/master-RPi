@@ -24,7 +24,7 @@ class PPC_master_class:
 		self.S_nom = float(self.configdata["master"]["nominal_power"]) # Nominal apparent power in MVA
 		self.P_nom = float(self.configdata["master"]["nominal_power"]) # Nominal active power in MW
 		self.V_nom = float(self.configdata["master"]["nominal_voltage"]) # Nominal voltage in kV
-		self.sampling_rate = 20 # Hz = 20 samples/second
+		self.sampling_rate = 20 # Hz = 20 samples/second => period = 1/20 = 0.05s (50ms)
 		# Slave PPCs management
 		self.slaves_data = self.configdata["slave_tree"]
 		self.numberOfSlaves = len(self.slaves_data) # number of slaves
@@ -60,29 +60,14 @@ class PPC_master_class:
 		# Local = SCADA / Remote = TSO
 		self.local_remote = 0 # 0 = Local / 1 = Remote
 		# Mode of operation for active and reactive control
-		self.p_mode = 2 # 0 = P control (PID) / 1 = F control (FSM) / 2 = P Open Loop / 3 = MPPT control
-		self.q_mode = 4 # 0 = Q control (PID) / 1 = Q(P) control / 2 = V control / 3 = PF control / 4 = Q Open Loop / 5 = Q(U) / 6 = Q(U) with limit	
+		self.p_mode = 0 # 0 = P control (PID) / 1 = F control (FSM) / 2 = P Open Loop / 3 = MPPT control
+		self.q_mode = 5 # 0 = Q control (PID) / 1 = Q(P) control / 2 = V control / 3 = PF control / 4 = Q Open Loop / 5 = Q(U) / 6 = Q(U) with limit	
 		# Per unit values
 		self.max_P_cap = 1 # Max active power capability (meteo are ignored)
-		self.max_Q_cap = 0.2 # Max reactive power capability
-		self.min_Q_cap = -0.35 # Max reactive power capability
-		# Limits
-		self.start_stop = 0 # 0 = start / 1 = stop
-		self.operational_state = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
-		self.release = True # False = PPC has turned off due to grid imbalance / True = PPC is ready to reconnect
-		self.f_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
-		self.v_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
-		self.v2_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
-		self.v3_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
-		self.auto_start_state = 0 # 0 = OFF / 1 = ON
-		# Main switch
+		self.max_Q_cap = 0.33 # Max reactive power capability
+		self.min_Q_cap = -0.33 # Max reactive power capability
+		# Main switch position
 		self.main_switch_pos = 1 # 0 = Open / 1 = Closed
-		# Timers / coutners
-		self.f_counter = 0
-		self.v_counter = 0
-		self.v2_counter = 0
-		self.v3_counter = 0
-		self.release_counter = 0
 		# Local setpoints (SCADA)
 		self.local_P_sp = self.configdata["PPC_parameters"]["local_setpoints"]["local_P_sp"]/self.S_nom
 		self.local_Q_sp = self.configdata["PPC_parameters"]["local_setpoints"]["local_Q_sp"]/self.S_nom
@@ -98,13 +83,17 @@ class PPC_master_class:
 		self.tso_Q_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_Q_sp"]/self.S_nom # Minimum p.u
 		self.tso_V_sp = 0 # Maximum p.u
 		self.tso_PF_sp = 0 # Maximum p.u
-		# 3rd party setpoints (FOSE)
+		# 3rd party setpoints (FOSE)f
 		self.fose_P_sp = -0.1 # Maximum p.u
 		self.fose_Q_sp = 0.05 # Maximum p.u
 		self.fose_V_sp = 0 # Maximum p.u
 		self.fose_PF_sp = 0 # Maximum p.u
 		# Universal setpoints (configured by SCADA)
 		# Gradient values (setpoint rate of change MW/sec or p.u/sample)
+		# 0.66%*Pbinst/sec = 0.0066/(20*0.05) = 0.000330 p.u/sample
+		# 0.33%*Pbinst/sec = 0.0033/(20*0.05) = 0.000165 p.u/sample
+		# 4%*Pbinst/min = 0.04/(60*20*0.05) = 0.0000333 p.u/sample
+		# 10%*Pbinst/min = 0.10/(60*20*0.05) = 0.0000833 p.u/sample
 		self.P_grad = self.configdata["PPC_parameters"]["power_gradients"]["P_grad"]/self.S_nom # p.u/sample
 		self.F_grad = self.configdata["PPC_parameters"]["power_gradients"]["F_grad"]/self.S_nom # p.u/sample
 		self.MPPT_grad = self.configdata["PPC_parameters"]["power_gradients"]["MPPT_grad"]/self.S_nom # p.u/sample
@@ -144,10 +133,12 @@ class PPC_master_class:
 		# HV meter
 		self.p_actual_hv = 0
 		self.q_actual_hv = 0
+		self.s_actual_hv = 0
 		self.f_actual = 50
+		self.vab_actual = 1.011
+		self.vbc_actual = 1
+		self.vca_actual = 1
 		self.v_actual = 1
-		self.v2_actual = 1
-		self.v3_actual = 1
 		self.pf_actual = 1
 		# MV meter main
 		self.p_actual_mv = 0
@@ -155,14 +146,32 @@ class PPC_master_class:
 		# Global Meteo
 		self.temp = 30
 		self.irradiance = 900
-		# Settling time
-		self.start = 0
+		# Limits
+		self.start_stop = 0 # 0 = start / 1 = stop
+		self.operational_state = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
+		self.release = True # False = PPC has turned off due to grid imbalance / True = PPC is ready to reconnect
+		self.f_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
+		self.vab_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
+		self.vbc_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
+		self.vca_shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
+		self.auto_start_state = 0 # 0 = OFF / 1 = ON
+		# Timers / counters
+		self.f_counter = 0
+		self.vab_counter = 0
+		self.vbc_counter = 0
+		self.vca_counter = 0
+		self.release_counter = 0
 		# ----------------------- Control curves ----------------------------------
 		# P(f)
 		self.s_FSM = self.configdata["PPC_parameters"]["P(f)_curve"]["s_FSM"]
 		self.s_LFSM_O = self.configdata["PPC_parameters"]["P(f)_curve"]["s_LFSM_O"]
 		self.s_LFSM_U = self.configdata["PPC_parameters"]["P(f)_curve"]["s_LFSM_U"]
 		self.PF_p = self.configdata["PPC_parameters"]["P(f)_curve"]["p_ref"]
+		self.fsm_pref_flag = True
+		self.lfsm_pref_flag = True
+		self.lfsm_flag = False
+		self.fsm_pref = 0.5
+		self.lfsm_pref = 0.5
 		# Q(P)
 		self.numOfPoints = len(self.configdata["PPC_parameters"]["Q(P)_curve"]["P_values"])
 		self.P_points = self.configdata["PPC_parameters"]["Q(P)_curve"]["P_values"]
