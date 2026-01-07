@@ -3,6 +3,8 @@ from callbacks import *
 from distribution import *
 from time import sleep
 
+printMessages = False
+
 def receive_signals(ppc_master_obj, window_obj):
 	while True:
         	# Wait for command
@@ -25,10 +27,9 @@ def receive_signals(ppc_master_obj, window_obj):
 				for i in range(ppc_master_obj.numberOfSlaves):
 					label = 'Slave_' + str(i+1)
 					if message['origin'] == label: origin = label
-			'''
-			if message['status'] == True: print(f"{origin} connection ok")
-			else: print(f"{origin} connection not ok")
-			'''
+			if printMessages:
+				if message['status'] == True: print(f"{origin} connection ok")
+				else: print(f"{origin} connection not ok")
 		
 		# Check for local / remote signal
 		if message['origin'] == 'localPlatform':
@@ -39,11 +40,10 @@ def receive_signals(ppc_master_obj, window_obj):
 		# Local mode - only SCADA commands are taken into account
 		if ppc_master_obj.local_remote == 0:
 			if message['origin'] == 'TSO':
-				print("You are in local mode - TSO messages are ignored")
+				if printMessages: print("You are in local mode - TSO messages are ignored")
 				pass
 			
 			elif message['origin'] == 'localPlatform':
-				# if message['value_name'] == 'df925a75-00a7-40ae-8ed9-cb5008d725ce': print("SCADA connection ok")
 				# ----------------------------- mode selection ------------------------------------------------------------
 				if message['value_name'] == 'active_control_mode': ppc_master_obj.p_mode = int(message['value'])
 				elif message['value_name'] == 'reactive_control_mode': ppc_master_obj.q_mode = int(message['value'])
@@ -58,20 +58,20 @@ def receive_signals(ppc_master_obj, window_obj):
 				elif message['value_name'] == 's_LFSM-U_setpoint': local_s_LFSM_U_setpoint(ppc_master_obj, window_obj, float(message['value']))
 				elif message['value_name'] == 'slope_setpoint': local_slope_setpoint(ppc_master_obj, window_obj, float(message['value']))
 				elif message['value_name'] == 'V_deadband_setpoint': local_V_deadband_setpoint(ppc_master_obj, window_obj, float(message['value']))
-				# ----------------------------- Gradient values -------------------------------------------------------------
+				# ----------------------------- Gradient values ------------------------l-------------------------------------
 				elif message['value_name'] == 'P_control_gradient': local_P_gradient_setpoint(ppc_master_obj, float(message['value']))
 				elif message['value_name'] == 'F_control_gradient': local_F_gradient_setpoint(ppc_master_obj, float(message['value']))
 				elif message['value_name'] == 'MPPT_control_gradient': local_MPPT_gradient_setpoint(ppc_master_obj, float(message['value']))
 				# ----------------------------- P control PID parameter values ---------------------------------
-				elif message['value_name'] == 'Kp_Pcontrol': ppc_master_obj.p_kp = float(message['value'])
-				elif message['value_name'] == 'Ki_Pcontrol': ppc_master_obj.p_ki = float(message['value'])
-				elif message['value_name'] == 'Kd_Pcontrol': ppc_master_obj.p_kd = float(message['value'])
-				elif message['value_name'] == 'Ti_Pcontrol': ppc_master_obj.p_dt = float(message['value'])
+				elif message['value_name'] == 'Kp_Pcontrol': set_p_kp(ppc_master_obj, float(message['value']))
+				elif message['value_name'] == 'Ki_Pcontrol': set_p_ki(ppc_master_obj, float(message['value']))
+				elif message['value_name'] == 'Kd_Pcontrol': set_p_kd(ppc_master_obj, float(message['value']))
+				elif message['value_name'] == 'Ti_Pcontrol': set_p_dt(ppc_master_obj, float(message['value']))
 				# ----------------------------- P control PID parameter values ---------------------------------
-				elif message['value_name'] == 'Kp_Qcontrol': ppc_master_obj.q_kp = float(message['value'])
-				elif message['value_name'] == 'Ki_Qcontrol': ppc_master_obj.q_ki = float(message['value'])
-				elif message['value_name'] == 'Kd_Qcontrol': ppc_master_obj.q_kd = float(message['value'])
-				elif message['value_name'] == 'Ti_Qcontrol': ppc_master_obj.q_dt = float(message['value'])
+				elif message['value_name'] == 'Kp_Qcontrol': set_q_kp(ppc_master_obj, float(message['value']))
+				elif message['value_name'] == 'Ki_Qcontrol': set_q_ki(ppc_master_obj, float(message['value']))
+				elif message['value_name'] == 'Kd_Qcontrol': set_q_kd(ppc_master_obj, float(message['value']))
+				elif message['value_name'] == 'Ti_Qcontrol': set_q_dt(ppc_master_obj, float(message['value']))
 				# ----------------------------- Controls -------------------------------------------------------------------
 				elif message['value_name'] == 'Stop': stop_command(ppc_master_obj, window_obj, int(message['value']))
 				elif message['value_name'] == 'Start': pass # start_command(ppc_master_obj, window_obj, int(message['value']))
@@ -83,10 +83,10 @@ def receive_signals(ppc_master_obj, window_obj):
 				elif message['value_name'] == 'frequency_disturbance': ppc_master_obj.f_disturbance = float(message['value'])
 				elif message['value_name'] == 'simulation_duration': ppc_master_obj.simulation_duration = int(float(message['value']))
 		
-		# Remote mode - only TSO commands are taken into account - SCADA can still chanLge mode to local
+		# Remote mode - only TSO commands are taken into account - SCADA can still change mode to local
 		elif ppc_master_obj.local_remote == 1:
 			if message['origin'] == 'localPlatform':
-				# print("You are in remote mode - SCADA messages are ignored (except for local_remote)")
+				if printMessages: print("You are in remote mode - SCADA messages are ignored (except for local_remote)")
 				pass
 
 			elif message['origin'] == 'TSO':
@@ -102,7 +102,7 @@ def receive_signals(ppc_master_obj, window_obj):
 				if message['value_name'] == 'SPMAX': remote_spmax(ppc_master_obj)
 				elif message['value_name'] == 'P_SP_FOSE': ppc_master_obj.fose_P_sp = float(message["value"])/ppc_master_obj.S_nom
 				elif message['value_name'] == 'Q_SP_FOSE': ppc_master_obj.fose_Q_sp = float(message["value"])/ppc_master_obj.S_nom
-				elif message['value_name'] == 'V_SP_FOSE': ppc_master_obj.fose_V_sp = float(message["value"])
+				elif message['value_name'] == 'V_SP_FOSE': ppc_master_obj.fose_V_sp = float(message["value"])/ppc_master_obj.V_nom
 				elif message['value_name'] == 'PF_SP_FOSE': ppc_master_obj.fose_PF_sp = float(message["value"])
 				elif message['value_name'] == 'ENAP': remote_enap(ppc_master_obj, window_obj)
 				elif message['value_name'] == '10': remote_10min(ppc_master_obj, window_obj)
@@ -115,18 +115,14 @@ def receive_signals(ppc_master_obj, window_obj):
 				elif message['value_name'] == 'Total_Qmax_available': ppc_master_obj.slave_qmax[i] = float(message["value"])
 				elif message['value_name'] == 'Total_Qmin_available': ppc_master_obj.slave_qmin[i] = float(message["value"])
 		
-		recalc_contribution(ppc_master_obj, window_obj)
-		
 		if message['origin'] == 'HV_Meter':
-			if message['value_name'] == 'V1': ppc_master_obj.vl_actual = float(message["value"])
-			elif message['value_name'] == 'Vab': ppc_master_obj.vab_actual = float(message["value"])
-			elif message['value_name'] == 'Vbc': ppc_master_obj.vbc_actual = float(message["value"])
-			elif message['value_name'] == 'Vca': ppc_master_obj.vca_actual = float(message["value"])
+			if message['value_name'] == 'V1': ppc_master_obj.v_actual = float(message["value"])/ppc_master_obj.V_nom
+			elif message['value_name'] == 'Vab': ppc_master_obj.vab_actual = float(message["value"])/ppc_master_obj.V_nom
+			elif message['value_name'] == 'Vbc': ppc_master_obj.vbc_actual = float(message["value"])/ppc_master_obj.V_nom
+			elif message['value_name'] == 'Vca': ppc_master_obj.vca_actual = float(message["value"])/ppc_master_obj.V_nom
 			elif message['value_name'] == 'f': ppc_master_obj.f_actual = float(message["value"])
 			elif message['value_name'] == 'Pa': ppc_master_obj.p_actual_hv = float(message["value"])/ppc_master_obj.S_nom
 			elif message['value_name'] == 'Qa': ppc_master_obj.q_actual_hv = float(message["value"])/ppc_master_obj.S_nom
 			elif message['value_name'] == 'S': ppc_master_obj.s_actual_hv = float(message["value"])/ppc_master_obj.S_nom
 			elif message['value_name'] == 'main_switch_position': ppc_master_obj.main_switch_pos = int(message["value"])
-		
-		recalc_pf(ppc_master_obj)
 

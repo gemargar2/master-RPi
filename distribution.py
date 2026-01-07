@@ -48,12 +48,26 @@ def send_internal_setpoints(ppc_master_obj, window_obj):
 		if ppc_master_obj.slave_p_sp[i] > ppc_master_obj.slave_pmax[i]: ppc_master_obj.slave_p_sp[i] = ppc_master_obj.slave_pmax[i]
 		if ppc_master_obj.slave_q_sp[i] > ppc_master_obj.slave_qmax[i]: ppc_master_obj.slave_q_sp[i] = ppc_master_obj.slave_qmax[i]
 		if ppc_master_obj.slave_q_sp[i] < ppc_master_obj.slave_qmin[i]: ppc_master_obj.slave_q_sp[i] = ppc_master_obj.slave_qmin[i]
+		# Send start/stop command
+		# print(f'op state = {ppc_master_obj.operational_state}')
+		if ppc_master_obj.operational_state == 1:
+			#print("Send stop")
+			start = 0
+			stop = 1
+		else:
+			#print("Send start")
+			start = 1
+			stop = 0	
 		# Send setponts
 		message1 = {"destination": dest, "value_name": "P_SP_master", "value": str(ppc_master_obj.slave_p_sp[i])}
 		message2 = {"destination": dest, "value_name": "Q_SP_master", "value": str(ppc_master_obj.slave_q_sp[i])}
+		message3 = {"destination": dest, "value_name": "Start", "value": str(start)}
+		message4 = {"destination": dest, "value_name": "Stop", "value": str(stop)}
 		try:
 			ppc_master_obj.socket_tx.send_json(message1, zmq.NOBLOCK)
 			ppc_master_obj.socket_tx.send_json(message2, zmq.NOBLOCK)
+			ppc_master_obj.socket_tx.send_json(message3, zmq.NOBLOCK)
+			ppc_master_obj.socket_tx.send_json(message4, zmq.NOBLOCK)
 			if printMessages: print("Success")
 		except:
 			if printMessages: print('Slave internal setpoints Error')

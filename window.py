@@ -1,8 +1,6 @@
 import matplotlib.pyplot as plt
-from collections import deque
 
-xmax = 40 # seconds
-smax = 400 # samples
+xmax = 30 # seconds
 
 class Window_class:
 
@@ -68,12 +66,12 @@ class Window_class:
 		self.ax2.set_xlim(0, xmax)
 		self.ax2.set_ylim(46.5, 52.5)
 		self.ax3.set_xlim(0, xmax)
-		self.ax3.set_ylim(-0.6, 0.4)
+		self.ax3.set_ylim(-0.8, 0.8)
 		self.ax4.set_xlim(0, xmax)
 		self.ax4.set_ylim(0.8, 1.2)
-		self.ax5.set_xlim(-0.4, 0.4)
-		self.ax5.set_ylim(0.85, 1.15)
-		self.ax6.set_xlim(-0.4, 0.4)
+		self.ax5.set_xlim(-0.4, 0.5)
+		self.ax5.set_ylim(0.85, 1.18)
+		self.ax6.set_xlim(-0.4, 0.5)
 		self.ax6.set_ylim(-0.1, 1.15)
 		self.ax7.set_xlim(0.85, 1.15)
 		self.ax7.set_ylim(-0.4, 0.4)
@@ -101,9 +99,8 @@ class Window_class:
 		self.ln33, = self.ax3.plot([], [], "c--", label='tso')
 		self.ln34, = self.ax3.plot([], [], "y--", label='fose')
 		self.ln35, = self.ax3.plot([], [], "r-", label='in_sp')
-		self.ln36, = self.ax3.plot([], [], "g-", label='grad_sp')
-		self.ln37, = self.ax1.plot([], [], "k-", label='pid_sp')
-		self.ax3.legend(handles=[self.ln31, self.ln32, self.ln33, self.ln34, self.ln35, self.ln36, self.ln37])
+		self.ln36, = self.ax3.plot([], [], "k-", label='pid_sp')
+		self.ax3.legend(handles=[self.ln31, self.ln32, self.ln33, self.ln34, self.ln35, self.ln36])
 		# V plot
 		self.ln41, = self.ax4.plot([], [], "b-", label="vab")
 		self.ln42, = self.ax4.plot([], [], "g-", label="vbc")
@@ -114,14 +111,16 @@ class Window_class:
 		self.ln47, = self.ax4.plot([], [], "k--", label="1.15pu")
 		self.ax4.legend(handles=[self.ln41, self.ln42, self.ln43])
 		# U-Q
-		self.ln51, = self.ax5.plot([], [], "r-", label="Limit")
-		self.ln52, = self.ax5.plot([], [], "w-", label="Setpoint", marker='o', mec='k')
-		self.ax5.legend(handles=[self.ln51, self.ln52])
+		self.ln51, = self.ax5.plot([], [], "r-", label="IPTO Limit")
+		self.ln52, = self.ax5.plot([], [], "g-", label="VDE opt.2")
+		self.ln53, = self.ax5.plot([], [], "w-", label="Setpoint", marker='o', mec='k')
+		self.ax5.legend(handles=[self.ln51, self.ln52, self.ln53])
 		# P-Q
-		self.ln61, = self.ax6.plot([], [], "r-", label="Limit")
-		self.ln62, = self.ax6.plot([], [], "b-", label="Q(P)")
-		self.ln63, = self.ax6.plot([], [], "w-", label="Setpoint", marker='o', mec='k')
-		self.ax6.legend(handles=[self.ln61, self.ln62, self.ln63])
+		self.ln61, = self.ax6.plot([], [], "r-", label="IPTO Limit")
+		self.ln62, = self.ax6.plot([], [], "g-", label="VDE opt.2")
+		self.ln63, = self.ax6.plot([], [], "b-", label="Q(P)")
+		self.ln64, = self.ax6.plot([], [], "w-", label="Setpoint", marker='o', mec='k')
+		self.ax6.legend(handles=[self.ln61, self.ln62, self.ln63, self.ln64])
 		# Q(U)
 		self.ln71, = self.ax7.plot([], [], "r-", label="Q(U)")
 		self.ln72, = self.ax7.plot([], [], "g-", label="Q(U) w/limit")
@@ -134,15 +133,25 @@ class Window_class:
 		self.ln83, = self.ax8.plot([], [], "w-", label="Setpoint", marker='o', mec='k')
 		self.ax8.legend(handles=[self.ln81, self.ln82, self.ln83])
 
-		# V-Q limits (fixed)
+		# V-Q limits IPTO (fixed)
 		q_vector = [-0.35, 0, 0.2, 0.2, 0, -0.35, -0.35]
 		v_vector = [1.1, 1.1, 1, 0.9, 0.9, 1, 1.1]
 		self.ln51.set_data(q_vector, v_vector)
+		
+		# V-Q limits IPTO (fixed)
+		q_vector = [0.41, 0.27, -0.33, -0.33, 0.08, 0.41, 0.41]
+		v_vector = [0.875, 0.875, 1, 1.15, 1.15, 1.118, 0.875]
+		self.ln52.set_data(q_vector, v_vector)
 
-		# P-Q limits (fixed)
+		# IPTO P-Q limits (fixed)
 		q_vector = [0, -0.35, -0.35, 0.2, 0.2, 0]
 		p_vector = [0, 0.2, 1, 1, 0.2, 0]
 		self.ln61.set_data(q_vector, p_vector)
+		
+		# VDE P-Q limits (fixed)
+		q_vector = [-0.1, -0.33, -0.33, 0.41, 0.41, 0.1, -0.1]
+		p_vector = [0.1, 0.2, 1, 1, 0.2, 0.1, 0.1]
+		self.ln62.set_data(q_vector, p_vector)
 
 		self.fig.tight_layout(pad=2.0)
 		# self.fig.subplots_adjust(
@@ -154,130 +163,47 @@ class Window_class:
 		#     wspace=0.2
 		# )
 	
-	# Samples/timestamps
-	x_data = deque([], maxlen=smax)
-	
-	# P remote setpoints
-	p_scada_sp = deque([], maxlen=smax)
-	p_tso_sp = deque([], maxlen=smax)
-	p_fose_sp = deque([], maxlen=smax)
-	# P internal setpoints
-	p_in_sp_data = deque([], maxlen=smax)
-	p_grad_sp_data = deque([], maxlen=smax)
-	p_pid_sp_data = deque([], maxlen=smax)
-	# P measurement
-	p_actual_data = deque([], maxlen=smax)
-	
-	# F setpoint
-	f_data = deque([], maxlen=smax)
-	f_up = deque([], maxlen=smax)
-	f_dn = deque([], maxlen=smax)
-	f_up2 = deque([], maxlen=smax)
-	f_dn2 = deque([], maxlen=smax)
-	
-	# Q remote setpoints
-	q_scada_sp = deque([], maxlen=smax)
-	q_tso_sp = deque([], maxlen=smax)
-	q_fose_sp = deque([], maxlen=smax)
-	# Q internal setpoints
-	q_in_sp_data = deque([], maxlen=smax)
-	q_grad_sp_data = deque([], maxlen=smax)
-	q_pid_sp_data = deque([], maxlen=smax)
-	# Q measurement
-	q_actual_data = deque([], maxlen=smax)
-	
-	# V setpoint
-	vab_data = deque([], maxlen=smax)
-	vbc_data = deque([], maxlen=smax)
-	vca_data = deque([], maxlen=smax)
-	v_up = deque([], maxlen=smax)
-	v_dn = deque([], maxlen=smax)
-	v_up2 = deque([], maxlen=smax)
-	v_dn2 = deque([], maxlen=smax)
-	
 	# Plot data
-	def plot_data(self, x, ppc_master_obj):
+	def plot_data(self, ppc_master_obj):
+		x = ppc_master_obj.x
 		# Update FSM Characteristic
 		if ppc_master_obj.fsm_pref_flag: self.plot_FSM_curve(ppc_master_obj)
 		if ppc_master_obj.lfsm_pref_flag: self.plot_LFSM_curve(ppc_master_obj)
-		# samples/timestamp
-		self.x_data.append(x)
 		
-		# ------ P plot -------
-		# P remote setpoints
-		self.p_scada_sp.append(ppc_master_obj.local_P_sp)
-		self.p_tso_sp.append(ppc_master_obj.tso_P_sp)
-		self.p_fose_sp.append(ppc_master_obj.fose_P_sp)
-		# P internal setpoints
-		self.p_in_sp_data.append(ppc_master_obj.p_in_sp)
-		self.p_grad_sp_data.append(ppc_master_obj.p_grad_sp)
-		self.p_pid_sp_data.append(ppc_master_obj.p_pid_sp)
-		# P measurement
-		self.p_actual_data.append(ppc_master_obj.p_actual_hv)
-		
-		# F plot
-		self.f_data.append(ppc_master_obj.f_actual)
-		self.f_up.append(51)
-		self.f_dn.append(49)
-		self.f_up2.append(51.5)
-		self.f_dn2.append(47.5)
-		
-		# ------ Q plot -------
-		# Q remote setpoints
-		self.q_scada_sp.append(ppc_master_obj.local_Q_sp)
-		self.q_tso_sp.append(ppc_master_obj.tso_Q_sp)
-		self.q_fose_sp.append(ppc_master_obj.fose_Q_sp)
-		# Q internal setpoints
-		self.q_in_sp_data.append(ppc_master_obj.q_in_sp)
-		self.q_grad_sp_data.append(ppc_master_obj.q_grad_sp)
-		self.q_pid_sp_data.append(ppc_master_obj.q_pid_sp)
-		# Q measurement
-		self.q_actual_data.append(ppc_master_obj.q_actual_hv)
-		
-		# V plots
-		self.vab_data.append(ppc_master_obj.vab_actual)
-		self.vbc_data.append(ppc_master_obj.vbc_actual)
-		self.vca_data.append(ppc_master_obj.vca_actual)
-		self.v_up.append(1.118)
-		self.v_dn.append(0.9)
-		self.v_up2.append(1.15)
-		self.v_dn2.append(0.85)
-
 		# Plot stuff
 		# P plot
-		self.ln11.set_data(self.x_data, self.p_actual_data)
-		self.ln12.set_data(self.x_data, self.p_scada_sp)
-		self.ln13.set_data(self.x_data, self.p_tso_sp)
-		self.ln14.set_data(self.x_data, self.p_fose_sp)
-		self.ln15.set_data(self.x_data, self.p_in_sp_data)
-		self.ln16.set_data(self.x_data, self.p_grad_sp_data)
-		self.ln17.set_data(self.x_data, self.p_pid_sp_data)
+		self.ln11.set_data(ppc_master_obj.x_data, ppc_master_obj.p_actual_data)
+		self.ln12.set_data(ppc_master_obj.x_data, ppc_master_obj.p_scada_sp)
+		self.ln13.set_data(ppc_master_obj.x_data, ppc_master_obj.p_tso_sp)
+		self.ln14.set_data(ppc_master_obj.x_data, ppc_master_obj.p_fose_sp)
+		self.ln15.set_data(ppc_master_obj.x_data, ppc_master_obj.p_in_sp_data)
+		self.ln16.set_data(ppc_master_obj.x_data, ppc_master_obj.p_grad_sp_data)
+		self.ln17.set_data(ppc_master_obj.x_data, ppc_master_obj.p_pid_sp_data)
 		# F plot
-		self.ln21.set_data(self.x_data, self.f_data)
-		self.ln22.set_data(self.x_data, self.f_up)
-		self.ln23.set_data(self.x_data, self.f_dn)
-		self.ln24.set_data(self.x_data, self.f_up2)
-		self.ln25.set_data(self.x_data, self.f_dn2)
+		self.ln21.set_data(ppc_master_obj.x_data, ppc_master_obj.f_data)
+		self.ln22.set_data(ppc_master_obj.x_data, ppc_master_obj.f_up)
+		self.ln23.set_data(ppc_master_obj.x_data, ppc_master_obj.f_dn)
+		self.ln24.set_data(ppc_master_obj.x_data, ppc_master_obj.f_up2)
+		self.ln25.set_data(ppc_master_obj.x_data, ppc_master_obj.f_dn2)
 		# Q plot
-		self.ln31.set_data(self.x_data, self.q_actual_data)
-		self.ln32.set_data(self.x_data, self.q_scada_sp)
-		self.ln33.set_data(self.x_data, self.q_tso_sp)
-		self.ln34.set_data(self.x_data, self.q_fose_sp)
-		self.ln35.set_data(self.x_data, self.q_in_sp_data)
-		self.ln36.set_data(self.x_data, self.q_grad_sp_data)
-		self.ln37.set_data(self.x_data, self.p_pid_sp_data)
+		self.ln31.set_data(ppc_master_obj.x_data, ppc_master_obj.q_actual_data)
+		self.ln32.set_data(ppc_master_obj.x_data, ppc_master_obj.q_scada_sp)
+		self.ln33.set_data(ppc_master_obj.x_data, ppc_master_obj.q_tso_sp)
+		self.ln34.set_data(ppc_master_obj.x_data, ppc_master_obj.q_fose_sp)
+		self.ln35.set_data(ppc_master_obj.x_data, ppc_master_obj.q_in_sp_data)
+		self.ln36.set_data(ppc_master_obj.x_data, ppc_master_obj.q_pid_sp_data)
 		# V plot
-		self.ln41.set_data(self.x_data, self.vab_data)
-		self.ln42.set_data(self.x_data, self.vbc_data)
-		self.ln43.set_data(self.x_data, self.vca_data)
-		self.ln44.set_data(self.x_data, self.v_up)
-		self.ln45.set_data(self.x_data, self.v_dn)
-		self.ln46.set_data(self.x_data, self.v_up2)
-		self.ln47.set_data(self.x_data, self.v_dn2)
+		self.ln41.set_data(ppc_master_obj.x_data, ppc_master_obj.vab_data)
+		self.ln42.set_data(ppc_master_obj.x_data, ppc_master_obj.vbc_data)
+		self.ln43.set_data(ppc_master_obj.x_data, ppc_master_obj.vca_data)
+		self.ln44.set_data(ppc_master_obj.x_data, ppc_master_obj.v_up)
+		self.ln45.set_data(ppc_master_obj.x_data, ppc_master_obj.v_dn)
+		self.ln46.set_data(ppc_master_obj.x_data, ppc_master_obj.v_up2)
+		self.ln47.set_data(ppc_master_obj.x_data, ppc_master_obj.v_dn2)
 		# V-Q
-		self.ln52.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.v_actual)
+		self.ln53.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.v_actual)
 		# P-Q
-		self.ln63.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.p_in_sp)
+		self.ln64.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.p_in_sp)
 		# Q_U characteristics
 		self.ln74.set_data(ppc_master_obj.v_actual, ppc_master_obj.q_in_sp)
 		# P-f
@@ -383,7 +309,7 @@ class Window_class:
 	def plot_QU_curve(self, ppc_master_obj):
 		# Q(U) curve (can be modified through the config tool)
 		s = ppc_master_obj.QU_s
-		v_ref = ppc_master_obj.QU_v
+		v_ref = ppc_master_obj.v_ex_sp
 		q_ref = 0
 		q_max = ppc_master_obj.max_Q_cap
 		q_min = ppc_master_obj.min_Q_cap
@@ -406,7 +332,7 @@ class Window_class:
     
 	def plot_QU_limit_curve(self, ppc_master_obj):
 		# Q(U) with limit curve (can be modified through the config tool)
-		q_ref = ppc_master_obj.QU_q
+		q_ref = ppc_master_obj.q_ex_sp
 		q_max = ppc_master_obj.max_Q_cap
 		q_min = ppc_master_obj.min_Q_cap
 		# Deadband limits are affected by voltage setpoint
@@ -428,12 +354,9 @@ class Window_class:
 		self.ln72.set_data(v_vector, q_vector)
 
 	def plot_V_control_curve(self, ppc_master_obj):
-		# Q(U) curve (can be modified through the config tool)
-		s = ppc_master_obj.slope_sp
-		# Toggle setpoints
-		if ppc_master_obj.local_remote == 0: v_ref = ppc_master_obj.local_V_sp
-		else: v_ref = ppc_master_obj.remote_V_sp
 		# v_ref = 1
+		s = ppc_master_obj.slope_sp
+		v_ref = ppc_master_obj.v_ex_sp
 		q_ref = 0.0
 		# other limits
 		q_max = ppc_master_obj.max_Q_cap
@@ -454,4 +377,4 @@ class Window_class:
 		self.ln73.set_data(v_vector, q_vector)
     
 	def plot_QP_curve(self, ppc_master_obj):
-		self.ln62.set_data(ppc_master_obj.Q_points, ppc_master_obj.P_points)
+		self.ln63.set_data(ppc_master_obj.Q_points, ppc_master_obj.P_points)

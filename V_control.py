@@ -1,15 +1,13 @@
 
 printMessages = False
 
-v_ref = 1.0 # Voltage setpoint is always 1.0 p.u
-
 # Q mode = 2
 def V_control(ppc_master_obj):
-	q_ref = 0 # ppc_master_obj.q_ex_sp
+	# Initial conditions
+	q_ref = 0.0
+	v_sp = ppc_master_obj.v_ex_sp
+	# Independent variable (abscissa)
 	v_actual = ppc_master_obj.v_actual
-	
-	if ppc_master_obj.local_remote == 0: v_sp = ppc_master_obj.local_V_sp # setpoint voltage
-	else: v_sp = ppc_master_obj.remote_V_sp # setpoint voltage
 	
 	slope = ppc_master_obj.slope_sp # Droop adjustable between 2-12%, default value 5%
 	db = ppc_master_obj.V_deadband_sp # voltage deadband
@@ -41,10 +39,12 @@ def V_control(ppc_master_obj):
 
 # Q mode = 5
 def QU_VDE(ppc_master_obj):
-	q_ref = 0 # ppc_master_obj.q_ex_sp
+	# Initial conditions
+	q_ref = 0.0
+	v_sp = ppc_master_obj.v_ex_sp
+	# Independent variable (abscissa)
 	v_actual = ppc_master_obj.v_actual
 	slope = ppc_master_obj.QU_s # Droop adjustable between 2-12%, default value 5%
-	v_sp = ppc_master_obj.QU_v # setpoint voltage
 	db = ppc_master_obj.QU_db # voltage deadband
 	m = 1/slope # gradient 7<m<24
 	#print(f'slope = {slope}, v_sp = {v_sp}, db = {db}, m = {m}')
@@ -74,7 +74,7 @@ def QU_VDE(ppc_master_obj):
 
 # Q mode = 6
 def V_Limit_VDE(ppc_master_obj):
-	q_ref = ppc_master_obj.QU_q
+	q_ref = ppc_master_obj.q_ex_sp
 	v_actual = ppc_master_obj.v_actual
 	if (v_actual < ppc_master_obj.dba):
 		if printMessages:
@@ -99,7 +99,8 @@ def V_Limit_VDE(ppc_master_obj):
 	return q_in_sp
 
 # V limit VDE init
-def V_Limit_VDE_init(self, q_ref):
+def V_Limit_VDE_init(self):
+	q_ref = self.q_ex_sp
 	#print(f'P1=({self.P1[0]}, {self.P1[1]}), P2=({self.P2[0]}, {self.P2[1]}), P3=({self.P3[0]}, {self.P3[1]}), P4=({self.P4[0]}, {self.P4[1]})')
 	# Slopes are not affected by voltage setpoint
 	self.ma = (self.P2[1] - self.P1[1]) / (self.P2[0] - self.P1[0])

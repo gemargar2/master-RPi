@@ -15,40 +15,32 @@ def q_pid_controller(setpoint, pv, kp, ki, kd, previous_error, integral, dt):
 	integral += error * dt
 	derivative = 0 # (error - previous_error) / dt
 	control = kp * error + ki * integral + kd * derivative
-
+ 
 	return control, error, integral
 
 # --- Gradient control -------------------------------
 
-prev_p_sp = 0
-prev_q_sp = 0
-
-def gradient_control(ppc_master_obj, p_in_sp, q_in_sp):
-	global prev_p_sp , prev_q_sp
+def gradient_control(ppc_master_obj, prev_p_sp, prev_q_sp):
 
 	# Active power gradient
+	# Convert p.u/sec to p.u/sample = p.u/sampling_period = MW/(S_nom*sampling_period)
 	if ppc_master_obj.p_mode == 3: # MPPT
-		grad = ppc_master_obj.MPPT_grad
+		grad = ppc_master_obj.MPPT_grad/ppc_master_obj.sampling_rate
+	elif ppc_master_obj.p_mode == 1: # F control
+		grad = ppc_master_obj.F_grad/ppc_master_obj.sampling_rate
 	else: # P Control or P Open Loop
-		grad = ppc_master_obj.P_grad
+		grad = ppc_master_obj.P_grad/ppc_master_obj.sampling_rate
+	
+	# Deadband: if active power remains less than 1 grad unit (= 0.33%/sec = 0.000165p.u/sample)l
+	# but your previous setpoint is greater or equal then stop ascending
+	#if ppc_master_obj.p_actual_hv < 0.0001 and prev_p_sp > 0.0001:
+	#	prev_p_sp = 0.0001
+	#else: 
+	if (ppc_master_obj.p_in_sp - prev_p_sp > grad): prev_p_sp += grad
+	elif (prev_p_sp - ppc_master_obj.p_in_sp > grad): prev_p_sp -= grad
+	else: prev_p_sp = ppc_master_obj.p_in_sp
 
-	if (p_in_sp - prev_p_sp > grad):
-		prev_p_sp += grad
-	elif (prev_p_sp - p_in_sp > grad):
-		prev_p_sp -= grad
-	else:
-		prev_p_sp = p_in_sp
-
-	# Reactive power gradient (optional)
-	'''
-	if (ppc_master_obj.q_ex_sp - prev_q_sp > ppc_master_obj.Q_grad):
-		prev_q_sp += ppc_master_obj.Q_grad
-	elif (prev_q_sp - ppc_master_obj.q_ex_sp> ppc_master_obj.Q_grad):
-		prev_q_sp -= ppc_master_obj.Q_grad
-	else:
-		prev_q_sp = ppc_master_obj.q_ex_sp
-	'''
-	prev_q_sp = q_in_sp
+	prev_q_sp = ppc_master_obj.q_in_sp
 
 	return prev_p_sp, prev_q_sp
 
@@ -75,6 +67,8 @@ def P_control(p_grad_sp, prev_p_grad_sp, ppc_master_obj):
 	
 	if p_pid_sp >= 1: p_pid_sp = 1
 	if p_pid_sp <= 0: p_pid_sp = 0
+	
+	#if ((ppc_master_obj.p_actual_hv < 0.0001) and (p_pid_sp > 0.0001)): p_pid_sp = 0.0001
 
 	return p_pid_sp
 
@@ -95,6 +89,9 @@ def Q_control(q_grad_sp, prev_q_grad_sp, ppc_master_obj):
 	
 	if q_pid_sp >= 1: q_pid_sp = 1
 	if q_pid_sp <= -1: q_pid_sp = -1
+	
+	#if ((ppc_master_obj.p_actual_hv < 0.0001) and (q_pid_sp > 0.0001)): q_pid_sp = 0.0001
+	#if ((ppc_master_obj.p_actual_hv > -0.0001) and (q_pid_sp < -0.0001)): q_pid_sp = -0.0001
 
 	return q_pid_sp
 
@@ -111,7 +108,13 @@ def QP_control(ppc_master_obj):
 
 # Q mode = 3
 def PF_control(ppc_master_obj):
-	if ppc_master_obj.pf_ex_sp > 0: q_in_sp = ppc_master_obj.p_actual_hv * math.tan(math.acos(ppc_master_obj.pf_ex_sp))
-	else: q_in_sp = -ppc_master_obj.p_actual_hv * math.tan(math.acos(ppc_master_obj.pf_ex_sp))
+	q_in_sp = ppc_master_obj.p_actual_hv * math.tan(math.acos(ppc_master_obj.pf_ex_sp))
 	return q_in_sp
 
+# Hello sunshine
+def recalc_pf(ppc_master_obj):
+	if ppc_master_obj.p_actual_hv == 0:
+		ppc_master_obj.pf_actual = 1
+	else:
+		ppc_master_obj.pf_actual = math.cos(math.atan(ppc_master_obj.q_actual_hv/ppc_master_obj.p_actual_hv))
+		# if ppc_master_obj.q_actual_hv < 0: ppc_master_obj.pf_actual = -ppc_master_obj.pf_actual

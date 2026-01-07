@@ -1,7 +1,7 @@
 import zmq
 import math
 import json
-from time import sleep
+import time
 from distribution import *
 
 printMessages = False
@@ -51,8 +51,8 @@ def send_HV_quantities(ppc_master_obj):
 # --- Running setpoints --------------------------------------
 
 def send_actual_setpoints(ppc_master_obj):
-	var1 = ppc_master_obj.p_ex_sp*ppc_master_obj.S_nom
-	var2 = ppc_master_obj.q_ex_sp*ppc_master_obj.S_nom
+	var1 = ppc_master_obj.p_in_sp*ppc_master_obj.S_nom
+	var2 = ppc_master_obj.q_in_sp*ppc_master_obj.S_nom
 	message1 = { "destination": "localPlatform", "value_name": "actual_P_setpoint", "value": str(var1) }
 	message2 = { "destination": "localPlatform", "value_name": "actual_Q_setpoint", "value": str(var2) }
 	try:
@@ -148,9 +148,36 @@ def send_TSO(ppc_master_obj):
 	except:
 		print('TSO Error')
 
+# --- Write into memory -------------------------------------------
+
+def memory_write(ppc_master_obj):
+	# start = time.time()
+	# Store the last setpoint to memory
+	ppc_master_obj.memory["internal_setpoints"]["p_in_sp"] = round(ppc_master_obj.p_in_sp, 3)
+	ppc_master_obj.memory["internal_setpoints"]["q_in_sp"] = round(ppc_master_obj.q_in_sp, 3)
+	ppc_master_obj.memory["internal_setpoints"]["p_grad_sp"] = round(ppc_master_obj.p_grad_sp, 3)
+	ppc_master_obj.memory["internal_setpoints"]["q_grad_sp"] = round(ppc_master_obj.q_grad_sp, 3)
+	ppc_master_obj.memory["internal_setpoints"]["p_pid_sp"] = round(ppc_master_obj.p_pid_sp, 3)
+	ppc_master_obj.memory["internal_setpoints"]["q_pid_sp"] = round(ppc_master_obj.q_pid_sp, 3)
+	ppc_master_obj.memory["internal_setpoints"]["prev_p_grad_sp"] = round(ppc_master_obj.prev_p_grad_sp, 3)
+	ppc_master_obj.memory["internal_setpoints"]["prev_q_grad_sp"] = round(ppc_master_obj.prev_q_grad_sp, 3)
+	ppc_master_obj.memory["internal_setpoints"]["prev_p_pid_sp"] = round(ppc_master_obj.prev_p_pid_sp, 3)
+	ppc_master_obj.memory["internal_setpoints"]["prev_q_pid_sp"] = round(ppc_master_obj.prev_q_pid_sp, 3)
+	ppc_master_obj.memory["control_mode"]["active_control_mode"] = ppc_master_obj.p_mode
+	ppc_master_obj.memory["control_mode"]["reactive_control_mode"] = ppc_master_obj.q_mode
+	with open("memory.json", "w") as f:
+		json.dump(ppc_master_obj.memory, f)
+	# end = time.time()
+	# eta = end-start
+	# print(f'memory write eta = {eta}')
+
+
+# --- Loop -------------------------------------------
+
 def transmit_signals(ppc_master_obj, window_obj):
 	while True:
-		sleep(0.1)
+		time.sleep(0.1)
+		# send data to SCADA
 		send_MV_quantities(ppc_master_obj)
 		send_HV_quantities(ppc_master_obj)
 		send_actual_setpoints(ppc_master_obj)
@@ -159,5 +186,8 @@ def transmit_signals(ppc_master_obj, window_obj):
 		send_operation_status(ppc_master_obj)
 		send_meteo(ppc_master_obj)
 		send_TSO(ppc_master_obj)
-		send_internal_setpoints(ppc_master_obj, window_obj)
 		send_external_setpoints(ppc_master_obj)
+		# Send setpoints to slave PPCs
+		send_internal_setpoints(ppc_master_obj, window_obj)
+		# Write current setpoints to memory json
+		memory_write(ppc_master_obj)

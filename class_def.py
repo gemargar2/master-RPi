@@ -3,28 +3,26 @@ import time
 import threading
 from numpy import zeros
 from V_control import *
+from class_methods import *
+from collections import deque
+
+sampling_rate = 10 # 20Hz
+time_window = 30 # 30 seconds
+smax = time_window*sampling_rate # samples
 
 class PPC_master_class:
 	def __init__(self, json_obj, json_mem):
 		# --- Configuration ----------------------------
 		self.configdata = json_obj
 		self.memory = json_mem
-		self.boot_flag = self.memory["boot_flag"]
+		self.boot_flag = 0 # 0 = Init setpoints from memory / 1 = Init setpoints from config
 		# General description
 		self.name = self.configdata["master"]["name"]
-		self.desc = self.configdata["master"]["description"]
-		self.type = self.configdata["master"]["plant_type"]
-		self.surface_type = self.configdata["master"]["surface_type"]
-		self.surface_tilt = self.configdata["master"]["surface_tilt"]
-		self.surface_azimuth = self.configdata["master"]["surface_azimuth"]
-		self.solar_zenith = self.configdata["master"]["solar_zenith"]
-		self.solar_azimuth = self.configdata["master"]["solar_azimuth"]
-		self.temp_coef = self.configdata["master"]["temp_coefficient_of_power"]
 		# Nominal ratings
 		self.S_nom = float(self.configdata["master"]["nominal_power"]) # Nominal apparent power in MVA
 		self.P_nom = float(self.configdata["master"]["nominal_power"]) # Nominal active power in MW
 		self.V_nom = float(self.configdata["master"]["nominal_voltage"]) # Nominal voltage in kV
-		self.sampling_rate = 20 # Hz = 20 samples/second => period = 1/20 = 0.05s (50ms)
+		self.sampling_rate = 10 # Hz = 20 samples/second => period = 1/20 = 0.05s (50ms)
 		# Slave PPCs management
 		self.slaves_data = self.configdata["slave_tree"]
 		self.numberOfSlaves = len(self.slaves_data) # number of slaves
@@ -39,14 +37,13 @@ class PPC_master_class:
 		self.qi_per = zeros(self.numberOfSlaves) # percentage of contribution to the injected reactive power
 		self.qa_per = zeros(self.numberOfSlaves) # percentage of contribution to the absorbed reactive power
 		# Slave internal setpoints
-		self.slave_p_sp = zeros(self.numberOfSlaves)
-		self.slave_q_sp = zeros(self.numberOfSlaves)
+		self.slave_p_sp = zeros(self.numberOfSlaves) # P setpoint distributionl
+		self.slave_q_sp = zeros(self.numberOfSlaves) # Q setpoint distribution
 		# Summary
 		self.total_pmax = 0 # MW
 		self.total_qmax = 0 # MVAR
 		self.total_qmin = 0 # MVAR
 		self.connection = 0 # connection status
-		self.connect_to_slaves()
 		# --- Establish connection for transmission --------------
 		self.context_tx = zmq.Context()
 		self.socket_tx = self.context_tx.socket(zmq.PUSH)
@@ -57,7 +54,7 @@ class PPC_master_class:
 		self.socket_rx.connect("ipc:///tmp/zmqpub")
 		time.sleep(5)
 		# --- Signals ----------------------------
-		# Local = SCADA / Remote = TSO
+		# Local = SCADA / Remote = TSO/FOSE
 		self.local_remote = 0 # 0 = Local / 1 = Remote
 		# Mode of operation for active and reactive control
 		self.p_mode = 0 # 0 = P control (PID) / 1 = F control (FSM) / 2 = P Open Loop / 3 = MPPT control
@@ -69,57 +66,56 @@ class PPC_master_class:
 		# Main switch position
 		self.main_switch_pos = 1 # 0 = Open / 1 = Closed
 		# Local setpoints (SCADA)
-		self.local_P_sp = self.configdata["PPC_parameters"]["local_setpoints"]["local_P_sp"]/self.S_nom
-		self.local_Q_sp = self.configdata["PPC_parameters"]["local_setpoints"]["local_Q_sp"]/self.S_nom
-		self.local_PF_sp = self.configdata["PPC_parameters"]["local_setpoints"]["local_PF_sp"]
-		self.local_V_sp = self.configdata["PPC_parameters"]["local_setpoints"]["local_V_sp"]/self.V_nom
-		# Remote setpoints (TSO)
-		self.remote_P_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_P_sp"]/self.S_nom
-		self.remote_Q_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_Q_sp"]/self.S_nom
-		self.remote_PF_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_PF_sp"]
-		self.remote_V_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_V_sp"]/self.V_nom
+		self.local_P_sp = 0
+		self.local_Q_sp = 0
+		self.local_PF_sp = 1
+		self.local_V_sp = 1
+		# Remote setpoints (TSO vs FOSE)
+		self.remote_P_sp = 0
+		self.remote_Q_sp = 0
+		self.remote_PF_sp = 1
+		self.remote_V_sp = 1
 		# Network Operator setpoints (TSO)
-		self.tso_P_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_P_sp"]/self.S_nom # Minimum p.u
-		self.tso_Q_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_Q_sp"]/self.S_nom # Minimum p.u
-		self.tso_V_sp = 0 # Maximum p.u
-		self.tso_PF_sp = 0 # Maximum p.u
-		# 3rd party setpoints (FOSE)f
-		self.fose_P_sp = -0.1 # Maximum p.u
-		self.fose_Q_sp = 0.05 # Maximum p.u
-		self.fose_V_sp = 0 # Maximum p.u
-		self.fose_PF_sp = 0 # Maximum p.u
-		# Universal setpoints (configured by SCADA)
+		self.tso_P_sp = 0
+		self.tso_Q_sp = 0
+		self.tso_V_sp = 1
+		self.tso_PF_sp = 1
+		# 3rd party setpoints (FOSE)
+		self.fose_P_sp = 0
+		self.fose_Q_sp = 0
+		self.fose_V_sp = 1
+		self.fose_PF_sp = 1
 		# Gradient values (setpoint rate of change MW/sec or p.u/sample)
 		# 0.66%*Pbinst/sec = 0.0066/(20*0.05) = 0.000330 p.u/sample
 		# 0.33%*Pbinst/sec = 0.0033/(20*0.05) = 0.000165 p.u/sample
 		# 4%*Pbinst/min = 0.04/(60*20*0.05) = 0.0000333 p.u/sample
 		# 10%*Pbinst/min = 0.10/(60*20*0.05) = 0.0000833 p.u/sample
-		self.P_grad = self.configdata["PPC_parameters"]["power_gradients"]["P_grad"]/self.S_nom # p.u/sample
-		self.F_grad = self.configdata["PPC_parameters"]["power_gradients"]["F_grad"]/self.S_nom # p.u/sample
-		self.MPPT_grad = self.configdata["PPC_parameters"]["power_gradients"]["MPPT_grad"]/self.S_nom # p.u/sample
-		self.Q_grad = 1 # 1 p.u/sample => reactive power can change immediately
+		self.P_grad = 0
+		self.F_grad = 0
+		self.MPPT_grad = 0
 		# P control PID parameters
-		self.p_kp = self.configdata["PPC_parameters"]["P_PID_parameters"]["p_kp"] # Proportional gain
-		self.p_ki = self.configdata["PPC_parameters"]["P_PID_parameters"]["p_ki"] # Integral gain
-		self.p_kd = self.configdata["PPC_parameters"]["P_PID_parameters"]["p_kd"] # Derivative gain
-		self.p_dt = self.configdata["PPC_parameters"]["P_PID_parameters"]["p_dt"] # Integration/Derivation time constant
+		self.p_kp = 0
+		self.p_ki = 0
+		self.p_kd = 0
+		self.p_dt = 0
 		# P control PID parameters
-		self.q_kp = self.configdata["PPC_parameters"]["Q_PID_parameters"]["q_kp"] # Proportional gain
-		self.q_ki = self.configdata["PPC_parameters"]["Q_PID_parameters"]["q_ki"] # Integral gain
-		self.q_kd = self.configdata["PPC_parameters"]["Q_PID_parameters"]["q_kd"] # Derivative gain
-		self.q_dt = self.configdata["PPC_parameters"]["Q_PID_parameters"]["q_dt"] # Integration/Derivation time constant
+		self.q_kp = 0
+		self.q_ki = 0
+		self.q_kd = 0
+		self.q_dt = 0
 		# Simulation variables
-		self.f_disturbance = 50.0 # Nominal Frequency = 50 Hz
-		self.v_disturbance = 1.0 # Nominal Voltage = 1 p.u
+		self.f_disturbance = 50 # Nominal Frequency = 50 Hz
+		self.v_disturbance = 1 # Nominal Voltage = 1 p.u
 		self.simulation_mode = 0 # 0 = voltage / 1 = frequency
 		self.simulation_run_stop = 0 # 0 = stop / 1 = run
 		self.simulation_duration = 0 # seconds
 		self.simulation_start_stop = False # True = simulation ongoing / False = real measurments
 		# ----------------------- Setpoints -------------------------------------
 		# External setpoints (init with local values)
-		self.p_ex_sp = self.local_P_sp
-		self.q_ex_sp = self.local_Q_sp
-		self.pf_ex_sp = self.local_PF_sp
+		self.p_ex_sp = 0
+		self.q_ex_sp = 0
+		self.v_ex_sp = 1
+		self.pf_ex_sp = 1
 		# Internal setpoints
 		self.p_in_sp = 0
 		self.q_in_sp = 0
@@ -129,6 +125,12 @@ class PPC_master_class:
 		# Setpoints with PID
 		self.p_pid_sp = 0
 		self.q_pid_sp = 0
+		# Previous setpoints with gradient
+		self.prev_p_grad_sp = 0
+		self.prev_q_grad_sp = 0
+		# Previous setpoints with PID
+		self.prev_p_pid_sp = 0
+		self.prev_q_pid_sp = 0
 		# ----------------------- Measurements -------------------------------------
 		# HV meter
 		self.p_actual_hv = 0
@@ -161,35 +163,33 @@ class PPC_master_class:
 		self.vbc_counter = 0
 		self.vca_counter = 0
 		self.release_counter = 0
-		# ----------------------- Control curves ----------------------------------
+		# ------- Characteristics curves ----------------------------------
+		# ------- Signal driven -------------------------------------------
 		# P(f)
 		self.s_FSM = self.configdata["PPC_parameters"]["P(f)_curve"]["s_FSM"]
 		self.s_LFSM_O = self.configdata["PPC_parameters"]["P(f)_curve"]["s_LFSM_O"]
 		self.s_LFSM_U = self.configdata["PPC_parameters"]["P(f)_curve"]["s_LFSM_U"]
-		self.PF_p = self.configdata["PPC_parameters"]["P(f)_curve"]["p_ref"]
 		self.fsm_pref_flag = True
 		self.lfsm_pref_flag = True
 		self.lfsm_flag = False
 		self.fsm_pref = 0.5
 		self.lfsm_pref = 0.5
+		# V control
+		self.slope_sp = self.configdata["PPC_parameters"]["V_control_curve"]["slope_sp"]
+		self.V_deadband_sp = self.configdata["PPC_parameters"]["V_control_curve"]["V_deadband_sp"]
+		# ------- Config tool driven -------------------------------------------
 		# Q(P)
 		self.numOfPoints = len(self.configdata["PPC_parameters"]["Q(P)_curve"]["P_values"])
 		self.P_points = self.configdata["PPC_parameters"]["Q(P)_curve"]["P_values"]
 		self.Q_points = self.configdata["PPC_parameters"]["Q(P)_curve"]["Q_values"]
 		self.m = []
-		self.QP_init()
-		# V control
-		self.slope_sp = self.configdata["PPC_parameters"]["V_control_curve"]["slope_sp"]
-		self.V_deadband_sp = self.configdata["PPC_parameters"]["V_control_curve"]["V_deadband_sp"]
 		# Q(U)
 		self.QU_db = self.configdata["PPC_parameters"]["Q(U)_curve"]["deadband"]
 		self.QU_s = self.configdata["PPC_parameters"]["Q(U)_curve"]["slope"]
-		self.QU_v = self.configdata["PPC_parameters"]["Q(U)_curve"]["v_ref"]
 		# Q(U) w/Limit
 		self.numOfPoints2 = 4 # by default
 		self.U_points = self.configdata["PPC_parameters"]["Q(U)_Limit_curve"]["U_values"]
 		self.Q_points2 = self.configdata["PPC_parameters"]["Q(U)_Limit_curve"]["Q_values"]
-		self.QU_q = self.configdata["PPC_parameters"]["Q(U)_Limit_curve"]["q_ref"]
 		self.P1 = [float(self.U_points[0]), float(self.Q_points2[0])]
 		self.P2 = [float(self.U_points[1]), float(self.Q_points2[1])]
 		self.P3 = [float(self.U_points[2]), float(self.Q_points2[2])]
@@ -198,144 +198,56 @@ class PPC_master_class:
 		self.mb = 0
 		self.dba = 0
 		self.dbb = 0
-		self.V_Limit_VDE_init(self.QU_q)
+		# ------- Plot vectors -------------------------------------------------
+		self.sample = 0 # samples
+		self.x = 0 # samples
+		# Samples/timestamps
+		self.x_data = deque([], maxlen=smax)
+		# P remote setpoints
+		self.p_scada_sp = deque([], maxlen=smax)
+		self.p_tso_sp = deque([], maxlen=smax)
+		self.p_fose_sp = deque([], maxlen=smax)
+		# P internal setpoints
+		self.p_in_sp_data = deque([], maxlen=smax)
+		self.p_grad_sp_data = deque([], maxlen=smax)
+		self.p_pid_sp_data = deque([], maxlen=smax)
+		# P measurement
+		self.p_actual_data = deque([], maxlen=smax)
+		# F setpoint
+		self.f_data = deque([], maxlen=smax)
+		self.f_up = deque([], maxlen=smax)
+		self.f_dn = deque([], maxlen=smax)
+		self.f_up2 = deque([], maxlen=smax)
+		self.f_dn2 = deque([], maxlen=smax)
+		# Q remote setpoints
+		self.q_scada_sp = deque([], maxlen=smax)
+		self.q_tso_sp = deque([], maxlen=smax)
+		self.q_fose_sp = deque([], maxlen=smax)
+		# Q internal setpoints
+		self.q_in_sp_data = deque([], maxlen=smax)
+		self.q_grad_sp_data = deque([], maxlen=smax)
+		self.q_pid_sp_data = deque([], maxlen=smax)
+		# Q measurement
+		self.q_actual_data = deque([], maxlen=smax)
+		# V setpoint
+		self.vab_data = deque([], maxlen=smax)
+		self.vbc_data = deque([], maxlen=smax)
+		self.vca_data = deque([], maxlen=smax)
+		self.v_up = deque([], maxlen=smax)
+		self.v_dn = deque([], maxlen=smax)
+		self.v_up2 = deque([], maxlen=smax)
+		self.v_dn2 = deque([], maxlen=smax)
+		# ---- Run init functions --------------------------------
+		self.QP_init()
+		self.V_Limit_VDE_init()
+		self.connect_to_slaves()
 		self.initialize_setpoints()
+		self.setpoint_priority()
 	
-	def connect_to_slaves(self):
-		checksum = 0
-		index = 0
-		for i in self.slaves_data:
-			# print(i)
-			self.slave_id.append(int(self.slaves_data[i]["ID"]))
-			self.slaves_Pinst.append(int(self.slaves_data[i]["nominal_power"]))
-			self.pi_per[index] = float(self.slaves_data[i]["nominal_power"])/self.S_nom
-			self.qi_per[index] = float(self.slaves_data[i]["nominal_power"])/self.S_nom
-			self.qa_per[index] = float(self.slaves_data[i]["nominal_power"])/self.S_nom
-			checksum += (int(self.slaves_data[i]["nominal_power"]))
-			index += 1
-		
-		print(self.slave_id)
-		print(self.slaves_Pinst)
-		print(self.pi_per)
-		
-		if checksum != self.S_nom:
-			print("Error! Sum of inverter's nominal power ratings does not match Slave's nominal power")
-		else:
-			print("Checksum ok")
-
-	def simulation_countdown(self):
-		start = time.time()
-		while self.simulation_start_stop:
-			time.sleep(0.1)
-			end = time.time()
-			# print(f'{end-start} > {self.simulation_duration}')
-			if end-start >= self.simulation_duration:
-				# print("Hello")
-				self.simulation_start_stop = False
-				break
-		self.simulation_run_stop = 0
-		self.simulation_start_stop = False
-    
-	def run_simulation(self, value):
-		self.simulation_run_stop = value
-		if self.simulation_run_stop == 1:
-			self.simulation_start_stop = True
-			clock = threading.Thread(target=self.simulation_countdown)
-			clock.start()
-		elif self.simulation_run_stop == 0:
-			self.simulation_start_stop = False
-	
-	# Control curves
-	
+	connect_to_slaves = connect_to_slaves
 	V_Limit_VDE_init = V_Limit_VDE_init
 	QP_init = QP_init
-    
-	def setpoint_priority(self):
-		printMessages = False
-		# Local setpoints
-		if self.local_remote == 0:
-			if self.p_mode == 3: self.p_ex_sp = self.max_P_cap
-			else: self.p_ex_sp = self.local_P_sp
-			self.q_ex_sp = self.local_Q_sp
-			self.pf_ex_sp = self.local_PF_sp
-		# Remote setpoints
-		elif self.local_remote == 1:
-			if self.p_mode == 3:
-				self.p_ex_sp = self.max_P_cap
-			else:
-				# Both negative
-				if self.tso_P_sp < 0 and self.fose_P_sp < 0:
-					if printMessages: print("Both negative")
-					self.remote_P_sp = 0
-				# One positive one negative
-				elif self.tso_P_sp < 0 and self.fose_P_sp > 0:
-					if printMessages: print(f"tso={self.tso_P_sp}<0 / fose={self.fose_P_sp}>0")
-					self.remote_P_sp = self.fose_P_sp #/self.S_nom
-				elif self.tso_P_sp > 0 and self.fose_P_sp < 0:
-					if printMessages: print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}<0")
-					self.remote_P_sp = self.tso_P_sp #/self.S_nom
-				# Both setpoints are positive
-				elif self.tso_P_sp <= self.fose_P_sp:
-					if printMessages: print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}>0")
-					if printMessages: print("0<tso<fose")
-					self.remote_P_sp = self.tso_P_sp #/self.S_nom
-				else:
-					if printMessages: print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}>0")
-					if printMessages: print("0<fose<tso")
-					self.remote_P_sp = self.fose_P_sp #/self.S_nom
-			# Q setpoint
-			if self.tso_Q_sp <= self.fose_Q_sp: self.remote_Q_sp = self.tso_Q_sp #/self.S_nom
-			else: self.remote_Q_sp = self.fose_Q_sp #/self.S_nom
-			self.p_ex_sp = self.remote_P_sp
-			self.q_ex_sp = self.remote_Q_sp
-			self.pf_ex_sp = self.remote_PF_sp
-        
-		# Check operational state
-		if self.operational_state == 1:
-			self.p_ex_sp = 0
-			self.q_ex_sp = 0
-			self.p_mode = 0
-			self.q_mode = 0
-
-	def set_start_zero(self):
-		message1 = { "destination": "localPlatform", "value": "0", "value_name": "Start" }
-		message2 = { "destination": "localPlatform", "value": "1", "value_name": "Stop" }
-		try:
-			self.socket_tx.send_json(message1, zmq.NOBLOCK)
-			self.socket_tx.send_json(message2, zmq.NOBLOCK)
-		except Exception as e:
-			print("Send failed:", e)
-			traceback.print_exc()
+	setpoint_priority = setpoint_priority
+	initialize_setpoints = initialize_setpoints
 	
-	def initialize_setpoints(self):
-		if self.boot_flag == 1:
-			# Local setpoints (SCADA)
-			self.local_P_sp = self.configdata["PPC_parameters"]["local_setpoints"]["local_P_sp"]/self.S_nom
-			self.local_Q_sp = self.configdata["PPC_parameters"]["local_setpoints"]["local_Q_sp"]/self.S_nom
-			self.local_PF_sp = self.configdata["PPC_parameters"]["local_setpoints"]["local_PF_sp"]
-			self.local_V_sp = self.configdata["PPC_parameters"]["local_setpoints"]["local_V_sp"]/self.V_nom
-			# Remote setpoints (TSO)
-			self.remote_P_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_P_sp"]/self.S_nom
-			self.remote_Q_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_Q_sp"]/self.S_nom
-			self.remote_PF_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_PF_sp"]
-			self.remote_V_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_V_sp"]/self.V_nom
-			# Network Operator setpoints (TSO)
-			self.tso_P_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_P_sp"]/self.S_nom # Minimum p.u
-			self.tso_Q_sp = self.configdata["PPC_parameters"]["remote_setpoints"]["remote_Q_sp"]/self.S_nom # Minimum p.u
-		else:
-			# Local setpoints (SCADA)
-			self.local_P_sp = self.memory["local_setpoints"]["local_P_sp"]/self.S_nom
-			self.local_Q_sp = self.memory["local_setpoints"]["local_Q_sp"]/self.S_nom
-			self.local_PF_sp = self.memory["local_setpoints"]["local_PF_sp"]
-			self.local_V_sp = self.memory["local_setpoints"]["local_V_sp"]/self.V_nom
-			# Remote setpoints (TSO)
-			self.remote_P_sp = self.memory["remote_setpoints"]["remote_P_sp"]/self.S_nom
-			self.remote_Q_sp = self.memory["remote_setpoints"]["remote_Q_sp"]/self.S_nom
-			self.remote_PF_sp = self.memory["remote_setpoints"]["remote_PF_sp"]
-			self.remote_V_sp = self.memory["remote_setpoints"]["remote_V_sp"]/self.V_nom
-			# Network Operator setpoints (TSO)
-			self.tso_P_sp = self.memory["remote_setpoints"]["remote_P_sp"]/self.S_nom # Minimum p.u
-			self.tso_Q_sp = self.memory["remote_setpoints"]["remote_Q_sp"]/self.S_nom # Minimum p.u
-					
-					
 					

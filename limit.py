@@ -1,8 +1,8 @@
 # Timeouts in seconds for testing
 # For real-life multiply by 60 to get minutes
-f_timer = 30
-v_timer = 60
-release_timer = 10
+f_timer = 30*60 # seconds
+v_timer = 60*60 # seconds
+release_timer = 60 # seconds
 
 def normal_op_limits(ppc_master_obj, window_obj):
 	# Check frequency to activate LFSM-O/U
@@ -15,20 +15,16 @@ def normal_op_limits(ppc_master_obj, window_obj):
 		ppc_master_obj.f_counter = 0
 		ppc_master_obj.f_shutdown = 0 # Runninng
 	elif 47.5 <= ppc_master_obj.f_actual < 49.0:
-		window_obj.ax2.set_title(u"Underfrequency: shutdown in {}".format(f_timer-ppc_master_obj.f_counter))
+		window_obj.ax2.set_title(u"Underfrequency: shutdown in {}".format(f_timer*ppc_master_obj.sampling_rate-ppc_master_obj.f_counter))
 		ppc_master_obj.f_counter += 1
 		ppc_master_obj.f_shutdown = 2 # Stopping
 	elif 51.0 < ppc_master_obj.f_actual <= 51.5:
-		window_obj.ax2.set_title(u"Overfrequency: shutdown in {}".format(f_timer-ppc_master_obj.f_counter))
+		window_obj.ax2.set_title(u"Overfrequency: shutdown in {}".format(f_timer*ppc_master_obj.sampling_rate-ppc_master_obj.f_counter))
 		ppc_master_obj.f_counter += 1
 		ppc_master_obj.f_shutdown = 2 # Stopping
 	elif ppc_master_obj.f_actual < 47.5 or ppc_master_obj.f_actual > 51.5:
 		window_obj.ax2.set_title('Frequency out of range!')
 		ppc_master_obj.f_shutdown = 1 # Not Running
-	
-	# if ppc_master_obj.f_actual < 49.8 or ppc_master_obj.f_actual > 50.2:
-	if ppc_master_obj.f_actual > 50.2:
-		ppc_master_obj.p_mode = 1
 
 	# Vab voltage ranges
 	if 0.90 <= ppc_master_obj.vab_actual <= 1.118:
@@ -36,16 +32,16 @@ def normal_op_limits(ppc_master_obj, window_obj):
 		ppc_master_obj.vab_counter = 0
 		ppc_master_obj.vab_shutdown = 0 # Running
 	elif 0.85 <= ppc_master_obj.vab_actual < 0.90:
-		window_obj.ax4.set_title(u"Undervoltage: shutdown in {}".format(v_timer-ppc_master_obj.v_counter))
+		window_obj.ax4.set_title(u"Undervoltage: shutdown in {}".format(v_timer*ppc_master_obj.sampling_rate-ppc_master_obj.vab_counter))
 		ppc_master_obj.vab_counter += 1
 		ppc_master_obj.vab_shutdown = 2 # Stopping
 	elif 1.118 < ppc_master_obj.vab_actual <= 1.15:
-		window_obj.ax4.set_title(u"Overvoltage: shutdown in {}".format(v_timer-ppc_master_obj.v_counter))
+		window_obj.ax4.set_title(u"Overvoltage: shutdown in {}".format(v_timer*ppc_master_obj.sampling_rate-ppc_master_obj.vab_counter))
 		ppc_master_obj.vab_counter += 1
 		ppc_master_obj.vab_shutdown = 2 # Stopping
 	elif ppc_master_obj.vab_actual < 0.85 or ppc_master_obj.vab_actual > 1.15:
 		window_obj.ax4.set_title('Voltage out of range!')
-		ppc_master_obj.v_shutdown = 1 # Not Running
+		ppc_master_obj.vab_shutdown = 1 # Not Running
 
 	# Vbc Voltage ranges
 	if 0.90 <= ppc_master_obj.vbc_actual <= 1.118:
@@ -81,23 +77,23 @@ def operating_ranges(ppc_master_obj, window_obj):
 		normal_op_limits(ppc_master_obj, window_obj)
 		
 		# Check counters for timeouts
-		if ppc_master_obj.f_counter > f_timer:
+		if ppc_master_obj.f_counter > f_timer*ppc_master_obj.sampling_rate:
 			window_obj.ax2.set_title("Frequency shutdown timeout")
 			ppc_master_obj.f_shutdown = 1 # Timeout = PPC Not Running
-		if ppc_master_obj.vab_counter > v_timer:
-			window_obj.ax4.set_title("Voltage shutdown timeout")
+		if ppc_master_obj.vab_counter > v_timer*ppc_master_obj.sampling_rate:
+			window_obj.ax4.set_title("Vab shutdown timeout")
 			ppc_master_obj.vab_shutdown = 1 # Timeout = PPC Not Running
-		if ppc_master_obj.vbc_counter > v_timer:
-			window_obj.ax4.set_title("Voltage shutdown timeout")
+		if ppc_master_obj.vbc_counter > v_timer*ppc_master_obj.sampling_rate:
+			window_obj.ax4.set_title("Vbc shutdown timeout")
 			ppc_master_obj.vbc_shutdown = 1 # Timeout = PPC Not Running
-		if ppc_master_obj.vca_counter > v_timer:
-			window_obj.ax4.set_title("Voltage shutdown timeout")
+		if ppc_master_obj.vca_counter > v_timer*ppc_master_obj.sampling_rate:
+			window_obj.ax4.set_title("Vca shutdown timeout")
 			ppc_master_obj.vca_shutdown = 1 # Timeout = PPC Not Running
 		
 		# If either f or v has gone out of range
 		if (ppc_master_obj.f_shutdown == 1 or ppc_master_obj.vab_shutdown == 1 or ppc_master_obj.vbc_shutdown == 1 or ppc_master_obj.vca_shutdown == 1):
 			ppc_master_obj.operational_state = 1
-			ppc_master_obj.release = True
+			ppc_master_obj.release = False
 		# If you reach here it means that both f and v are still in range
 		elif (ppc_master_obj.f_shutdown == 2 or ppc_master_obj.vab_shutdown == 2 or ppc_master_obj.vbc_shutdown == 2 or ppc_master_obj.vca_shutdown == 2):
 			ppc_master_obj.operational_state = 2
@@ -125,16 +121,21 @@ def operating_ranges(ppc_master_obj, window_obj):
 	# print(ppc_master_obj.operational_state)	
 
 # Check if internal P and Q setpoints are within limits
-def limit(p_in_sp, q_in_sp, ppc_master_obj):
+def limit(ppc_master_obj):
 	# Check if p setpoint lays within limits
-	if p_in_sp >= ppc_master_obj.max_P_cap:	p_lim = ppc_master_obj.max_P_cap
-	elif p_in_sp <= 0: p_lim = 0
-	else: p_lim = p_in_sp
-        
+	if ppc_master_obj.p_in_sp >= ppc_master_obj.max_P_cap: p_lim = ppc_master_obj.max_P_cap
+	elif ppc_master_obj.p_in_sp <= 0: p_lim = 0
+	else: p_lim = ppc_master_obj.p_in_sp
+	
+	# Check if p setpoint lays within limits
+	if ppc_master_obj.q_in_sp >= ppc_master_obj.max_Q_cap:	q_lim2 = ppc_master_obj.max_Q_cap
+	elif ppc_master_obj.q_in_sp <= ppc_master_obj.min_Q_cap: q_lim2 = ppc_master_obj.min_Q_cap
+	else: q_lim2 = ppc_master_obj.q_in_sp
+	
 	# Check U-Q curve
-	q_lim = UQ_limit(q_in_sp, ppc_master_obj.v_actual)
+	# q_lim = UQ_limit(q_in_sp, ppc_master_obj.v_actual)
 	# Check P-Q curve
-	q_lim2 = PQ_limit(q_lim, ppc_master_obj.p_actual_hv)
+	# q_lim2 = PQ_limit(q_lim, ppc_master_obj.p_actual_hv)
     
 	return p_lim, q_lim2
 
