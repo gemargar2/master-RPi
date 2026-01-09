@@ -137,7 +137,7 @@ class PPC_master_class:
 		self.q_actual_hv = 0
 		self.s_actual_hv = 0
 		self.f_actual = 50
-		self.vab_actual = 1.011
+		self.vab_actual = 1
 		self.vbc_actual = 1
 		self.vca_actual = 1
 		self.v_actual = 1
@@ -249,5 +249,6 @@ class PPC_master_class:
 	QP_init = QP_init
 	setpoint_priority = setpoint_priority
 	initialize_setpoints = initialize_setpoints
+	set_start_zero = set_start_zero
 	
 					

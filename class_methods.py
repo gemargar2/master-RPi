@@ -1,4 +1,15 @@
 # Connect to slaves
+import zmq
+
+def set_start_zero(self):
+	message1 = { "destination": "localPlatform", "value": "0", "value_name": "Start" }
+	message2 = { "destination": "localPlatform", "value": "1", "value_name": "Stop" }
+	try:
+		self.socket_tx.send_json(message1, zmq.NOBLOCK)
+		self.socket_tx.send_json(message2, zmq.NOBLOCK)
+	except Exception as e:
+		print("Send failed:", e)
+		traceback.print_exc()
 
 def connect_to_slaves(self):
 	checksum = 0

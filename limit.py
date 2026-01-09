@@ -6,8 +6,10 @@ release_timer = 60 # seconds
 
 def normal_op_limits(ppc_master_obj, window_obj):
 	# Check frequency to activate LFSM-O/U
+	# ----- Comment out for test 0 (FSM only) -------------------------------------------------------
 	if ppc_master_obj.f_actual>50.2 or ppc_master_obj.f_actual<49.8: ppc_master_obj.lfsm_flag = True
 	else: ppc_master_obj.lfsm_flag = False
+	# ----- Comment out for test 0 (FSM only) -------------------------------------------------------
 	
 	# Frequency ranges
 	if 49.0 <= ppc_master_obj.f_actual <= 51.0:
@@ -71,7 +73,6 @@ def normal_op_limits(ppc_master_obj, window_obj):
 
 # Check if frequency and voltage are within limits
 def operating_ranges(ppc_master_obj, window_obj):
-	
 	if (ppc_master_obj.release):
 		# Check limits for normal operation
 		normal_op_limits(ppc_master_obj, window_obj)
@@ -110,7 +111,7 @@ def operating_ranges(ppc_master_obj, window_obj):
 			if ppc_master_obj.release_counter >= release_timer:
 				ppc_master_obj.release = True
 				ppc_master_obj.release_counter = 0
-				ppc_master_obj.set_start_zero()
+				ppc_master_obj.set_start_zero() # Overwrite start signal
 			else:
 				ppc_master_obj.release_counter += 1
 				window_obj.ax2.set_title(u"Enable in {}".format(release_timer-ppc_master_obj.release_counter))

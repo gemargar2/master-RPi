@@ -31,7 +31,7 @@ def gradient_control(ppc_master_obj, prev_p_sp, prev_q_sp):
 	else: # P Control or P Open Loop
 		grad = ppc_master_obj.P_grad/ppc_master_obj.sampling_rate
 	
-	# Deadband: if active power remains less than 1 grad unit (= 0.33%/sec = 0.000165p.u/sample)l
+	# Deadband: if active power remains less than 1 grad unit (= 0.33%/sec = 0.000165p.u/sample)
 	# but your previous setpoint is greater or equal then stop ascending
 	#if ppc_master_obj.p_actual_hv < 0.0001 and prev_p_sp > 0.0001:
 	#	prev_p_sp = 0.0001
@@ -99,10 +99,10 @@ def Q_control(q_grad_sp, prev_q_grad_sp, ppc_master_obj):
 def QP_control(ppc_master_obj):
 	index = 0
 	for i in range(ppc_master_obj.numOfPoints-1):
-		if (ppc_master_obj.p_in_sp < float(ppc_master_obj.P_points[i+1])) and (ppc_master_obj.p_in_sp > float(ppc_master_obj.P_points[i])):
+		if (ppc_master_obj.p_in_sp < float(ppc_master_obj.P_points[i+1])) and (ppc_master_obj.p_in_sp >= float(ppc_master_obj.P_points[i])):
 			index = i
 			break
-	# print(index)
+	#print(index)
 	q_in_sp = (ppc_master_obj.p_in_sp - float(ppc_master_obj.P_points[index]))*ppc_master_obj.m[i] + float(ppc_master_obj.Q_points[i])
 	return q_in_sp
 
@@ -117,4 +117,4 @@ def recalc_pf(ppc_master_obj):
 		ppc_master_obj.pf_actual = 1
 	else:
 		ppc_master_obj.pf_actual = math.cos(math.atan(ppc_master_obj.q_actual_hv/ppc_master_obj.p_actual_hv))
-		# if ppc_master_obj.q_actual_hv < 0: ppc_master_obj.pf_actual = -ppc_master_obj.pf_actual
+		if ppc_master_obj.q_actual_hv < 0: ppc_master_obj.pf_actual = -ppc_master_obj.pf_actual

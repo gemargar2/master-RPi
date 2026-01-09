@@ -8,6 +8,7 @@ class Window_class:
 		# --- init plot --------------
 		# Landscape
 		self.fig = plt.figure(figsize=(18, 8))
+		#self.fig = plt.figure(figsize=(12, 8))
 		mngr = plt.get_current_fig_manager()
 		mngr.window.geometry("+50+100")
 		self.fig.suptitle('Master PPC: Local')
@@ -17,10 +18,20 @@ class Window_class:
 		self.ax2 = self.fig.add_subplot(242)
 		self.ax3 = self.fig.add_subplot(245)
 		self.ax4 = self.fig.add_subplot(246)
-		self.ax5 = self.fig.add_subplot(243)
+		self.ax5 = self.fig.add_subplot(248)
 		self.ax6 = self.fig.add_subplot(244)
 		self.ax7 = self.fig.add_subplot(247)
-		self.ax8 = self.fig.add_subplot(248)
+		self.ax8 = self.fig.add_subplot(243)
+		'''
+		self.ax1 = self.fig.add_subplot(231)
+		self.ax2 = self.fig.add_subplot(232)
+		self.ax3 = self.fig.add_subplot(234)
+		self.ax4 = self.fig.add_subplot(235)
+		#self.ax5 = self.fig.add_subplot(243)
+		#self.ax6 = self.fig.add_subplot(244)
+		self.ax7 = self.fig.add_subplot(236)
+		self.ax8 = self.fig.add_subplot(233)
+		'''
 
 		# Set titles of subplots
 		self.ax1.set_title('Active Power')

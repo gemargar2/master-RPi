@@ -59,7 +59,9 @@ def controllerCore(window_obj, ppc_master_obj):
 	operating_ranges(ppc_master_obj, window_obj)
 	
 	# 2nd task: for remote level apply setpoint priority (lowest value)
+	# ----- Comment out for testbench --------
 	# ppc_master_obj.setpoint_priority()
+	# ----- Comment out for testbench --------
 	
 	# 3rd task: Specify the setpoint AFTER the transient phenomenon (gradient control + PGS step response)
 	if ppc_master_obj.operational_state == 1:

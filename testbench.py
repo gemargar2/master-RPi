@@ -1,8 +1,24 @@
-from time import sleep
+from time import sleep, time
+import threading
 
 step_time = 30
+recFlag = False
 
-def test_app(obj):
+def recorder(obj, log_obj):
+	global recFlag
+	start_time = time()
+	while recFlag:
+		#start = time.time()
+		log_obj.write_data(obj, start_time)
+		#stop = time.time()
+		#plot_time_elapsed = stop-startl
+		#print(f'plot = {plot_time_elapsed}')
+		sleep(0.1)
+	print("Write complete")
+
+def test_app(obj, log_obj, window_obj):
+	global recFlag
+	
 	while True:
 		# Reset park
 		obj.p_ex_sp = 0.75
@@ -12,7 +28,9 @@ def test_app(obj):
 		obj.p_mode = 0 # 0 = P control (PID) / 1 = F control (FSM) / 2 = P Open Loop / 3 = MPPT control
 		obj.q_mode = 0 # 0 = Q control (PID) / 1 = Q(P) control / 2 = V control / 3 = PF control / 4 = Q Open Loop / 5 = Q(U) / 6 = Q(U) with limit	
 		print("-------------- SETPOINT COMMANDS TEST MENU ------------------")
+		print("Prerequisite: Comment out controller_core.py line 63")
 		print("Test 1: Displacement factor cos(phi) (6.1.3.2)")
+		print("Test 3: Q(U) characteristic (6.1.3.4)")
 		print("Test 4: Characteristic curve Q(P) (6.1.3.5)")
 		print("Test 5: Active power P (6.1.3.6)")
 		print("Test 6: Displacement factor cos(phi) (6.1.4.2)")
@@ -24,10 +42,31 @@ def test_app(obj):
 		ans = input("Enter test code = ")
 		if ans == '1':
 			print("Test 1: Displacement factor cos(phi) (6.1.3.2)")
+			log_obj.init_file()
+			rec = threading.Thread(target = recorder, args=(obj, log_obj))
+			recFlag = True
+			rec.start()
 			test1(obj)
+			recFlag = False
+			rec.join()
+		elif ans == '3':
+			print("Test 3.2: Q(U) characteristic (6.1.3.4)")
+			log_obj.init_file()
+			rec = threading.Thread(target = recorder, args=(obj, log_obj))
+			recFlag = True
+			rec.start()
+			test3(obj, window_obj)
+			recFlag = False
+			rec.join()
 		elif ans == '4':
 			print("Test 4: Characteristic curve Q(P) (6.1.3.5)")
+			log_obj.init_file()
+			rec = threading.Thread(target = recorder, args=(obj, log_obj))
+			recFlag = True
+			rec.start()
 			test4(obj)
+			recFlag = False
+			rec.join()
 		elif ans == '5':
 			print("Test 5: Active power P (6.1.3.6)")
 			test5(obj)
@@ -87,6 +126,27 @@ def test1(obj):
 	print("Step 7: PF = +0.99")
 	obj.pf_ex_sp = 0.99
 	sleep(step_time)
+	print("Finish: PF = 1.0")
+	obj.pf_ex_sp = 1
+
+def test3(obj, window_obj):
+	# Enter the correct mode
+	obj.q_mode = 5 # 5 = Q(U) control
+	print("Step 1: V = 1.0 p.u (150 kV)")
+	obj.v_ex_sp = 1
+	window_obj.plot_QU_curve(obj)
+	sleep(step_time)
+	print("Step 2: V = 0.98 p.u (147 kV)")
+	obj.v_ex_sp = 0.98
+	window_obj.plot_QU_curve(obj)
+	sleep(step_time)
+	print("Step 3: V = 1.02 p.u (153 kV)")
+	obj.v_ex_sp = 1.02
+	window_obj.plot_QU_curve(obj)
+	sleep(step_time)
+	print("Finish: V = 1.0 p.u (150 kV)")
+	obj.v_ex_sp = 1
+	window_obj.plot_QU_curve(obj)
 
 def test4(obj):
 	# Enter the correct mode
@@ -104,7 +164,7 @@ def test4(obj):
 	obj.p_ex_sp = 0.55
 	sleep(step_time)
 	print("Step 5: P = 0.50 p.u (11.1 MW) ")
-	obj.p_ex_sp = 0.55
+	obj.p_ex_sp = 0.5
 	sleep(step_time)
 	print("Step 6: P = 0.00 p.u (0.0 MW) ")
 	obj.p_ex_sp = 0

@@ -6,9 +6,25 @@ from class_def import *
 from window import *
 from time import sleep
 from testbench import test_app
+from logfile import *
 
 plotFlag = True
+logFlag = True
 sampling_period = 0.1
+
+def recorder_loop(ppc_master_obj, logfile_obj):
+	while True:
+		print("Recorder menu")
+		eta = int(input("Enter recording time (seconds) = "))
+		input("Press enter to start")
+		start_time = time.time()
+		for i in range(eta*10):
+			#start = time.time()
+			logfile_obj.write_data(ppc_master_obj, start_time)
+			#stop = time.time()
+			#plot_time_elapsed = stop-start
+			#print(f'plot = {plot_time_elapsed}')
+			sleep(0.1)			
 
 def controller_loop(ppc_master_obj, window_obj):
 	while True:
@@ -37,6 +53,7 @@ def main():
 	# Create objects
 	ppc_master_obj = PPC_master_class(config, memory)
 	window_obj = Window_class()
+	logfile_obj = logFile_class()
 	
 	# Start parallel processes
 	receive_messages = threading.Thread(target = receive_signals, args=(ppc_master_obj, window_obj))
@@ -45,8 +62,10 @@ def main():
 	send_messages.start()
 	control = threading.Thread(target = controller_loop, args=(ppc_master_obj, window_obj))
 	control.start()
-	testApp = threading.Thread(target = test_app, args=(ppc_master_obj, ))
+	testApp = threading.Thread(target = test_app, args=(ppc_master_obj, logfile_obj, window_obj))
 	testApp.start()
+	#recApp = threading.Thread(target = recorder_loop, args=(ppc_master_obj, logfile_obj))
+	#recApp.start()
 	
 	# Plot the 5 grid-forming control curves
 	window_obj.plot_PF_curve(ppc_master_obj)
@@ -59,7 +78,7 @@ def main():
 	while True:
 		if plotFlag:
 			#start = time.time()
-			window_obj.plot_data(ppc_master_obj)	
+			window_obj.plot_data(ppc_master_obj)
 			#stop = time.time()
 			#plot_time_elapsed = stop-start
 			#print(f'plot = {plot_time_elapsed}')

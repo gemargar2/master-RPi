@@ -79,13 +79,15 @@ def FSM_VDE(p_ref, ppc_master_obj, window_obj):
 
 	return p_in_sp
 
-# --- F control if tree -------------------------------------
+# ---- DEPRECATED -------------------------------------------
+
+# --- F control -------------------------------------
 
 def F_control(ppc_master_obj, window_obj):
 	f_ref = 50.01
 	p_in_sp = FSM(f_ref, ppc_master_obj, window_obj)
 	return p_in_sp
- 
+
 def F_control2(ppc_master_obj, window_obj):
 	global f_mode
 	p_ref = ppc_master_obj.PF_p
