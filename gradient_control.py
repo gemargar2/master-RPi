@@ -5,7 +5,7 @@ import math
 def p_pid_controller(setpoint, pv, kp, ki, kd, previous_error, integral, dt):
 	error = setpoint - pv
 	integral += error * dt
-	derivative = 0 # (error - previous_error) / dt
+	derivative = (error - previous_error) / dt
 	control = kp * error + ki * integral + kd * derivative
 
 	return control, error, integral
@@ -13,7 +13,7 @@ def p_pid_controller(setpoint, pv, kp, ki, kd, previous_error, integral, dt):
 def q_pid_controller(setpoint, pv, kp, ki, kd, previous_error, integral, dt):
 	error = setpoint - pv
 	integral += error * dt
-	derivative = 0 # (error - previous_error) / dt
+	derivative = (error - previous_error) / dt
 	control = kp * error + ki * integral + kd * derivative
  
 	return control, error, integral

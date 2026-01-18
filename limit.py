@@ -101,20 +101,24 @@ def operating_ranges(ppc_master_obj, window_obj):
 		# No problem with f and v -> prioritize start/stop SCADA button
 		else: 
 			window_obj.ax2.set_title("Frequency ok")
-			if ppc_master_obj.start_stop == 1 or ppc_master_obj.auto_start_state == 1:
+			if ppc_master_obj.operational_state == 2 or ppc_master_obj.start_stop == 1 or ppc_master_obj.auto_start_state == 1:
 				ppc_master_obj.operational_state = 0
-
+				ppc_master_obj.P_grad = 0.00167
+	
 	# Reconnection process
 	else:
 		# Frequency ranges
 		if 49.9 <= ppc_master_obj.f_actual <= 50.1 and ppc_master_obj.vab_actual >= 0.95 and ppc_master_obj.vbc_actual >= 0.95 and ppc_master_obj.vca_actual >= 0.95:
-			if ppc_master_obj.release_counter >= release_timer:
-				ppc_master_obj.release = True
-				ppc_master_obj.release_counter = 0
-				ppc_master_obj.set_start_zero() # Overwrite start signal
-			else:
-				ppc_master_obj.release_counter += 1
-				window_obj.ax2.set_title(u"Enable in {}".format(release_timer-ppc_master_obj.release_counter))
+			ppc_master_obj.release = True
+			ppc_master_obj.release_counter = 0
+			ppc_master_obj.set_start_zero() # Overwrite start signal
+			#if ppc_master_obj.release_counter >= release_timer:
+			#	ppc_master_obj.release = True
+			#	ppc_master_obj.release_counter = 0
+			#	ppc_master_obj.set_start_zero() # Overwrite start signal
+			#else:
+			#	ppc_master_obj.release_counter += 1
+			#	window_obj.ax2.set_title(u"Enable in {}".format(release_timer-ppc_master_obj.release_counter))
 		else:
 			ppc_master_obj.release_counter = 0
 			ppc_master_obj.release = False # Not Running					

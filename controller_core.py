@@ -60,10 +60,10 @@ def controllerCore(window_obj, ppc_master_obj):
 	
 	# 2nd task: for remote level apply setpoint priority (lowest value)
 	# ----- Comment out for testbench --------
-	# ppc_master_obj.setpoint_priority()
+	ppc_master_obj.setpoint_priority()
 	# ----- Comment out for testbench --------
 	
-	# 3rd task: Specify the setpoint AFTER the transient phenomenon (gradient control + PGS step response)
+	# 3rd task: Specify the setpoint
 	if ppc_master_obj.operational_state == 1:
 		ppc_master_obj.p_in_sp = 0
 		ppc_master_obj.q_in_sp = 0
@@ -76,7 +76,7 @@ def controllerCore(window_obj, ppc_master_obj):
 		ppc_master_obj.prev_p_pid_sp = 0
 		ppc_master_obj.prev_q_pid_sp = 0
 	else:
-		if ppc_master_obj.lfsm_flag:
+		if ppc_master_obj.lfsm_flag and (ppc_master_obj.vde4130_flag or ppc_master_obj.tso_none_flag):
 			if ppc_master_obj.lfsm_pref_flag:
 				window_obj.ax1.set_title('Active power: LFSM-O/U')
 				print("LFSM First time")
@@ -155,10 +155,13 @@ def controllerCore(window_obj, ppc_master_obj):
 		# Check PID flag AND if active power measurement is near the final setpoint
 		if p_pid_flag and abs(ppc_master_obj.p_in_sp-ppc_master_obj.p_actual_hv)<0.06:
 			ppc_master_obj.p_pid_sp = P_control(ppc_master_obj.p_grad_sp, ppc_master_obj.prev_p_pid_sp, ppc_master_obj)
-		else: ppc_master_obj.p_pid_sp = ppc_master_obj.p_grad_sp
+		else:
+			ppc_master_obj.p_pid_sp = ppc_master_obj.p_grad_sp
 		# Q PID
-		if q_pid_flag: ppc_master_obj.q_pid_sp = Q_control(ppc_master_obj.q_grad_sp, ppc_master_obj.prev_q_pid_sp, ppc_master_obj)
-		else: ppc_master_obj.q_pid_sp = ppc_master_obj.q_grad_sp
+		if q_pid_flag:
+			ppc_master_obj.q_pid_sp = Q_control(ppc_master_obj.q_grad_sp, ppc_master_obj.prev_q_pid_sp, ppc_master_obj)
+		else:
+			ppc_master_obj.q_pid_sp = ppc_master_obj.q_grad_sp
 	
 	
 	# Needed for the PID to follow along when not activated
@@ -173,3 +176,4 @@ def controllerCore(window_obj, ppc_master_obj):
 	recalc_contribution(ppc_master_obj, window_obj)
 	recalc_pf(ppc_master_obj)
 	populate_vectors(ppc_master_obj)
+	# print(f'power gradient = {ppc_master_obj.P_grad}')

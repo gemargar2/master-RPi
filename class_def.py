@@ -110,6 +110,7 @@ class PPC_master_class:
 		self.simulation_run_stop = 0 # 0 = stop / 1 = run
 		self.simulation_duration = 0 # seconds
 		self.simulation_start_stop = False # True = simulation ongoing / False = real measurments
+		self.watchdog = True
 		# ----------------------- Setpoints -------------------------------------
 		# External setpoints (init with local values)
 		self.p_ex_sp = 0
@@ -171,6 +172,8 @@ class PPC_master_class:
 		self.s_LFSM_U = self.configdata["PPC_parameters"]["P(f)_curve"]["s_LFSM_U"]
 		self.fsm_pref_flag = True
 		self.lfsm_pref_flag = True
+		self.vde4130_flag = False # Test 12: True = Priority of LFSM over TSO / False = Priority of TSO over LFSM
+		self.tso_none_flag = True # Test 12: True = TSO is not / False = Priority of TSO over LFSM
 		self.lfsm_flag = False
 		self.fsm_pref = 0.5
 		self.lfsm_pref = 0.5

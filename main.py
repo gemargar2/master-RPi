@@ -62,8 +62,8 @@ def main():
 	send_messages.start()
 	control = threading.Thread(target = controller_loop, args=(ppc_master_obj, window_obj))
 	control.start()
-	testApp = threading.Thread(target = test_app, args=(ppc_master_obj, logfile_obj, window_obj))
-	testApp.start()
+	#testApp = threading.Thread(target = test_app, args=(ppc_master_obj, logfile_obj, window_obj))
+	#testApp.start()
 	#recApp = threading.Thread(target = recorder_loop, args=(ppc_master_obj, logfile_obj))
 	#recApp.start()
 	

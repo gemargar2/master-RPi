@@ -137,7 +137,7 @@ def send_meteo(ppc_master_obj):
 
 def send_TSO(ppc_master_obj):
 	message1 = { "destination": "TSO", "value_name": "L_R", "value": str(ppc_master_obj.local_remote) }
-	message2 = { "destination": "TSO", "value_name": "WDOG", "value": str(ppc_master_obj.connection) }
+	message2 = { "destination": "TSO", "value_name": "WDOG", "value": str(ppc_master_obj.watchdog) }
 	message3 = { "destination": "TSO", "value_name": "HLIM", "value": str(ppc_master_obj.total_pmax) }
 	message4 = { "destination": "TSO", "value_name": "LLIM", "value": "0" }
 	try:

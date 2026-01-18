@@ -3,9 +3,20 @@ from callbacks import *
 from distribution import *
 from time import sleep
 
-printMessages = False
+printMessages = True
+
+grid_rx = True
+tso_rx = True
+fose_rx = True
+scada_rx = True
+hv_meter_rx = True
+tso_server_rx = True
+slave1_rx = True
+slave2_rx = True
 
 def receive_signals(ppc_master_obj, window_obj):
+	global grid_rx, tso_rx, fose_rx, scada_rx, hv_meter_rx, tso_server_rx, slave1_rx, slave2_rx
+	
 	while True:
         	# Wait for command
 		message = ppc_master_obj.socket_rx.recv_json()
@@ -16,20 +27,39 @@ def receive_signals(ppc_master_obj, window_obj):
 		# Check for connection status
 		if message['value_name'] == 'df925a75-00a7-40ae-8ed9-cb5008d725ce':
 			# print(message)
-			if message['origin'] == 'Grid': origin = 'Grid'
-			elif message['origin'] == 'TSO': origin = 'TSO'
-			elif message['origin'] == 'TSO_server': origin = 'TSO_server'
-			elif message['origin'] == 'FOSE': origin = 'FOSE'
-			elif message['origin'] == 'localPlatform': origin = 'SCADA'
-			elif message['origin'] == 'HV_Meter': origin = 'HV_Meter'
+			if message['origin'] == 'Grid':
+				origin = 'Grid'
+				grid_rx = message['status']
+			elif message['origin'] == 'TSO':
+				origin = 'TSO'
+				tso_rx = message['status']
+			elif message['origin'] == 'TSO_server':
+				origin = 'TSO_server'
+				tso_server_rx = message['status']
+			elif message['origin'] == 'FOSE':
+				origin = 'FOSE'
+				fose_rx = message['status']
+			elif message['origin'] == 'localPlatform':
+				origin = 'SCADA'
+				scada_rx = message['status']
+			elif message['origin'] == 'HV_Meter':
+				origin = 'HV_Meter'
+				hv_meter_rx = message['status']
+			elif message['origin'] == 'Slave_1':
+				origin = 'Slave_1'
+				slave1_rx = message['status']
+			elif message['origin'] == 'Slave_2':
+				origin = 'Slave_2'
+				slave2_rx = message['status']
+			else: pass
+			
+			if message['status'] == True:
+				if printMessages: print(f"{message['origin']} connection ok")
 			else:
-				# Iterate through slaves
-				for i in range(ppc_master_obj.numberOfSlaves):
-					label = 'Slave_' + str(i+1)
-					if message['origin'] == label: origin = label
-			if printMessages:
-				if message['status'] == True: print(f"{origin} connection ok")
-				else: print(f"{origin} connection not ok")
+				if printMessages: print(f"{message['origin']} connection not ok")
+			
+			if grid_rx and tso_rx and fose_rx and scada_rx and hv_meter_rx and slave1_rx and slave2_rx: ppc_master_obj.watchdog = True
+			else: ppc_master_obj.watchdog = False
 		
 		# Check for local / remote signal
 		if message['origin'] == 'localPlatform':
@@ -91,19 +121,19 @@ def receive_signals(ppc_master_obj, window_obj):
 
 			elif message['origin'] == 'TSO':
 				if message['value_name'] == 'SPMAX': remote_spmax(ppc_master_obj)
-				elif message['value_name'] == 'P_SP_TSO': remote_P_setpoint(ppc_master_obj, window_obj, float(message['value']))
-				elif message['value_name'] == 'Q_SP_TSO': remote_Q_setpoint(ppc_master_obj, window_obj, float(message['value']))
-				elif message['value_name'] == 'V_SP_TSO': remote_V_setpoint(ppc_master_obj, window_obj, float(message['value']))
-				elif message['value_name'] == 'PF_SP_TSO': remote_PF_setpoint(ppc_master_obj, window_obj, float(message['value']))
+				elif message['value_name'] == 'P_SP_TSO': tso_P_setpoint(ppc_master_obj, float(message["value"]))
+				elif message['value_name'] == 'Q_SP_TSO': tso_Q_setpoint(ppc_master_obj, float(message["value"]))
+				elif message['value_name'] == 'V_SP_TSO': tso_V_setpoint(ppc_master_obj, float(message["value"]))
+				elif message['value_name'] == 'PF_SP_TSO': tso_PF_setpoint(ppc_master_obj, float(message["value"]))
 				elif message['value_name'] == 'ENAP': remote_enap(ppc_master_obj, window_obj)
 				elif message['value_name'] == '10': remote_10min(ppc_master_obj, window_obj)
 
 			elif message['origin'] == 'FOSE':
 				if message['value_name'] == 'SPMAX': remote_spmax(ppc_master_obj)
-				elif message['value_name'] == 'P_SP_FOSE': ppc_master_obj.fose_P_sp = float(message["value"])/ppc_master_obj.S_nom
-				elif message['value_name'] == 'Q_SP_FOSE': ppc_master_obj.fose_Q_sp = float(message["value"])/ppc_master_obj.S_nom
-				elif message['value_name'] == 'V_SP_FOSE': ppc_master_obj.fose_V_sp = float(message["value"])/ppc_master_obj.V_nom
-				elif message['value_name'] == 'PF_SP_FOSE': ppc_master_obj.fose_PF_sp = float(message["value"])
+				elif message['value_name'] == 'P_SP_FOSE': fose_P_setpoint(ppc_master_obj, float(message["value"]))
+				elif message['value_name'] == 'Q_SP_FOSE': fose_Q_setpoint(ppc_master_obj, float(message["value"]))
+				elif message['value_name'] == 'V_SP_FOSE': fose_V_setpoint(ppc_master_obj, float(message["value"]))
+				elif message['value_name'] == 'PF_SP_FOSE': fose_PF_setpoint(ppc_master_obj, float(message["value"]))
 				elif message['value_name'] == 'ENAP': remote_enap(ppc_master_obj, window_obj)
 				elif message['value_name'] == '10': remote_10min(ppc_master_obj, window_obj)
 		

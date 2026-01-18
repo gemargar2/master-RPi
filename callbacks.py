@@ -332,7 +332,7 @@ def remote_spmax(ppc_master_obj):
 
 def remote_enap(ppc_master_obj, window_obj):
 	window_obj.fig.suptitle('Master PPC: ENAP (Emergency shutdown)')
-	stop_command(ppc_master_obj, window_obj)
+	stop_command(ppc_master_obj, window_obj, 1)
 
 def remote_10min(ppc_master_obj, window_obj):
 	window_obj.fig.suptitle('Master PPC: Shutdown in 10 minutes')

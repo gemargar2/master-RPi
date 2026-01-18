@@ -310,7 +310,7 @@ class Window_class:
                 	51.5]
                 
 		p_vector = [
-                	p_ref + 2.3*0.4*p_ref,
+                	p_ref + 2.3*0.4,
                 	p_ref,
                 	p_ref,
                 	p_ref - 1.3*0.4*p_ref]

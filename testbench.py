@@ -29,6 +29,7 @@ def test_app(obj, log_obj, window_obj):
 		obj.q_mode = 0 # 0 = Q control (PID) / 1 = Q(P) control / 2 = V control / 3 = PF control / 4 = Q Open Loop / 5 = Q(U) / 6 = Q(U) with limit	
 		print("-------------- SETPOINT COMMANDS TEST MENU ------------------")
 		print("Prerequisite: Comment out controller_core.py line 63")
+		print("Test 00: Reactive power step response")
 		print("Test 1: Displacement factor cos(phi) (6.1.3.2)")
 		print("Test 3: Q(U) characteristic (6.1.3.4)")
 		print("Test 4: Characteristic curve Q(P) (6.1.3.5)")
@@ -40,7 +41,10 @@ def test_app(obj, log_obj, window_obj):
 		print("Test 16: Controller Bridging (Slave mode) (6.1.9)")
 		print("Test 17: Prioritization of the Grid Operator Demand (6.1.10)")
 		ans = input("Enter test code = ")
-		if ans == '1':
+		if ans == '00':
+			print("Test 00: Reactive power step response")
+			test00(obj)
+		elif ans == '1':
 			print("Test 1: Displacement factor cos(phi) (6.1.3.2)")
 			log_obj.init_file()
 			rec = threading.Thread(target = recorder, args=(obj, log_obj))
@@ -101,6 +105,10 @@ def test_app(obj, log_obj, window_obj):
 		elif ans == '17':
 			print("Test 17: Prioritization of the Grid Operator Demand (6.1.10)")
 			test17(obj)
+
+def test00(obj):
+	# Enter the correct mode
+	obj.q_mode = 0 # 0 = Q control
 
 def test1(obj):
 	# Enter the correct mode
