@@ -116,10 +116,10 @@ def local_V_deadband_setpoint(ppc_master_obj, window_obj, var):
 
 def local_P_gradient_setpoint(ppc_master_obj, var):
 	# Convert MW/sec to p.u/sec = MW/S_nominal
-	var = var/ppc_master_obj.S_nom
+	# var = var/ppc_master_obj.S_nom
 	# Check if gradient is within the accepted limits 0.33%/sec < gradient < 0.66%/sec
-	if var > 0.0066: var = 0.0066
-	elif var < 0.0033: var = 0.0033
+	#if var > 0.0066: var = 0.0066
+	#elif var < 0.0033: var = 0.0033
 	# Store into class variable
 	ppc_master_obj.P_grad = var
 	# Store into memory.json
@@ -129,10 +129,10 @@ def local_P_gradient_setpoint(ppc_master_obj, var):
 
 def local_F_gradient_setpoint(ppc_master_obj, var):
 	# Convert MW/sec to p.u/sec = MW/S_nominal
-	var = var/ppc_master_obj.S_nom
+	# var = var/ppc_master_obj.S_nom
 	# Check if gradient is within the accepted limits 0.33%/sec < gradient < 0.66%/sec
-	if var > 0.0066: var = 0.0066
-	elif var < 0.0033: var = 0.0033
+	#if var > 0.0066: var = 0.0066
+	#elif var < 0.0033: var = 0.0033
 	# Store into class variable
 	ppc_master_obj.F_grad = var
 	# Store into memory.json
@@ -142,10 +142,10 @@ def local_F_gradient_setpoint(ppc_master_obj, var):
 
 def local_MPPT_gradient_setpoint(ppc_master_obj, var):
 	# Convert MW/sec to p.u/sec = MW/S_nominal
-	var = var/ppc_master_obj.S_nom
+	# var = var/ppc_master_obj.S_nom
 	# Check if gradient is within the accepted limits 0.33%/sec < gradient < 0.66%/sec
-	if var > 0.0066: var = 0.0066
-	elif var < 0.0033: var = 0.0033
+	#if var > 0.0066: var = 0.0066
+	#elif var < 0.0033: var = 0.0033
 	# Store to class variable
 	ppc_master_obj.MPPT_grad = var
 	ppc_master_obj.memory["power_gradients"]["MPPT_grad"] = round(var, 6)

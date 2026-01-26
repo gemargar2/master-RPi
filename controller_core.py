@@ -60,7 +60,7 @@ def controllerCore(window_obj, ppc_master_obj):
 	
 	# 2nd task: for remote level apply setpoint priority (lowest value)
 	# ----- Comment out for testbench --------
-	ppc_master_obj.setpoint_priority()
+	# ppc_master_obj.setpoint_priority()
 	# ----- Comment out for testbench --------
 	
 	# 3rd task: Specify the setpoint
@@ -71,6 +71,8 @@ def controllerCore(window_obj, ppc_master_obj):
 		ppc_master_obj.q_grad_sp = 0
 		ppc_master_obj.p_pid_sp = 0
 		ppc_master_obj.q_pid_sp = 0
+		ppc_master_obj.prev_p_in_sp = 0
+		ppc_master_obj.prev_q_in_sp = 0
 		ppc_master_obj.prev_p_grad_sp = 0
 		ppc_master_obj.prev_q_grad_sp = 0
 		ppc_master_obj.prev_p_pid_sp = 0
@@ -82,7 +84,7 @@ def controllerCore(window_obj, ppc_master_obj):
 				print("LFSM First time")
 				ppc_master_obj.lfsm_pref = ppc_master_obj.p_actual_hv
 				ppc_master_obj.lfsm_pref_flag = False
-				ppc_master_obj.fsm_pref_flag = True
+				# ppc_master_obj.fsm_pref_flag = True
 				print(f'LFSM Pref = {ppc_master_obj.lfsm_pref}')
 			ppc_master_obj.p_in_sp = LFSM_VDE(ppc_master_obj.lfsm_pref, ppc_master_obj, window_obj)
 		else:
@@ -163,7 +165,10 @@ def controllerCore(window_obj, ppc_master_obj):
 		else:
 			ppc_master_obj.q_pid_sp = ppc_master_obj.q_grad_sp
 	
-	
+	# Needed for the PID to follow along when not activated
+	ppc_master_obj.prev_p_in_sp = ppc_master_obj.p_in_sp
+	ppc_master_obj.prev_q_in_sp = ppc_master_obj.q_in_sp
+
 	# Needed for the PID to follow along when not activated
 	ppc_master_obj.prev_p_grad_sp = ppc_master_obj.p_grad_sp
 	ppc_master_obj.prev_q_grad_sp = ppc_master_obj.q_grad_sp

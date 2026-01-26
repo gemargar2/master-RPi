@@ -126,6 +126,9 @@ class PPC_master_class:
 		# Setpoints with PID
 		self.p_pid_sp = 0
 		self.q_pid_sp = 0
+		# Previous Internal setpoints
+		self.prev_p_in_sp = 0
+		self.prev_q_in_sp = 0
 		# Previous setpoints with gradient
 		self.prev_p_grad_sp = 0
 		self.prev_q_grad_sp = 0

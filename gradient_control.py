@@ -20,7 +20,10 @@ def q_pid_controller(setpoint, pv, kp, ki, kd, previous_error, integral, dt):
 
 # --- Gradient control -------------------------------
 
+q_grad = 0
+
 def gradient_control(ppc_master_obj, prev_p_sp, prev_q_sp):
+	global q_grad
 
 	# Active power gradient
 	# Convert p.u/sec to p.u/sample = p.u/sampling_period = MW/(S_nom*sampling_period)
@@ -39,8 +42,17 @@ def gradient_control(ppc_master_obj, prev_p_sp, prev_q_sp):
 	if (ppc_master_obj.p_in_sp - prev_p_sp > grad): prev_p_sp += grad
 	elif (prev_p_sp - ppc_master_obj.p_in_sp > grad): prev_p_sp -= grad
 	else: prev_p_sp = ppc_master_obj.p_in_sp
-
-	prev_q_sp = ppc_master_obj.q_in_sp
+	
+	response_time = 5 # response time in seconds
+	delta_q = ppc_master_obj.q_in_sp - ppc_master_obj.prev_q_in_sp
+	# print(delta_q)
+	if (abs(delta_q) > 0.01):
+		q_grad = delta_q/(response_time*ppc_master_obj.sampling_rate)
+		print(q_grad)
+	
+	if (abs(ppc_master_obj.q_in_sp - prev_q_sp) > abs(q_grad)): prev_q_sp += q_grad
+	else: prev_q_sp = ppc_master_obj.q_in_sp
+	# prev_q_sp = ppc_master_obj.q_in_sp
 
 	return prev_p_sp, prev_q_sp
 

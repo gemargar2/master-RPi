@@ -3,7 +3,7 @@ from callbacks import *
 from distribution import *
 from time import sleep
 
-printMessages = True
+printMessages = False
 
 grid_rx = True
 tso_rx = True

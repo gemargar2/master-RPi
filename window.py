@@ -111,7 +111,8 @@ class Window_class:
 		self.ln34, = self.ax3.plot([], [], "y--", label='fose')
 		self.ln35, = self.ax3.plot([], [], "r-", label='in_sp')
 		self.ln36, = self.ax3.plot([], [], "k-", label='pid_sp')
-		self.ax3.legend(handles=[self.ln31, self.ln32, self.ln33, self.ln34, self.ln35, self.ln36])
+		self.ln37, = self.ax3.plot([], [], "g-", label='grad_sp')
+		self.ax3.legend(handles=[self.ln31, self.ln32, self.ln33, self.ln34, self.ln35, self.ln36, self.ln37])
 		# V plot
 		self.ln41, = self.ax4.plot([], [], "b-", label="vab")
 		self.ln42, = self.ax4.plot([], [], "g-", label="vbc")
@@ -203,6 +204,7 @@ class Window_class:
 		self.ln34.set_data(ppc_master_obj.x_data, ppc_master_obj.q_fose_sp)
 		self.ln35.set_data(ppc_master_obj.x_data, ppc_master_obj.q_in_sp_data)
 		self.ln36.set_data(ppc_master_obj.x_data, ppc_master_obj.q_pid_sp_data)
+		self.ln37.set_data(ppc_master_obj.x_data, ppc_master_obj.q_grad_sp_data)
 		# V plot
 		self.ln41.set_data(ppc_master_obj.x_data, ppc_master_obj.vab_data)
 		self.ln42.set_data(ppc_master_obj.x_data, ppc_master_obj.vbc_data)
@@ -239,6 +241,7 @@ class Window_class:
 			self.ln34.axes.set_xlim(x-xmax, x)
 			self.ln35.axes.set_xlim(x-xmax, x)
 			self.ln36.axes.set_xlim(x-xmax, x)
+			self.ln37.axes.set_xlim(x-xmax, x)
 			self.ln41.axes.set_xlim(x-xmax, x)
 			self.ln42.axes.set_xlim(x-xmax, x)
 			self.ln43.axes.set_xlim(x-xmax, x)
