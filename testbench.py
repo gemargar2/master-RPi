@@ -1,7 +1,7 @@
 from time import sleep, time
 import threading
 
-step_time = 30
+step_time = 10
 recFlag = False
 
 def recorder(obj, log_obj):
@@ -43,7 +43,13 @@ def test_app(obj, log_obj, window_obj):
 		ans = input("Enter test code = ")
 		if ans == '00':
 			print("Test 00: Reactive power step response")
+			log_obj.init_file()
+			rec = threading.Thread(target = recorder, args=(obj, log_obj))
+			recFlag = True
+			rec.start()
 			test00(obj)
+			recFlag = False
+			rec.join()
 		elif ans == '1':
 			print("Test 1: Displacement factor cos(phi) (6.1.3.2)")
 			log_obj.init_file()
@@ -108,7 +114,10 @@ def test_app(obj, log_obj, window_obj):
 
 def test00(obj):
 	# Enter the correct mode
-	obj.q_mode = 0 # 0 = Q control
+	obj.q_mode = 3 # 3 = PF control
+	print("Step 2: PF = -0.975")
+	obj.pf_ex_sp = -0.95
+	sleep(step_time)
 
 def test1(obj):
 	# Enter the correct mode

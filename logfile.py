@@ -10,15 +10,14 @@ class logFile_class():
 			self.writer = csv.writer(csvfile, delimiter=',', escapechar=' ', quoting=csv.QUOTE_NONE)
 			self.writer.writerow([
 				"timestamp",
-				"p_ex_sp",
-				"q_ex_sp",
-				"v_ex_sp",
-				"pf_ex_sp",
+				"p_in_sp",
+				"q_in_sp",
+				"q_in_up",
+				"q_in_dn",
+				"q_in_63",
+				"q_in_90",
 				"p_actual_hv",
-				"q_actual_hv",
-				"f_actual_hv",
-				"v_actual_hv",
-				"pf_actual_hv"
+				"q_actual_hv"
 			])
 	
 	def write_data(self, obj, start_time):
@@ -27,13 +26,12 @@ class logFile_class():
 			self.writer = csv.writer(csvfile, delimiter=',', escapechar=' ', quoting=csv.QUOTE_NONE)
 			self.writer.writerow([
 				str(round(time.time()-start_time, 3)),
-				str(round(obj.p_ex_sp, 3)),
-				str(round(obj.q_ex_sp, 3)),
-				str(round(obj.v_ex_sp, 3)),
-				str(round(obj.pf_ex_sp, 3)),
+				str(round(obj.p_in_sp, 3)),
+				str(round(obj.q_in_sp, 3)),
+				str(round(obj.q_in_sp + 0.05*obj.delta_q, 3)),
+				str(round(obj.q_in_sp - 0.05*obj.delta_q, 3)),
+				str(round(obj.q_in_sp - 0.378*obj.delta_q, 3)),
+				str(round(obj.q_in_sp - 0.10*obj.delta_q, 3)),
 				str(round(obj.p_actual_hv, 3)),
-				str(round(obj.q_actual_hv, 3)),
-				str(round(obj.f_actual, 3)),
-				str(round(obj.v_actual, 3)),
-				str(round(obj.pf_actual, 3))
+				str(round(obj.q_actual_hv, 3))
 			])

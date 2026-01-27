@@ -135,6 +135,8 @@ class PPC_master_class:
 		# Previous setpoints with PID
 		self.prev_p_pid_sp = 0
 		self.prev_q_pid_sp = 0
+		# Reactive power step change
+		self.delta_q = 0
 		# ----------------------- Measurements -------------------------------------
 		# HV meter
 		self.p_actual_hv = 0
