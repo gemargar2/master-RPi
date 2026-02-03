@@ -38,7 +38,7 @@ def controller_loop(ppc_master_obj, window_obj):
 		# print(f'control eta = {control_eta}')
 		wait_time = sampling_period-control_eta
 		# print(f'wait time = {wait_time}')
-		sleep(wait_time)
+		if wait_time >= 0: sleep(wait_time)
 
 def main():
 	# Configuration file = initialize PPC
@@ -64,8 +64,8 @@ def main():
 	send_messages.start()
 	control = threading.Thread(target = controller_loop, args=(ppc_master_obj, window_obj))
 	control.start()
-	testApp = threading.Thread(target = test_app, args=(ppc_master_obj, logfile_obj, window_obj))
-	testApp.start()
+	#testApp = threading.Thread(target = test_app, args=(ppc_master_obj, logfile_obj, window_obj))
+	#testApp.start()
 	#recApp = threading.Thread(target = recorder_loop, args=(ppc_master_obj, logfile_obj))
 	#recApp.start()
 	

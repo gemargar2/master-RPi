@@ -60,7 +60,7 @@ def controllerCore(window_obj, ppc_master_obj):
 	
 	# 2nd task: for remote level apply setpoint priority (lowest value)
 	# ----- Comment out for testbench --------
-	# ppc_master_obj.setpoint_priority()
+	ppc_master_obj.setpoint_priority()
 	# ----- Comment out for testbench --------
 	
 	# 3rd task: Specify the setpoint

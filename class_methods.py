@@ -35,6 +35,7 @@ def connect_to_slaves(self):
 
 def initialize_setpoints(self):
 	# ------ Signal based parameters ---------------------------
+	self.local_remote = self.memory["local_remote"]
 	# Local setpoints (SCADA)
 	self.local_P_sp = self.memory["local_setpoints"]["local_P_sp"]
 	self.local_Q_sp = self.memory["local_setpoints"]["local_Q_sp"]

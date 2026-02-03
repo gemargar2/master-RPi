@@ -3,6 +3,13 @@ import time
 import threading
 from limit import *
 
+def local_remote_func(ppc_master_obj, var):
+	ppc_master_obj.local_remote = var
+	# Store the last setpoint to memory
+	ppc_master_obj.memory["local_remote"] = var
+	with open("memory.json", "w") as f:
+		json.dump(ppc_master_obj.memory, f)
+
 # ----------------------- Local setpoints ------------------------------------
 
 def local_P_setpoint(ppc_master_obj, window_obj, var):
