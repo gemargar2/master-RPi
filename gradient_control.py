@@ -89,10 +89,10 @@ q_integral = 0
 def P_control(p_grad_sp, prev_p_grad_sp, ppc_master_obj):
 	global p_integral, p_prev_error
 	# Parameters
-	kp = ppc_master_obj.p_kp   # Proportional gain
-	ki = ppc_master_obj.p_ki   # Integral gain
-	kd = ppc_master_obj.p_kd   # Derivative gain
-	dt = ppc_master_obj.p_dt   # 100 ms
+	kp = ppc_master_obj.p_pid.kp   # Proportional gain
+	ki = ppc_master_obj.p_pid.ki   # Integral gain
+	kd = ppc_master_obj.p_pid.kd   # Derivative gain
+	dt = ppc_master_obj.p_pid.dt   # 100 ms
 	# Power control model
 	p_control, p_error, p_integral = p_pid_controller(p_grad_sp, ppc_master_obj.p_actual_hv, kp, ki, kd, p_prev_error, p_integral, dt)
 	p_pid_sp = prev_p_grad_sp + p_control * dt
@@ -111,10 +111,10 @@ def P_control(p_grad_sp, prev_p_grad_sp, ppc_master_obj):
 def Q_control(q_grad_sp, prev_q_grad_sp, ppc_master_obj):
 	global q_integral, q_prev_error
 	# Parameters
-	kp = ppc_master_obj.q_kp   # Proportional gain
-	ki = ppc_master_obj.q_ki   # Integral gain
-	kd = ppc_master_obj.q_kd   # Derivative gain
-	dt = ppc_master_obj.q_dt   # 100 ms
+	kp = ppc_master_obj.q_pid.kp   # Proportional gain
+	ki = ppc_master_obj.q_pid.ki   # Integral gain
+	kd = ppc_master_obj.q_pid.kd   # Derivative gain
+	dt = ppc_master_obj.q_pid.dt   # 100 ms
 	# Power control model
 	q_control, q_error, q_integral = q_pid_controller(q_grad_sp, ppc_master_obj.q_actual_hv, kp, ki, kd, q_prev_error, q_integral, dt)
 	q_pid_sp = prev_q_grad_sp + q_control * dt

@@ -162,28 +162,28 @@ def local_MPPT_gradient_setpoint(ppc_master_obj, var):
 # ---------------- P PID parameters ------------------------------------
 
 def set_p_kp(ppc_master_obj, var):
-	ppc_master_obj.p_kp = var
+	ppc_master_obj.p_pid.kp = var
 	# Store into memory.json
 	ppc_master_obj.memory["P_PID_parameters"]["p_kp"] = var
 	with open("memory.json", "w") as f:
 		json.dump(ppc_master_obj.memory, f)
 
 def set_p_ki(ppc_master_obj, var):
-	ppc_master_obj.p_ki = var
+	ppc_master_obj.p_pid.ki = var
 	# Store into memory.json
 	ppc_master_obj.memory["P_PID_parameters"]["p_ki"] = var
 	with open("memory.json", "w") as f:
 		json.dump(ppc_master_obj.memory, f)
 		
 def set_p_kd(ppc_master_obj, var):
-	ppc_master_obj.p_kd = var
+	ppc_master_obj.p_pid.kd = var
 	# Store into memory.json
 	ppc_master_obj.memory["P_PID_parameters"]["p_kd"] = var
 	with open("memory.json", "w") as f:
 		json.dump(ppc_master_obj.memory, f)
 
 def set_p_dt(ppc_master_obj, var):
-	ppc_master_obj.p_dt = var
+	ppc_master_obj.p_pid.dt = var
 	# Store into memory.json
 	ppc_master_obj.memory["P_PID_parameters"]["p_dt"] = var
 	with open("memory.json", "w") as f:
@@ -192,28 +192,28 @@ def set_p_dt(ppc_master_obj, var):
 # ---------------- Q PID parameters ------------------------------------
 
 def set_q_kp(ppc_master_obj, var):
-	ppc_master_obj.q_kp = var
+	ppc_master_obj.q_pid.kp = var
 	# Store into memory.json
 	ppc_master_obj.memory["Q_PID_parameters"]["q_kp"] = var
 	with open("memory.json", "w") as f:
 		json.dump(ppc_master_obj.memory, f)
 
 def set_q_ki(ppc_master_obj, var):
-	ppc_master_obj.q_ki = var
+	ppc_master_obj.q_pid.ki = var
 	# Store into memory.json
 	ppc_master_obj.memory["Q_PID_parameters"]["q_ki"] = var
 	with open("memory.json", "w") as f:
 		json.dump(ppc_master_obj.memory, f)
 		
 def set_q_kd(ppc_master_obj, var):
-	ppc_master_obj.q_kd = var
+	ppc_master_obj.q_pid.kd = var
 	# Store into memory.json
 	ppc_master_obj.memory["Q_PID_parameters"]["q_kd"] = var
 	with open("memory.json", "w") as f:
 		json.dump(ppc_master_obj.memory, f)
 
 def set_q_dt(ppc_master_obj, var):
-	ppc_master_obj.q_dt = var
+	ppc_master_obj.q_pid.dt = var
 	# Store into memory.json
 	ppc_master_obj.memory["Q_PID_parameters"]["q_dt"] = var
 	with open("memory.json", "w") as f:

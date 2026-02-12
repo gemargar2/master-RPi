@@ -83,15 +83,9 @@ class PPC_master_class:
 		self.F_grad = 0
 		self.MPPT_grad = 0
 		# P control PID parameters
-		self.p_kp = 0
-		self.p_ki = 0
-		self.p_kd = 0
-		self.p_dt = 0
-		# P control PID parameters
-		self.q_kp = 0
-		self.q_ki = 0
-		self.q_kd = 0
-		self.q_dt = 0
+		self.p_pid = pid_params()
+		# Q control PID parameters
+		self.q_pid = pid_params()
 		# Simulation variables
 		self.f_disturbance = 50 # Nominal Frequency = 50 Hz
 		self.v_disturbance = 1 # Nominal Voltage = 1 p.u

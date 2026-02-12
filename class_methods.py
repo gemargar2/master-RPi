@@ -73,15 +73,15 @@ def initialize_setpoints(self):
 		self.F_grad = self.configdata["PPC_parameters"]["power_gradients"]["F_grad"] # p.u/sample
 		self.MPPT_grad = self.configdata["PPC_parameters"]["power_gradients"]["MPPT_grad"] # p.u/sample
 		# P control PID parameters
-		self.p_kp = self.configdata["PPC_parameters"]["P_PID_parameters"]["p_kp"] # Proportional gain
-		self.p_ki = self.configdata["PPC_parameters"]["P_PID_parameters"]["p_ki"] # Integral gain
-		self.p_kd = self.configdata["PPC_parameters"]["P_PID_parameters"]["p_kd"] # Derivative gain
-		self.p_dt = self.configdata["PPC_parameters"]["P_PID_parameters"]["p_dt"] # Integration/Derivation time constant
+		self.p_pid.kp = self.configdata["PPC_parameters"]["P_PID_parameters"]["p_kp"] # Proportional gain
+		self.p_pid.ki = self.configdata["PPC_parameters"]["P_PID_parameters"]["p_ki"] # Integral gain
+		self.p_pid.kd = self.configdata["PPC_parameters"]["P_PID_parameters"]["p_kd"] # Derivative gain
+		self.p_pid.dt = self.configdata["PPC_parameters"]["P_PID_parameters"]["p_dt"] # Integration/Derivation time constant
 		# P control PID parameters
-		self.q_kp = self.configdata["PPC_parameters"]["Q_PID_parameters"]["q_kp"] # Proportional gain
-		self.q_ki = self.configdata["PPC_parameters"]["Q_PID_parameters"]["q_ki"] # Integral gain
-		self.q_kd = self.configdata["PPC_parameters"]["Q_PID_parameters"]["q_kd"] # Derivative gain
-		self.q_dt = self.configdata["PPC_parameters"]["Q_PID_parameters"]["q_dt"] # Integration/Derivation time constant
+		self.q_pid.kp = self.configdata["PPC_parameters"]["Q_PID_parameters"]["q_kp"] # Proportional gain
+		self.q_pid.ki = self.configdata["PPC_parameters"]["Q_PID_parameters"]["q_ki"] # Integral gain
+		self.q_pid.kd = self.configdata["PPC_parameters"]["Q_PID_parameters"]["q_kd"] # Derivative gain
+		self.q_pid.dt = self.configdata["PPC_parameters"]["Q_PID_parameters"]["q_dt"] # Integration/Derivation time constant
 		# P(f)
 		self.s_FSM = self.configdata["PPC_parameters"]["P(f)_curve"]["s_FSM"]
 		self.s_LFSM_O = self.configdata["PPC_parameters"]["P(f)_curve"]["s_LFSM_O"]
@@ -95,15 +95,15 @@ def initialize_setpoints(self):
 		self.F_grad = self.memory["power_gradients"]["F_grad"] # p.u/sample
 		self.MPPT_grad = self.memory["power_gradients"]["MPPT_grad"] # p.u/sample
 		# P control PID parameters
-		self.p_kp = self.memory["P_PID_parameters"]["p_kp"] # Proportional gain
-		self.p_ki = self.memory["P_PID_parameters"]["p_ki"] # Integral gain
-		self.p_kd = self.memory["P_PID_parameters"]["p_kd"] # Derivative gain
-		self.p_dt = self.memory["P_PID_parameters"]["p_dt"] # Integration/Derivation time constant
+		self.p_pid.kp = self.memory["P_PID_parameters"]["p_kp"] # Proportional gain
+		self.p_pid.ki = self.memory["P_PID_parameters"]["p_ki"] # Integral gain
+		self.p_pid.kd = self.memory["P_PID_parameters"]["p_kd"] # Derivative gain
+		self.p_pid.dt = self.memory["P_PID_parameters"]["p_dt"] # Integration/Derivation time constant
 		# P control PID parameters
-		self.q_kp = self.memory["Q_PID_parameters"]["q_kp"] # Proportional gain
-		self.q_ki = self.memory["Q_PID_parameters"]["q_ki"] # Integral gain
-		self.q_kd = self.memory["Q_PID_parameters"]["q_kd"] # Derivative gain
-		self.q_dt = self.memory["Q_PID_parameters"]["q_dt"] # Integration/Derivation time constant
+		self.q_pid.kp = self.memory["Q_PID_parameters"]["q_kp"] # Proportional gain
+		self.q_pid.ki = self.memory["Q_PID_parameters"]["q_ki"] # Integral gain
+		self.q_pid.kd = self.memory["Q_PID_parameters"]["q_kd"] # Derivative gain
+		self.q_pid.dt = self.memory["Q_PID_parameters"]["q_dt"] # Integration/Derivation time constant
 		# P(f)
 		self.s_FSM = self.memory["P(f)_curve"]["s_FSM"]
 		self.s_LFSM_O = self.memory["P(f)_curve"]["s_LFSM_O"]
