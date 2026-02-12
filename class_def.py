@@ -1,6 +1,7 @@
 import zmq
 import time
 import threading
+from aux_classes import *
 from numpy import zeros
 from V_control import *
 from class_methods import *
@@ -66,10 +67,11 @@ class PPC_master_class:
 		# Main switch position
 		self.main_switch_pos = 1 # 0 = Open / 1 = Closed
 		# Local setpoints (SCADA)
-		self.local_P_sp = 0
-		self.local_Q_sp = 0
-		self.local_PF_sp = 1
-		self.local_V_sp = 1
+		self.local_sp = local_setpoints()
+		#self.local_P_sp = 0
+		#self.local_Q_sp = 0
+		#self.local_PF_sp = 1
+		#self.local_V_sp = 1
 		# Remote setpoints (TSO vs FOSE)
 		self.remote_P_sp = 0
 		self.remote_Q_sp = 0
