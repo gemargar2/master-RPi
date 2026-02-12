@@ -63,7 +63,7 @@ def receive_signals(ppc_master_obj, window_obj):
 		
 		# Check for local / remote signal
 		if message['origin'] == 'localPlatform':
-			if message['value_name'] == 'Local_Remote': local_remote_func(int(message['value']))
+			if message['value_name'] == 'Local_Remote': local_remote_func(ppc_master_obj, int(message['value']))
 			if ppc_master_obj.local_remote == 0: window_obj.fig.suptitle('Master PPC: Local')
 			else: window_obj.fig.suptitle('Master PPC: Remote')
 		
