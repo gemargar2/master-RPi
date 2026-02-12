@@ -272,22 +272,22 @@ def test11(obj):
 
 def test17(obj):
 	# Local = SCADA / Remote = TSO/FOSE
-	self.local_remote = 1 # 1 = Remote
+	obj.local_remote = 1 # 1 = Remote
 	# Network Operator and 3rd party setpoints (TSO)
 	print("Step 1: TSO=100% / FOSE=100%")
-	self.tso_P_sp = 1
-	self.fose_P_sp = 1
+	obj.tso_P_sp = 1
+	obj.fose_P_sp = 1
 	sleep(step_time)
 	print("Step 1: TSO=60% / FOSE=100%")
-	self.tso_P_sp = 0.6
-	self.fose_P_sp = 1
+	obj.tso_P_sp = 0.6
+	obj.fose_P_sp = 1
 	sleep(step_time)
 	print("Step 2: TSO=60% / FOSE=30%")
-	self.tso_P_sp = 0.6
-	self.fose_P_sp = 0.3
+	obj.tso_P_sp = 0.6
+	obj.fose_P_sp = 0.3
 	sleep(step_time)
 	print("Step 3: TSO=0% / FOSE=30%")
-	self.tso_P_sp = 0
-	self.fose_P_sp = 0.3
+	obj.tso_P_sp = 0
+	obj.fose_P_sp = 0.3
 	sleep(step_time)
 	

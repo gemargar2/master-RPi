@@ -1,5 +1,6 @@
 # Connect to slaves
 import zmq
+import traceback
 
 def set_start_zero(self):
 	message1 = { "destination": "localPlatform", "value": "0", "value_name": "Start" }
@@ -37,10 +38,10 @@ def initialize_setpoints(self):
 	# ------ Signal based parameters ---------------------------
 	self.local_remote = self.memory["local_remote"]
 	# Local setpoints (SCADA)
-	self.local_P_sp = self.memory["local_setpoints"]["local_P_sp"]
-	self.local_Q_sp = self.memory["local_setpoints"]["local_Q_sp"]
-	self.local_PF_sp = self.memory["local_setpoints"]["local_PF_sp"]
-	self.local_V_sp = self.memory["local_setpoints"]["local_V_sp"]
+	self.local_setpoints.P_sp = self.memory["local_setpoints"]["local_P_sp"]
+	self.local_setpoints.Q_sp = self.memory["local_setpoints"]["local_Q_sp"]
+	self.local_setpoints.PF_sp = self.memory["local_setpoints"]["local_PF_sp"]
+	self.local_setpoints.V_sp = self.memory["local_setpoints"]["local_V_sp"]
 	# Network operator setpoints (TSO)
 	self.tso_P_sp = self.memory["tso_setpoints"]["tso_P_sp"]
 	self.tso_Q_sp = self.memory["tso_setpoints"]["tso_Q_sp"]
@@ -116,11 +117,11 @@ def setpoint_priority(self):
 		# Local setpoints
 		if self.local_remote == 0:
 			if self.p_mode == 3: value = self.max_P_cap
-			else: value = self.local_P_sp
+			else: value = self.local_setpoints.P_sp
 			self.p_ex_sp = value
-			self.q_ex_sp = self.local_Q_sp
-			self.v_ex_sp = self.local_V_sp
-			self.pf_ex_sp = self.local_PF_sp
+			self.q_ex_sp = self.local_setpoints.Q_sp
+			self.v_ex_sp = self.local_setpoints.V_sp
+			self.pf_ex_sp = self.local_setpoints.PF_sp
 		
 		# Remote setpoints
 		elif self.local_remote == 1:

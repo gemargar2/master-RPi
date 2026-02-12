@@ -13,7 +13,7 @@ def populate_vectors(ppc_master_obj):
 	# samples/timestamp	
 	# ------ P plot -------
 	# P remote setpoints
-	ppc_master_obj.p_scada_sp.append(ppc_master_obj.local_P_sp)
+	ppc_master_obj.p_scada_sp.append(ppc_master_obj.local_setpoints.P_sp)
 	ppc_master_obj.p_tso_sp.append(ppc_master_obj.tso_P_sp)
 	ppc_master_obj.p_fose_sp.append(ppc_master_obj.fose_P_sp)
 	# P internal setpoints
@@ -32,7 +32,7 @@ def populate_vectors(ppc_master_obj):
 		
 	# ------ Q plot -------
 	# Q remote setpoints
-	ppc_master_obj.q_scada_sp.append(ppc_master_obj.local_Q_sp)
+	ppc_master_obj.q_scada_sp.append(ppc_master_obj.local_setpoints.Q_sp)
 	ppc_master_obj.q_tso_sp.append(ppc_master_obj.tso_Q_sp)
 	ppc_master_obj.q_fose_sp.append(ppc_master_obj.fose_Q_sp)
 	# Q internal setpoints
