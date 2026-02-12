@@ -16,9 +16,9 @@ def local_P_setpoint(ppc_master_obj, window_obj, var):
 	# Convert to p.u
 	var = var/ppc_master_obj.S_nom
 	# Update ppc_master_obj variable
-	ppc_master_obj.local_setpoints.P_sp = var # store as per-unit
+	ppc_master_obj.local_sp.P_sp = var # store as per-unit
 	# Store the last setpoint to memory
-	ppc_master_obj.memory["local_setpoints"]["local_P_sp"] = round(var, 3)
+	ppc_master_obj.memory["local_sp"]["local_P_sp"] = round(var, 3)
 	with open("memory.json", "w") as f:
 		json.dump(ppc_master_obj.memory, f)
 	# Update active setpoints
@@ -28,9 +28,9 @@ def local_Q_setpoint(ppc_master_obj, window_obj, var):
 	# Convert to p.u
 	var = var/ppc_master_obj.S_nom
 	# Update ppc_master_obj variable
-	ppc_master_obj.local_setpoins.Q_sp = var # store as per-unit
+	ppc_master_obj.local_sp.Q_sp = var # store as per-unit
 	# Store the last setpoint to memory
-	ppc_master_obj.memory["local_setpoints"]["local_Q_sp"] = round(var, 3)
+	ppc_master_obj.memory["local_sp"]["local_Q_sp"] = round(var, 3)
 	with open("memory.json", "w") as f:
 		json.dump(ppc_master_obj.memory, f)
 	# Update active setpoints
@@ -40,9 +40,9 @@ def local_Q_setpoint(ppc_master_obj, window_obj, var):
 
 def local_PF_setpoint(ppc_master_obj, var):
 	# Set new setpoint
-	ppc_master_obj.local_setpoins.PF_sp = var
+	ppc_master_obj.local_sp.PF_sp = var
 	# Store the last setpoint to memory
-	ppc_master_obj.memory["local_setpoints"]["local_PF_sp"] = round(var, 3)
+	ppc_master_obj.memory["local_sp"]["local_PF_sp"] = round(var, 3)
 	with open("memory.json", "w") as f:
 		json.dump(ppc_master_obj.memory, f)
 	# Update active setpoints
@@ -52,9 +52,9 @@ def local_V_setpoint(ppc_master_obj, window_obj, var):
 	# Convert to p.u
 	var = var/ppc_master_obj.V_nom
 	# Update ppc_master_obj variable
-	ppc_master_obj.local_setpoins.V_sp = var
+	ppc_master_obj.local_sp.V_sp = var
 	# Store the last setpoint to memory
-	ppc_master_obj.memory["local_setpoints"]["local_V_sp"] = round(var, 3)
+	ppc_master_obj.memory["local_sp"]["local_V_sp"] = round(var, 3)
 	with open("memory.json", "w") as f:
 		json.dump(ppc_master_obj.memory, f)
 	# Update active setpoints
@@ -225,7 +225,7 @@ def tso_P_setpoint(ppc_master_obj, var):
 	# Convert to p.u
 	var = var/ppc_master_obj.S_nom
 	# Update ppc_master_obj variable
-	ppc_master_obj.tso_P_sp = var # store as per-unit
+	ppc_master_obj.tso_sp.P_sp = var # store as per-unit
 	# Store the last setpoint to memory
 	ppc_master_obj.memory["tso_setpoints"]["tso_P_sp"] = round(var, 3)
 	with open("memory.json", "w") as f:
@@ -236,7 +236,7 @@ def tso_Q_setpoint(ppc_master_obj, window_obj, var):
 	# Convert to p.u
 	var = var/ppc_master_obj.S_nom
 	# Update ppc_master_obj variable
-	ppc_master_obj.tso_Q_sp = var # store as per-unit
+	ppc_master_obj.tso_sp.Q_sp = var # store as per-unit
 	# Store the last setpoint to memory
 	ppc_master_obj.memory["tso_setpoints"]["tso_Q_sp"] = round(var, 3)
 	with open("memory.json", "w") as f:
@@ -246,7 +246,7 @@ def tso_Q_setpoint(ppc_master_obj, window_obj, var):
 
 def tso_PF_setpoint(ppc_master_obj, var):
 	# Set new setpoint
-	ppc_master_obj.tso_PF_sp = var
+	ppc_master_obj.tso_sp.PF_sp = var
 	# Store the last setpoint to memory
 	ppc_master_obj.memory["tso_setpoints"]["tso_PF_sp"] = round(var, 3)
 	with open("memory.json", "w") as f:
@@ -257,7 +257,7 @@ def tso_V_setpoint(ppc_master_obj, window_obj, var):
 	# Convert to p.u
 	var = var/ppc_master_obj.V_nom
 	# Update ppc_master_obj variable
-	ppc_master_obj.tso_V_sp = var # store as per-unit
+	ppc_master_obj.tso_sp.V_sp = var # store as per-unit
 	# Store the last setpoint to memory
 	ppc_master_obj.memory["tso_setpoints"]["tso_V_sp"] = round(var, 3)
 	with open("memory.json", "w") as f:
@@ -272,7 +272,7 @@ def fose_P_setpoint(ppc_master_obj, var):
 	# Convert to p.u
 	var = var/ppc_master_obj.S_nom
 	# Update ppc_master_obj variable
-	ppc_master_obj.fose_P_sp = var # store as per-unit
+	ppc_master_obj.fose_sp.P_sp = var # store as per-unit
 	# Store the last setpoint to memory
 	ppc_master_obj.memory["fose_setpoints"]["fose_P_sp"] = round(var, 3)
 	with open("memory.json", "w") as f:
@@ -283,7 +283,7 @@ def fose_Q_setpoint(ppc_master_obj, window_obj, var):
 	# Convert to p.u
 	var = var/ppc_master_obj.S_nom
 	# Update ppc_master_obj variable
-	ppc_master_obj.fose_Q_sp = var # store as per-unit
+	ppc_master_obj.fose_sp.Q_sp = var # store as per-unit
 	# Store the last setpoint to memory
 	ppc_master_obj.memory["fose_setpoints"]["fose_Q_sp"] = round(var, 3)
 	with open("memory.json", "w") as f:
@@ -293,7 +293,7 @@ def fose_Q_setpoint(ppc_master_obj, window_obj, var):
 
 def fose_PF_setpoint(ppc_master_obj, var):
 	# Set new setpoint
-	ppc_master_obj.fose_PF_sp = var
+	ppc_master_obj.fose_sp.PF_sp = var
 	# Store the last setpoint to memory
 	ppc_master_obj.memory["fose_setpoints"]["fose_PF_sp"] = round(var, 3)
 	with open("memory.json", "w") as f:
@@ -304,7 +304,7 @@ def fose_V_setpoint(ppc_master_obj, window_obj, var):
 	# Convert to p.u
 	var = var/ppc_master_obj.V_nom
 	# Update ppc_master_obj variable
-	ppc_master_obj.fose_V_sp = var # store as per-unit
+	ppc_master_obj.fose_sp.V_sp = var # store as per-unit
 	# Store the last setpoint to memory
 	ppc_master_obj.memory["fose_setpoints"]["fose_V_sp"] = round(var, 3)
 	with open("memory.json", "w") as f:

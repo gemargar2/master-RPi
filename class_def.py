@@ -67,26 +67,13 @@ class PPC_master_class:
 		# Main switch position
 		self.main_switch_pos = 1 # 0 = Open / 1 = Closed
 		# Local setpoints (SCADA)
-		self.local_sp = local_setpoints()
-		#self.local_P_sp = 0
-		#self.local_Q_sp = 0
-		#self.local_PF_sp = 1
-		#self.local_V_sp = 1
+		self.local_sp = setpoints()
 		# Remote setpoints (TSO vs FOSE)
-		self.remote_P_sp = 0
-		self.remote_Q_sp = 0
-		self.remote_PF_sp = 1
-		self.remote_V_sp = 1
+		self.remote_sp = setpoints()
 		# Network Operator setpoints (TSO)
-		self.tso_P_sp = 0
-		self.tso_Q_sp = 0
-		self.tso_V_sp = 1
-		self.tso_PF_sp = 1
+		self.tso_sp = setpoints()
 		# 3rd party setpoints (FOSE)
-		self.fose_P_sp = 0
-		self.fose_Q_sp = 0
-		self.fose_V_sp = 1
-		self.fose_PF_sp = 1
+		self.fose_sp = setpoints()
 		# Gradient values (setpoint rate of change MW/sec or p.u/sample)
 		# 0.66%*Pbinst/sec = 0.0066/(20*0.05) = 0.000330 p.u/sample
 		# 0.33%*Pbinst/sec = 0.0033/(20*0.05) = 0.000165 p.u/sample

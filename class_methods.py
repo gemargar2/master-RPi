@@ -38,20 +38,20 @@ def initialize_setpoints(self):
 	# ------ Signal based parameters ---------------------------
 	self.local_remote = self.memory["local_remote"]
 	# Local setpoints (SCADA)
-	self.local_setpoints.P_sp = self.memory["local_setpoints"]["local_P_sp"]
-	self.local_setpoints.Q_sp = self.memory["local_setpoints"]["local_Q_sp"]
-	self.local_setpoints.PF_sp = self.memory["local_setpoints"]["local_PF_sp"]
-	self.local_setpoints.V_sp = self.memory["local_setpoints"]["local_V_sp"]
+	self.local_sp.P_sp = self.memory["local_sp"]["local_P_sp"]
+	self.local_sp.Q_sp = self.memory["local_sp"]["local_Q_sp"]
+	self.local_sp.PF_sp = self.memory["local_sp"]["local_PF_sp"]
+	self.local_sp.V_sp = self.memory["local_sp"]["local_V_sp"]
 	# Network operator setpoints (TSO)
-	self.tso_P_sp = self.memory["tso_setpoints"]["tso_P_sp"]
-	self.tso_Q_sp = self.memory["tso_setpoints"]["tso_Q_sp"]
-	self.tso_PF_sp = self.memory["tso_setpoints"]["tso_PF_sp"]
-	self.tso_V_sp = self.memory["tso_setpoints"]["tso_V_sp"]
+	self.tso_sp.P_sp = self.memory["tso_setpoints"]["tso_P_sp"]
+	self.tso_sp.Q_sp = self.memory["tso_setpoints"]["tso_Q_sp"]
+	self.tso_sp.PF_sp = self.memory["tso_setpoints"]["tso_PF_sp"]
+	self.tso_sp.V_sp = self.memory["tso_setpoints"]["tso_V_sp"]
 	# Third Party setpoints (FOSE)
-	self.fose_P_sp = self.memory["fose_setpoints"]["fose_P_sp"]
-	self.fose_Q_sp = self.memory["fose_setpoints"]["fose_Q_sp"]
-	self.fose_PF_sp = self.memory["fose_setpoints"]["fose_PF_sp"]
-	self.fose_V_sp = self.memory["fose_setpoints"]["fose_V_sp"]
+	self.fose_sp.P_sp = self.memory["fose_setpoints"]["fose_P_sp"]
+	self.fose_sp.Q_sp = self.memory["fose_setpoints"]["fose_Q_sp"]
+	self.fose_sp.PF_sp = self.memory["fose_setpoints"]["fose_PF_sp"]
+	self.fose_sp.V_sp = self.memory["fose_setpoints"]["fose_V_sp"]
 	# Memory of the internal setpoints in case of power supply fault
 	self.p_in_sp = self.memory["internal_setpoints"]["p_in_sp"]
 	self.q_in_sp = self.memory["internal_setpoints"]["q_in_sp"]
@@ -117,70 +117,70 @@ def setpoint_priority(self):
 		# Local setpoints
 		if self.local_remote == 0:
 			if self.p_mode == 3: value = self.max_P_cap
-			else: value = self.local_setpoints.P_sp
+			else: value = self.local_sp.P_sp
 			self.p_ex_sp = value
-			self.q_ex_sp = self.local_setpoints.Q_sp
-			self.v_ex_sp = self.local_setpoints.V_sp
-			self.pf_ex_sp = self.local_setpoints.PF_sp
+			self.q_ex_sp = self.local_sp.Q_sp
+			self.v_ex_sp = self.local_sp.V_sp
+			self.pf_ex_sp = self.local_sp.PF_sp
 		
 		# Remote setpoints
 		elif self.local_remote == 1:
 			if self.p_mode == 3:
-				self.remote_P_sp = self.max_P_cap
+				self.remote_sp.P_sp = self.max_P_cap
 			else:
 				# Both negative
-				if self.tso_P_sp < 0 and self.fose_P_sp < 0:
+				if self.tso_sp.P_sp < 0 and self.fose_sp.P_sp < 0:
 					if printMessages: print("Both negative")
 					self.tso_none_flag = True
-					self.remote_P_sp = self.local_P_sp
-					self.remote_Q_sp = self.local_Q_sp
-					self.remote_V_sp = self.local_V_sp
-					self.remote_PF_sp = self.local_PF_sp
+					self.remote_sp.P_sp = self.local_sp.P_sp
+					self.remote_sp.Q_sp = self.local_sp.Q_sp
+					self.remote_sp.V_sp = self.local_sp.V_sp
+					self.remote_sp.PF_sp = self.local_sp.PF_sp
 				# One positive one negative
-				elif self.tso_P_sp < 0 and self.fose_P_sp > 0:
-					if printMessages: print(f"tso={self.tso_P_sp}<0 / fose={self.fose_P_sp}>0")
+				elif self.tso_sp.P_sp < 0 and self.fose_sp.P_sp > 0:
+					if printMessages: print(f"tso={self.tso_sp.P_sp}<0 / fose={self.fose_sp.P_sp}>0")
 					self.tso_none_flag = True
-					self.remote_P_sp = self.fose_P_sp
-					self.remote_Q_sp = self.fose_Q_sp
-					self.remote_V_sp = self.fose_V_sp
-					self.remote_PF_sp = self.fose_PF_sp
-				elif self.tso_P_sp > 0 and self.fose_P_sp < 0:
-					if printMessages: print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}<0")
+					self.remote_sp.P_sp = self.fose_sp.P_sp
+					self.remote_sp.Q_sp = self.fose_sp.Q_sp
+					self.remote_sp.V_sp = self.fose_sp.V_sp
+					self.remote_sp.PF_sp = self.fose_sp.PF_sp
+				elif self.tso_sp.P_sp > 0 and self.fose_sp.P_sp < 0:
+					if printMessages: print(f"tso={self.tso_sp.P_sp}>0 / fose={self.fose_sp.P_sp}<0")
 					self.tso_none_flag = False
-					self.remote_P_sp = self.tso_P_sp
-					self.remote_Q_sp = self.tso_Q_sp
-					self.remote_V_sp = self.tso_V_sp
-					self.remote_PF_sp = self.tso_PF_sp
+					self.remote_sp.P_sp = self.tso_sp.P_sp
+					self.remote_sp.Q_sp = self.tso_sp.Q_sp
+					self.remote_sp.V_sp = self.tso_sp.V_sp
+					self.remote_sp.PF_sp = self.tso_sp.PF_sp
 				# Both setpoints are positive
-				elif self.tso_P_sp <= self.fose_P_sp:
-					if printMessages: print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}>0")
+				elif self.tso_sp.P_sp <= self.fose_sp.P_sp:
+					if printMessages: print(f"tso={self.tso_sp.P_sp}>0 / fose={self.fose_sp.P_sp}>0")
 					if printMessages: print("0<tso<fose")
 					self.tso_none_flag = False
-					self.remote_P_sp = self.tso_P_sp
-					self.remote_Q_sp = self.tso_Q_sp
-					self.remote_V_sp = self.tso_V_sp
-					self.remote_PF_sp = self.tso_PF_sp
-				elif self.fose_P_sp <= self.tso_P_sp:
-					if printMessages: print(f"tso={self.tso_P_sp}>0 / fose={self.fose_P_sp}>0")
+					self.remote_sp.P_sp = self.tso_sp.P_sp
+					self.remote_sp.Q_sp = self.tso_sp.Q_sp
+					self.remote_sp.V_sp = self.tso_sp.V_sp
+					self.remote_sp.PF_sp = self.tso_sp.PF_sp
+				elif self.fose_sp.P_sp <= self.tso_sp.P_sp:
+					if printMessages: print(f"tso={self.tso_sp.P_sp}>0 / fose={self.fose_sp.P_sp}>0")
 					self.tso_none_flag = False
 					if self.lfsm_flag and not(self.vde4130_flag):
 						if printMessages: print(f"Under LFSM mode TSO has the absolute priority")
-						self.remote_P_sp = self.tso_P_sp
-						self.remote_Q_sp = self.tso_Q_sp
-						self.remote_V_sp = self.tso_V_sp
-						self.remote_PF_sp = self.tso_PF_sp
+						self.remote_sp.P_sp = self.tso_sp.P_sp
+						self.remote_sp.Q_sp = self.tso_sp.Q_sp
+						self.remote_sp.V_sp = self.tso_sp.V_sp
+						self.remote_sp.PF_sp = self.tso_sp.PF_sp
 					else:
 						if printMessages: print("0<fose<tso")
-						self.remote_P_sp = self.fose_P_sp
-						self.remote_Q_sp = self.fose_Q_sp
-						self.remote_V_sp = self.fose_V_sp
-						self.remote_PF_sp = self.fose_PF_sp
+						self.remote_sp.P_sp = self.fose_sp.P_sp
+						self.remote_sp.Q_sp = self.fose_sp.Q_sp
+						self.remote_sp.V_sp = self.fose_sp.V_sp
+						self.remote_sp.PF_sp = self.fose_sp.PF_sp
 				else:
 					pass
 			
 			# Remote setpoint
-			self.p_ex_sp = self.remote_P_sp
-			self.q_ex_sp = self.remote_Q_sp
-			self.v_ex_sp = self.remote_V_sp
-			self.pf_ex_sp = self.remote_PF_sp
+			self.p_ex_sp = self.remote_sp.P_sp
+			self.q_ex_sp = self.remote_sp.Q_sp
+			self.v_ex_sp = self.remote_sp.V_sp
+			self.pf_ex_sp = self.remote_sp.PF_sp
 			

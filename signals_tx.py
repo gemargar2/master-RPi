@@ -51,8 +51,8 @@ def send_HV_quantities(ppc_master_obj):
 # --- Running setpoints --------------------------------------
 
 def send_actual_setpoints(ppc_master_obj):
-	var1 = ppc_master_obj.p_in_sp*ppc_master_obj.S_nom
-	var2 = ppc_master_obj.q_in_sp*ppc_master_obj.S_nom
+	var1 = ppc_master_obj.p_in_sp * ppc_master_obj.S_nom
+	var2 = ppc_master_obj.q_in_sp * ppc_master_obj.S_nom
 	message1 = { "destination": "localPlatform", "value_name": "actual_P_setpoint", "value": str(var1) }
 	message2 = { "destination": "localPlatform", "value_name": "actual_Q_setpoint", "value": str(var2) }
 	try:
@@ -65,10 +65,10 @@ def send_actual_setpoints(ppc_master_obj):
 # --- TSO setpoints -----------------------------------------
 
 def send_remote_setpoints(ppc_master_obj):
-	var1 = ppc_master_obj.remote_P_sp*ppc_master_obj.S_nom
-	var2 = ppc_master_obj.remote_Q_sp*ppc_master_obj.S_nom
-	var3 = ppc_master_obj.remote_PF_sp
-	var4 = ppc_master_obj.remote_V_sp*ppc_master_obj.V_nom
+	var1 = ppc_master_obj.remote_sp.P_sp * ppc_master_obj.S_nom
+	var2 = ppc_master_obj.remote_sp.Q_sp * ppc_master_obj.S_nom
+	var3 = ppc_master_obj.remote_sp.PF_sp
+	var4 = ppc_master_obj.remote_sp.V_sp * ppc_master_obj.V_nom
 	message1 = { "destination": "localPlatform", "value_name": "P_setpoint_remote", "value": str(var1) }
 	message2 = { "destination": "localPlatform", "value_name": "Q_setpoint_remote", "value": str(var2) }
 	message3 = { "destination": "localPlatform", "value_name": "PF_setpoint_remote", "value": str(var3) }

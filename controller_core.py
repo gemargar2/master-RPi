@@ -13,9 +13,9 @@ def populate_vectors(ppc_master_obj):
 	# samples/timestamp	
 	# ------ P plot -------
 	# P remote setpoints
-	ppc_master_obj.p_scada_sp.append(ppc_master_obj.local_setpoints.P_sp)
-	ppc_master_obj.p_tso_sp.append(ppc_master_obj.tso_P_sp)
-	ppc_master_obj.p_fose_sp.append(ppc_master_obj.fose_P_sp)
+	ppc_master_obj.p_scada_sp.append(ppc_master_obj.local_sp.P_sp)
+	ppc_master_obj.p_tso_sp.append(ppc_master_obj.tso_sp.P_sp)
+	ppc_master_obj.p_fose_sp.append(ppc_master_obj.fose_sp.P_sp)
 	# P internal setpoints
 	ppc_master_obj.p_in_sp_data.append(ppc_master_obj.p_in_sp)
 	ppc_master_obj.p_grad_sp_data.append(ppc_master_obj.p_grad_sp)
@@ -32,9 +32,9 @@ def populate_vectors(ppc_master_obj):
 		
 	# ------ Q plot -------
 	# Q remote setpoints
-	ppc_master_obj.q_scada_sp.append(ppc_master_obj.local_setpoints.Q_sp)
-	ppc_master_obj.q_tso_sp.append(ppc_master_obj.tso_Q_sp)
-	ppc_master_obj.q_fose_sp.append(ppc_master_obj.fose_Q_sp)
+	ppc_master_obj.q_scada_sp.append(ppc_master_obj.local_sp.Q_sp)
+	ppc_master_obj.q_tso_sp.append(ppc_master_obj.tso_sp.Q_sp)
+	ppc_master_obj.q_fose_sp.append(ppc_master_obj.fose_sp.Q_sp)
 	# Q internal setpoints
 	ppc_master_obj.q_in_sp_data.append(ppc_master_obj.q_in_sp)
 	ppc_master_obj.q_grad_sp_data.append(ppc_master_obj.q_grad_sp)
