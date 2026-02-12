@@ -141,6 +141,7 @@ def receive_signals(ppc_master_obj, window_obj):
 		for i in range(ppc_master_obj.numberOfSlaves):
 			label = 'Slave_' + str(i+1)
 			if message['origin'] == label:
+				# print(message)
 				if message['value_name'] == 'Total_Pmax_available': ppc_master_obj.slave_pmax[i] = float(message["value"])
 				elif message['value_name'] == 'Total_Qmax_available': ppc_master_obj.slave_qmax[i] = float(message["value"])
 				elif message['value_name'] == 'Total_Qmin_available': ppc_master_obj.slave_qmin[i] = float(message["value"])
