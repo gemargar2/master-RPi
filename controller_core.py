@@ -84,7 +84,7 @@ def controllerCore(window_obj, ppc_master_obj):
 			if ppc_master_obj.lfsm_pref_flag:
 				window_obj.ax1.set_title('Active power: LFSM-O/U')
 				print("LFSM First time")
-				ppc_master_obj.lfsm_pref = ppc_master_obj.p_actual_hv
+				ppc_master_obj.lfsm_pref = ppc_master_obj.hv_meter.p_actual
 				ppc_master_obj.lfsm_pref_flag = False
 				# ppc_master_obj.fsm_pref_flag = True
 				print(f'LFSM Pref = {ppc_master_obj.lfsm_pref}')
@@ -100,7 +100,7 @@ def controllerCore(window_obj, ppc_master_obj):
 			elif ppc_master_obj.p_mode == 1:
 				if ppc_master_obj.fsm_pref_flag:
 					print("FSM First time")
-					ppc_master_obj.fsm_pref = ppc_master_obj.p_actual_hv
+					ppc_master_obj.fsm_pref = ppc_master_obj.hv_meter.p_actual
 					ppc_master_obj.fsm_pref_flag = False
 					print(f'FSM Pref = {ppc_master_obj.fsm_pref}')
 				window_obj.ax1.set_title('Active power: F control')
