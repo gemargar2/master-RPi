@@ -74,8 +74,8 @@ def send_internal_setpoints(ppc_master_obj, window_obj):
 
 # --- GRID --------------------------------------------------
 def send_external_setpoints(ppc_master_obj):
-	message1 = {"destination": "Grid", "value_name": "p_ex_sp", "value": str(ppc_master_obj.p_ex_sp * ppc_master_obj.S_nom)}
-	message2 = {"destination": "Grid", "value_name": "q_ex_sp", "value": str(ppc_master_obj.q_ex_sp * ppc_master_obj.S_nom)}
+	message1 = {"destination": "Grid", "value_name": "ex_sp.P_sp", "value": str(ppc_master_obj.ex_sp.P_sp * ppc_master_obj.S_nom)}
+	message2 = {"destination": "Grid", "value_name": "ex_sp.Q_sp", "value": str(ppc_master_obj.ex_sp.Q_sp * ppc_master_obj.S_nom)}
 	try:
 		ppc_master_obj.socket_tx.send_json(message1, zmq.NOBLOCK)
 		ppc_master_obj.socket_tx.send_json(message2, zmq.NOBLOCK)

@@ -21,10 +21,10 @@ def test_app(obj, log_obj, window_obj):
 	
 	while True:
 		# Reset park
-		obj.p_ex_sp = 0.75
-		obj.q_ex_sp = 0.0
-		obj.v_ex_sp = 1.0
-		obj.pf_ex_sp = 1.0
+		obj.ex_sp.P_sp = 0.75
+		obj.ex_sp.Q_sp = 0.0
+		obj.ex_sp.V_sp = 1.0
+		obj.ex_sp.PF_sp = 1.0
 		obj.p_mode = 0 # 0 = P control (PID) / 1 = F control (FSM) / 2 = P Open Loop / 3 = MPPT control
 		obj.q_mode = 0 # 0 = Q control (PID) / 1 = Q(P) control / 2 = V control / 3 = PF control / 4 = Q Open Loop / 5 = Q(U) / 6 = Q(U) with limit	
 		print("-------------- SETPOINT COMMANDS TEST MENU ------------------")
@@ -116,152 +116,152 @@ def test00(obj):
 	# Enter the correct mode
 	obj.q_mode = 3 # 3 = PF control
 	print("Step 2: PF = -0.975")
-	obj.pf_ex_sp = -0.95
+	obj.ex_sp.PF_sp = -0.95
 	sleep(step_time)
 
 def test1(obj):
 	# Enter the correct mode
 	obj.q_mode = 3 # 3 = PF control
 	print("Step 1: PF = 1.0")
-	obj.pf_ex_sp = 1
+	obj.ex_sp.PF_sp = 1
 	sleep(step_time)
 	print("Step 2: PF = -0.975")
-	obj.pf_ex_sp = -0.975
+	obj.ex_sp.PF_sp = -0.975
 	sleep(step_time)
 	print("Step 3: PF = -0.95")
-	obj.pf_ex_sp = -0.95
+	obj.ex_sp.PF_sp = -0.95
 	sleep(step_time)
 	print("Step 4: PF = 1.0")
-	obj.pf_ex_sp = 1
+	obj.ex_sp.PF_sp = 1
 	sleep(step_time)
 	print("Step 5: PF = +0.975")
-	obj.pf_ex_sp = 0.975
+	obj.ex_sp.PF_sp = 0.975
 	sleep(step_time)
 	print("Step 6: PF = +0.95")
-	obj.pf_ex_sp = 0.95
+	obj.ex_sp.PF_sp = 0.95
 	sleep(step_time)
 	print("Step 7: PF = +0.99")
-	obj.pf_ex_sp = 0.99
+	obj.ex_sp.PF_sp = 0.99
 	sleep(step_time)
 	print("Finish: PF = 1.0")
-	obj.pf_ex_sp = 1
+	obj.ex_sp.PF_sp = 1
 
 def test3(obj, window_obj):
 	# Enter the correct mode
 	obj.q_mode = 5 # 5 = Q(U) control
 	print("Step 1: V = 1.0 p.u (150 kV)")
-	obj.v_ex_sp = 1
+	obj.ex_sp.V_sp = 1
 	window_obj.plot_QU_curve(obj)
 	sleep(step_time)
 	print("Step 2: V = 0.98 p.u (147 kV)")
-	obj.v_ex_sp = 0.98
+	obj.ex_sp.V_sp = 0.98
 	window_obj.plot_QU_curve(obj)
 	sleep(step_time)
 	print("Step 3: V = 1.02 p.u (153 kV)")
-	obj.v_ex_sp = 1.02
+	obj.ex_sp.V_sp = 1.02
 	window_obj.plot_QU_curve(obj)
 	sleep(step_time)
 	print("Finish: V = 1.0 p.u (150 kV)")
-	obj.v_ex_sp = 1
+	obj.ex_sp.V_sp = 1
 	window_obj.plot_QU_curve(obj)
 
 def test4(obj):
 	# Enter the correct mode
 	obj.q_mode = 1 # 1 = Q(P) control
 	print("Step 1: P = 0.90 p.u (19.98 MW) ")
-	obj.p_ex_sp = 0.9
+	obj.ex_sp.P_sp = 0.9
 	sleep(step_time)
 	print("Step 2: P = 0.75 p.u (16.65 MW) ")
-	obj.p_ex_sp = 0.75
+	obj.ex_sp.P_sp = 0.75
 	sleep(step_time)
 	print("Step 3: P = 0.60 p.u (13.32 MW) ")
-	obj.p_ex_sp = 0.6
+	obj.ex_sp.P_sp = 0.6
 	sleep(step_time)
 	print("Step 4: P = 0.55 p.u (12.21 MW) ")
-	obj.p_ex_sp = 0.55
+	obj.ex_sp.P_sp = 0.55
 	sleep(step_time)
 	print("Step 5: P = 0.50 p.u (11.1 MW) ")
-	obj.p_ex_sp = 0.5
+	obj.ex_sp.P_sp = 0.5
 	sleep(step_time)
 	print("Step 6: P = 0.00 p.u (0.0 MW) ")
-	obj.p_ex_sp = 0
+	obj.ex_sp.P_sp = 0
 	sleep(step_time)
 
 def test5(obj):
 	# Enter the correct mode
 	obj.p_mode = 0 # 0 = P control (PID)
 	print("Step 1: P = 0.90 p.u (19.98 MW) ")
-	obj.p_ex_sp = 0.9
+	obj.ex_sp.P_sp = 0.9
 	sleep(step_time)
 	print("Step 2: P = 0.60 p.u (13.32 MW) ")
-	obj.p_ex_sp = 0.6
+	obj.ex_sp.P_sp = 0.6
 	sleep(step_time)
 	print("Step 3: P = 0.30 p.u (6.66 MW) ")
-	obj.p_ex_sp = 0.3
+	obj.ex_sp.P_sp = 0.3
 	sleep(step_time)
 	print("Step 4: P = 0.00 p.u (0.0 MW) ")
-	obj.p_ex_sp = 0
+	obj.ex_sp.P_sp = 0
 	sleep(step_time)
 
 def test6(obj):
 	# Set the right setpoint
-	obj.p_ex_sp = 0.75
+	obj.ex_sp.P_sp = 0.75
 	# Enter the correct mode
 	obj.q_mode = 3 # 3 = PF control
 	print("Step 1: PF = 1.0")
-	obj.pf_ex_sp = 1
+	obj.ex_sp.PF_sp = 1
 	sleep(step_time)
 	print("Step 2: PF = -0.95")
-	obj.pf_ex_sp = -0.95
+	obj.ex_sp.PF_sp = -0.95
 	sleep(step_time)
 	print("Step 3: PF = +0.95")
-	obj.pf_ex_sp = 0.95
+	obj.ex_sp.PF_sp = 0.95
 	sleep(step_time)
 	print("Step 4: PF = 1.0")
-	obj.pf_ex_sp = 1
+	obj.ex_sp.PF_sp = 1
 	sleep(step_time)
 
 def test9(obj):
 	# Enter the correct mode
 	obj.q_mode = 1 # 1 = Q(P) control
 	print("Step 1: P = 0.92 p.u (20.42 MW) ")
-	obj.p_ex_sp = 0.92
+	obj.ex_sp.P_sp = 0.92
 	sleep(step_time)
 	print("Step 2: P = 0.30 p.u (6.66 MW) ")
-	obj.p_ex_sp = 0.3
+	obj.ex_sp.P_sp = 0.3
 	sleep(step_time)
 
 def test10a(obj):
 	# Enter the correct mode
 	obj.p_mode = 0 # 0 = P control (PID)
 	print("Step 1: P = 0.90 p.u (19.98 MW) ")
-	obj.p_ex_sp = 0.9
+	obj.ex_sp.P_sp = 0.9
 	sleep(step_time)
 	print("Step 2: P = 0.00 p.u (0.0 MW) ")
-	obj.p_ex_sp = 0
+	obj.ex_sp.P_sp = 0
 	sleep(step_time)
 	print("Step 3: P = 0.90 p.u (19.98 MW) ")
-	obj.p_ex_sp = 0.9
+	obj.ex_sp.P_sp = 0.9
 	sleep(step_time)
 
 def test10bc(obj):
 	# Enter the correct mode
 	obj.p_mode = 0 # 0 = P control (PID)
 	print("Step 1: P = 0.70 p.u (15.54 MW) ")
-	obj.p_ex_sp = 0.7
+	obj.ex_sp.P_sp = 0.7
 	sleep(step_time)
 	print("Step 2: P = 0.50 p.u (11.1 MW) ")
-	obj.p_ex_sp = 0.5
+	obj.ex_sp.P_sp = 0.5
 	sleep(step_time)
 	print("Step 3: P = 0.70 p.u (15.54 MW) ")
-	obj.p_ex_sp = 0.7
+	obj.ex_sp.P_sp = 0.7
 	sleep(step_time)
 
 def test11(obj):
 	# Set the right setpoints
-	obj.p_ex_sp = 0.75
-	obj.q_ex_sp = 0
-	obj.v_ex_sp = 1.07
+	obj.ex_sp.P_sp = 0.75
+	obj.ex_sp.Q_sp = 0
+	obj.ex_sp.V_sp = 1.07
 	# Enter the correct mode
 	print("Step 1: Q(U) with limit Qref = 0.0")
 	obj.q_mode = 6 # 6 = Q(U) with limit

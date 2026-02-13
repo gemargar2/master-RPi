@@ -118,10 +118,10 @@ def setpoint_priority(self):
 		if self.local_remote == 0:
 			if self.p_mode == 3: value = self.max_P_cap
 			else: value = self.local_sp.P_sp
-			self.p_ex_sp = value
-			self.q_ex_sp = self.local_sp.Q_sp
-			self.v_ex_sp = self.local_sp.V_sp
-			self.pf_ex_sp = self.local_sp.PF_sp
+			self.ex_sp.P_sp = value
+			self.ex_sp.Q_sp = self.local_sp.Q_sp
+			self.ex_sp.V_sp = self.local_sp.V_sp
+			self.ex_sp.PF_sp = self.local_sp.PF_sp
 		
 		# Remote setpoints
 		elif self.local_remote == 1:
@@ -179,8 +179,8 @@ def setpoint_priority(self):
 					pass
 			
 			# Remote setpoint
-			self.p_ex_sp = self.remote_sp.P_sp
-			self.q_ex_sp = self.remote_sp.Q_sp
-			self.v_ex_sp = self.remote_sp.V_sp
-			self.pf_ex_sp = self.remote_sp.PF_sp
+			self.ex_sp.P_sp = self.remote_sp.P_sp
+			self.ex_sp.Q_sp = self.remote_sp.Q_sp
+			self.ex_sp.V_sp = self.remote_sp.V_sp
+			self.ex_sp.PF_sp = self.remote_sp.PF_sp
 			

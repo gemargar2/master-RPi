@@ -323,7 +323,7 @@ class Window_class:
 	def plot_QU_curve(self, ppc_master_obj):
 		# Q(U) curve (can be modified through the config tool)
 		s = ppc_master_obj.QU_s
-		v_ref = ppc_master_obj.v_ex_sp
+		v_ref = ppc_master_obj.ex_sp.V_sp
 		q_ref = 0
 		q_max = ppc_master_obj.max_Q_cap
 		q_min = ppc_master_obj.min_Q_cap
@@ -346,7 +346,7 @@ class Window_class:
     
 	def plot_QU_limit_curve(self, ppc_master_obj):
 		# Q(U) with limit curve (can be modified through the config tool)
-		q_ref = ppc_master_obj.q_ex_sp
+		q_ref = ppc_master_obj.ex_sp.Q_sp
 		q_max = ppc_master_obj.max_Q_cap
 		q_min = ppc_master_obj.min_Q_cap
 		# Deadband limits are affected by voltage setpoint
@@ -370,7 +370,7 @@ class Window_class:
 	def plot_V_control_curve(self, ppc_master_obj):
 		# v_ref = 1
 		s = ppc_master_obj.slope_sp
-		v_ref = ppc_master_obj.v_ex_sp
+		v_ref = ppc_master_obj.ex_sp.V_sp
 		q_ref = 0.0
 		# other limits
 		q_max = ppc_master_obj.max_Q_cap

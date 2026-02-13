@@ -5,7 +5,7 @@ printMessages = False
 def V_control(ppc_master_obj):
 	# Initial conditions
 	q_ref = 0.0
-	v_sp = ppc_master_obj.v_ex_sp
+	v_sp = ppc_master_obj.ex_sp.V_sp
 	# Independent variable (abscissa)
 	v_actual = ppc_master_obj.v_actual
 	
@@ -41,7 +41,7 @@ def V_control(ppc_master_obj):
 def QU_VDE(ppc_master_obj):
 	# Initial conditions
 	q_ref = 0.0
-	v_sp = ppc_master_obj.v_ex_sp
+	v_sp = ppc_master_obj.ex_sp.V_sp
 	# Independent variable (abscissa)
 	v_actual = ppc_master_obj.v_actual
 	slope = ppc_master_obj.QU_s # Droop adjustable between 2-12%, default value 5%
@@ -74,7 +74,7 @@ def QU_VDE(ppc_master_obj):
 
 # Q mode = 6
 def V_Limit_VDE(ppc_master_obj):
-	q_ref = ppc_master_obj.q_ex_sp
+	q_ref = ppc_master_obj.ex_sp.Q_sp
 	v_actual = ppc_master_obj.v_actual
 	if (v_actual < ppc_master_obj.dba):
 		if printMessages:
@@ -100,7 +100,7 @@ def V_Limit_VDE(ppc_master_obj):
 
 # V limit VDE init
 def V_Limit_VDE_init(self):
-	q_ref = self.q_ex_sp
+	q_ref = self.ex_sp.Q_sp
 	#print(f'P1=({self.P1[0]}, {self.P1[1]}), P2=({self.P2[0]}, {self.P2[1]}), P3=({self.P3[0]}, {self.P3[1]}), P4=({self.P4[0]}, {self.P4[1]})')
 	# Slopes are not affected by voltage setpoint
 	self.ma = (self.P2[1] - self.P1[1]) / (self.P2[0] - self.P1[0])

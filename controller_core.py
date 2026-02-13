@@ -92,7 +92,7 @@ def controllerCore(window_obj, ppc_master_obj):
 			# Select active power control strategy
 			if ppc_master_obj.p_mode == 0:
 				window_obj.ax1.set_title('Active power: P control')
-				ppc_master_obj.p_in_sp = ppc_master_obj.p_ex_sp
+				ppc_master_obj.p_in_sp = ppc_master_obj.ex_sp.P_sp
 				p_pid_flag = True
 				ppc_master_obj.fsm_pref_flag = True
 			elif ppc_master_obj.p_mode == 1:
@@ -107,7 +107,7 @@ def controllerCore(window_obj, ppc_master_obj):
 				p_pid_flag = True
 			elif ppc_master_obj.p_mode == 2: # P Open Loopl
 				window_obj.ax1.set_title('Active power: P open loop')
-				ppc_master_obj.p_in_sp = ppc_master_obj.p_ex_sp
+				ppc_master_obj.p_in_sp = ppc_master_obj.ex_sp.P_sp
 				p_pid_flag = False
 				ppc_master_obj.fsm_pref_flag = True
 			elif ppc_master_obj.p_mode == 3: # MPPT
@@ -119,7 +119,7 @@ def controllerCore(window_obj, ppc_master_obj):
 		# Select reactive power control strategy
 		if ppc_master_obj.q_mode == 0:
 			window_obj.ax3.set_title('Reactive power: Q control')
-			ppc_master_obj.q_in_sp = ppc_master_obj.q_ex_sp
+			ppc_master_obj.q_in_sp = ppc_master_obj.ex_sp.Q_sp
 			q_pid_flag = True
 		elif ppc_master_obj.q_mode == 1:
 			window_obj.ax3.set_title('Reactive power: Q(P)')
@@ -135,7 +135,7 @@ def controllerCore(window_obj, ppc_master_obj):
 			q_pid_flag = True
 		elif ppc_master_obj.q_mode == 4:
 			window_obj.ax3.set_title('Reactive power: Q open loop')
-			ppc_master_obj.q_in_sp = ppc_master_obj.q_ex_sp
+			ppc_master_obj.q_in_sp = ppc_master_obj.ex_sp.Q_sp
 			q_pid_flag = False
 		elif ppc_master_obj.q_mode == 5:
 			window_obj.ax3.set_title('Reactive power: Q(U)')

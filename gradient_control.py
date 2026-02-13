@@ -141,7 +141,7 @@ def QP_control(ppc_master_obj):
 
 # Q mode = 3
 def PF_control(ppc_master_obj):
-	q_in_sp = ppc_master_obj.p_actual_hv * math.tan(math.acos(ppc_master_obj.pf_ex_sp))
+	q_in_sp = ppc_master_obj.p_actual_hv * math.tan(math.acos(ppc_master_obj.ex_sp.PF_sp))
 	return q_in_sp
 
 # Hello sunshine
