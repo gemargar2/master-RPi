@@ -30,7 +30,7 @@ def controller_loop(ppc_master_obj, window_obj):
 	while True:
 		start = time.time()
 		ppc_master_obj.x = ppc_master_obj.sample*sampling_period
-		ppc_master_obj.x_data.append(ppc_master_obj.x)
+		ppc_master_obj.plot_v.x_data.append(ppc_master_obj.x)
 		controllerCore(window_obj, ppc_master_obj)
 		ppc_master_obj.sample += 1
 		stop = time.time()
