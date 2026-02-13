@@ -214,13 +214,13 @@ class Window_class:
 		self.ln46.set_data(ppc_master_obj.x_data, ppc_master_obj.v_up2)
 		self.ln47.set_data(ppc_master_obj.x_data, ppc_master_obj.v_dn2)
 		# V-Q
-		self.ln53.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.v_actual)
+		self.ln53.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.hv_meter.v_actual)
 		# P-Q
 		self.ln64.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.p_in_sp)
 		# Q_U characteristics
-		self.ln74.set_data(ppc_master_obj.v_actual, ppc_master_obj.q_in_sp)
+		self.ln74.set_data(ppc_master_obj.hv_meter.v_actual, ppc_master_obj.q_in_sp)
 		# P-f
-		self.ln83.set_data(ppc_master_obj.f_actual, ppc_master_obj.p_in_sp)
+		self.ln83.set_data(ppc_master_obj.hv_meter.f_actual, ppc_master_obj.p_in_sp)
 
 		# Slide window
 		if x>=xmax:
@@ -257,7 +257,7 @@ class Window_class:
 		# P(f) curve (limits fixed / slopes modifiable)
 		s = ppc_master_obj.s_FSM
 		# Toggle setpoints
-		p_ref = ppc_master_obj.p_actual_hv
+		p_ref = ppc_master_obj.hv_meter.p_actual
 		f_ref = 50
 		f_vector = [47.5,
                 	49.8,
@@ -275,7 +275,7 @@ class Window_class:
 		self.ln82.set_data(f_vector, p_vector)
 
 	def plot_LFSM_curve(self, ppc_master_obj):
-		p_ref = ppc_master_obj.p_actual_hv
+		p_ref = ppc_master_obj.hv_meter.p_actual
 		f_vector = [47.5,
                 	49.8,
                 	50.2,
