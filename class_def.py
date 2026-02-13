@@ -66,7 +66,9 @@ class PPC_master_class:
 		self.min_Q_cap = -0.33 # Max reactive power capability
 		# Main switch position
 		self.main_switch_pos = 1 # 0 = Open / 1 = Closed
+		# -----------------------------------------------------------------------
 		# ----------------------- Setpoints -------------------------------------
+		# -----------------------------------------------------------------------
 		# Local setpoints (SCADA)
 		self.local_sp = setpoints()
 		# Remote setpoints (TSO vs FOSE)
@@ -97,12 +99,16 @@ class PPC_master_class:
 		self.simulation_duration = 0 # seconds
 		self.simulation_start_stop = False # True = simulation ongoing / False = real measurments
 		self.watchdog = True
+		# -----------------------------------------------------------------------
+		# ----------------------- Submodules ------------------------------------
+		# -----------------------------------------------------------------------
 		# Internal setpoints
 		self.p_in_sp = 0
 		self.q_in_sp = 0
 		# Setpoints with gradient
-		self.p_grad_sp = 0
-		self.q_grad_sp = 0
+		self.grad_submod = basic_submod()
+		#self.p_grad_sp = 0
+		#self.q_grad_sp = 0
 		# Setpoints with PID
 		self.p_pid_sp = 0
 		self.q_pid_sp = 0

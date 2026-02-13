@@ -150,28 +150,28 @@ def controllerCore(window_obj, ppc_master_obj):
 		ppc_master_obj.p_in_sp, ppc_master_obj.q_in_sp = limit(ppc_master_obj)
 	
 		# 4th task: Apply gradient control to restrict overshoot
-		ppc_master_obj.p_grad_sp, ppc_master_obj.q_grad_sp = gradient_control(ppc_master_obj, ppc_master_obj.prev_p_grad_sp, ppc_master_obj.prev_q_grad_sp)
+		ppc_master_obj.grad_submod.p.output, ppc_master_obj.grad_submod.q.output = gradient_control(ppc_master_obj, ppc_master_obj.grad_submod.p.prev_state, ppc_master_obj.grad_submod.q.prev_state)
 	
 		# 5th task: Apply PI control to ensure that PGS reaches the desired setpoint
 		# P PID
 		# Check PID flag AND if active power measurement is near the final setpoint
 		if p_pid_flag and abs(ppc_master_obj.p_in_sp-ppc_master_obj.p_actual_hv)<0.06:
-			ppc_master_obj.p_pid_sp = P_control(ppc_master_obj.p_grad_sp, ppc_master_obj.prev_p_pid_sp, ppc_master_obj)
+			ppc_master_obj.p_pid_sp = P_control(ppc_master_obj.grad_submod.p.output, ppc_master_obj.prev_p_pid_sp, ppc_master_obj)
 		else:
-			ppc_master_obj.p_pid_sp = ppc_master_obj.p_grad_sp
+			ppc_master_obj.p_pid_sp = ppc_master_obj.grad_submod.p.output
 		# Q PID
 		if q_pid_flag:
-			ppc_master_obj.q_pid_sp = Q_control(ppc_master_obj.q_grad_sp, ppc_master_obj.prev_q_pid_sp, ppc_master_obj)
+			ppc_master_obj.q_pid_sp = Q_control(ppc_master_obj.grad_submod.q.output, ppc_master_obj.prev_q_pid_sp, ppc_master_obj)
 		else:
-			ppc_master_obj.q_pid_sp = ppc_master_obj.q_grad_sp
+			ppc_master_obj.q_pid_sp = ppc_master_obj.grad_submod.p.output
 	
 	# Needed for the PID to follow along when not activated
 	ppc_master_obj.prev_p_in_sp = ppc_master_obj.p_in_sp
 	ppc_master_obj.prev_q_in_sp = ppc_master_obj.q_in_sp
 
 	# Needed for the PID to follow along when not activated
-	ppc_master_obj.prev_p_grad_sp = ppc_master_obj.p_grad_sp
-	ppc_master_obj.prev_q_grad_sp = ppc_master_obj.q_grad_sp
+	ppc_master_obj.grad_submod.p.prev_state = ppc_master_obj.grad_submod.p.output
+	ppc_master_obj.grad_submod.q.prev_state = ppc_master_obj.grad_submod.q.output
 		
 	# Needed for the PID to follow along when not activated
 	ppc_master_obj.prev_p_pid_sp = ppc_master_obj.p_pid_sp

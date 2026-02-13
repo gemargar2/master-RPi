@@ -17,3 +17,8 @@ class basic_struct():
         self.input = 0
         self.output = 0
         self.prev_state = 0
+
+class basic_submod():
+    def __init__(self):
+        self.p = basic_struct()
+        self.q = basic_struct()
