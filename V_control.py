@@ -7,7 +7,7 @@ def V_control(ppc_master_obj):
 	q_ref = 0.0
 	v_sp = ppc_master_obj.ex_sp.V_sp
 	# Independent variable (abscissa)
-	v_actual = ppc_master_obj.v_actual
+	v_actual = ppc_master_obj.hv_meter.v_actual
 	
 	slope = ppc_master_obj.slope_sp # Droop adjustable between 2-12%, default value 5%
 	db = ppc_master_obj.V_deadband_sp # voltage deadband
@@ -43,7 +43,7 @@ def QU_VDE(ppc_master_obj):
 	q_ref = 0.0
 	v_sp = ppc_master_obj.ex_sp.V_sp
 	# Independent variable (abscissa)
-	v_actual = ppc_master_obj.v_actual
+	v_actual = ppc_master_obj.hv_meter.v_actual
 	slope = ppc_master_obj.QU_s # Droop adjustable between 2-12%, default value 5%
 	db = ppc_master_obj.QU_db # voltage deadband
 	m = 1/slope # gradient 7<m<24
@@ -75,7 +75,7 @@ def QU_VDE(ppc_master_obj):
 # Q mode = 6
 def V_Limit_VDE(ppc_master_obj):
 	q_ref = ppc_master_obj.ex_sp.Q_sp
-	v_actual = ppc_master_obj.v_actual
+	v_actual = ppc_master_obj.hv_meter.v_actual
 	if (v_actual < ppc_master_obj.dba):
 		if printMessages:
 			print(f'{v_actual} < {ppc_master_obj.dba}')

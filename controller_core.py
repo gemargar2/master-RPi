@@ -18,13 +18,13 @@ def populate_vectors(ppc_master_obj):
 	ppc_master_obj.p_fose_sp.append(ppc_master_obj.fose_sp.P_sp)
 	# P internal setpoints
 	ppc_master_obj.p_in_sp_data.append(ppc_master_obj.p_in_sp)
-	ppc_master_obj.p_grad_sp_data.append(ppc_master_obj.p_grad_sp)
-	ppc_master_obj.p_pid_sp_data.append(ppc_master_obj.p_pid_sp)
+	ppc_master_obj.p_grad_sp_data.append(ppc_master_obj.grad_submod.p.output)
+	ppc_master_obj.p_pid_sp_data.append(ppc_master_obj.pid_submod.p.output)
 	# P measurement
-	ppc_master_obj.p_actual_data.append(ppc_master_obj.p_actual_hv)
+	ppc_master_obj.p_actual_data.append(ppc_master_obj.hv_meter.p_actual)
 		
 	# F plot
-	ppc_master_obj.f_data.append(ppc_master_obj.f_actual)
+	ppc_master_obj.f_data.append(ppc_master_obj.hv_meter.f_actual)
 	ppc_master_obj.f_up.append(51)
 	ppc_master_obj.f_dn.append(49)
 	ppc_master_obj.f_up2.append(51.5)
@@ -37,15 +37,15 @@ def populate_vectors(ppc_master_obj):
 	ppc_master_obj.q_fose_sp.append(ppc_master_obj.fose_sp.Q_sp)
 	# Q internal setpoints
 	ppc_master_obj.q_in_sp_data.append(ppc_master_obj.q_in_sp)
-	ppc_master_obj.q_grad_sp_data.append(ppc_master_obj.q_grad_sp)
-	ppc_master_obj.q_pid_sp_data.append(ppc_master_obj.q_pid_sp)
+	ppc_master_obj.q_grad_sp_data.append(ppc_master_obj.grad_submod.q.output)
+	ppc_master_obj.q_pid_sp_data.append(ppc_master_obj.pid_submod.q.output)
 	# Q measurement
-	ppc_master_obj.q_actual_data.append(ppc_master_obj.q_actual_hv)
+	ppc_master_obj.q_actual_data.append(ppc_master_obj.hv_meter.q_actual)
 		
 	# V plots
-	ppc_master_obj.vab_data.append(ppc_master_obj.vab_actual)
-	ppc_master_obj.vbc_data.append(ppc_master_obj.vbc_actual)
-	ppc_master_obj.vca_data.append(ppc_master_obj.vca_actual)
+	ppc_master_obj.vab_data.append(ppc_master_obj.hv_meter.vab_actual)
+	ppc_master_obj.vbc_data.append(ppc_master_obj.hv_meter.vbc_actual)
+	ppc_master_obj.vca_data.append(ppc_master_obj.hv_meter.vca_actual)
 	ppc_master_obj.v_up.append(1.118)
 	ppc_master_obj.v_dn.append(0.9)
 	ppc_master_obj.v_up2.append(1.15)
@@ -67,16 +67,18 @@ def controllerCore(window_obj, ppc_master_obj):
 	if ppc_master_obj.operational_state == 1:
 		ppc_master_obj.p_in_sp = 0
 		ppc_master_obj.q_in_sp = 0
-		ppc_master_obj.p_grad_sp = 0
-		ppc_master_obj.q_grad_sp = 0
-		ppc_master_obj.p_pid_sp = 0
-		ppc_master_obj.q_pid_sp = 0
 		ppc_master_obj.prev_p_in_sp = 0
 		ppc_master_obj.prev_q_in_sp = 0
-		ppc_master_obj.prev_p_grad_sp = 0
-		ppc_master_obj.prev_q_grad_sp = 0
-		ppc_master_obj.prev_p_pid_sp = 0
-		ppc_master_obj.prev_q_pid_sp = 0
+		# Gradient submodule zero
+		ppc_master_obj.grad_submod.p.output = 0
+		ppc_master_obj.grad_submod.q.output = 0
+		ppc_master_obj.grad_submod.p.prev_state = 0
+		ppc_master_obj.grad_submod.q.prev_state = 0
+		# PID submodule zero
+		ppc_master_obj.pid_submod.p.output = 0
+		ppc_master_obj.pid_submod.q.output = 0
+		ppc_master_obj.pid_submod.p.prev_state = 0
+		ppc_master_obj.pid_submod.p.prev_state = 0
 	else:
 		if ppc_master_obj.lfsm_flag and (ppc_master_obj.vde4130_flag or ppc_master_obj.tso_none_flag):
 			if ppc_master_obj.lfsm_pref_flag:
@@ -86,7 +88,7 @@ def controllerCore(window_obj, ppc_master_obj):
 				ppc_master_obj.lfsm_pref_flag = False
 				# ppc_master_obj.fsm_pref_flag = True
 				print(f'LFSM Pref = {ppc_master_obj.lfsm_pref}')
-			ppc_master_obj.p_in_sp = LFSM_VDE(ppc_master_obj.lfsm_pref, ppc_master_obj, window_obj)
+			ppc_master_obj.p_in_sp = LFSM_VDE(ppc_master_obj.lfsm_pref, ppc_master_obj)
 		else:
 			ppc_master_obj.lfsm_pref_flag = True
 			# Select active power control strategy
@@ -103,7 +105,7 @@ def controllerCore(window_obj, ppc_master_obj):
 					print(f'FSM Pref = {ppc_master_obj.fsm_pref}')
 				window_obj.ax1.set_title('Active power: F control')
 				# p_in_sp = F_Control(ppc_master_obj, window_obj)
-				ppc_master_obj.p_in_sp = FSM_VDE(ppc_master_obj.fsm_pref, ppc_master_obj, window_obj)
+				ppc_master_obj.p_in_sp = FSM_VDE(ppc_master_obj.fsm_pref, ppc_master_obj)
 				p_pid_flag = True
 			elif ppc_master_obj.p_mode == 2: # P Open Loopl
 				window_obj.ax1.set_title('Active power: P open loop')
@@ -155,15 +157,15 @@ def controllerCore(window_obj, ppc_master_obj):
 		# 5th task: Apply PI control to ensure that PGS reaches the desired setpoint
 		# P PID
 		# Check PID flag AND if active power measurement is near the final setpoint
-		if p_pid_flag and abs(ppc_master_obj.p_in_sp-ppc_master_obj.p_actual_hv)<0.06:
-			ppc_master_obj.p_pid_sp = P_control(ppc_master_obj.grad_submod.p.output, ppc_master_obj.prev_p_pid_sp, ppc_master_obj)
+		if p_pid_flag and abs(ppc_master_obj.p_in_sp-ppc_master_obj.hv_meter.p_actual)<0.06:
+			ppc_master_obj.pid_submod.p.output = P_control(ppc_master_obj.grad_submod.p.output, ppc_master_obj.pid_submod.p.prev_state, ppc_master_obj)
 		else:
-			ppc_master_obj.p_pid_sp = ppc_master_obj.grad_submod.p.output
+			ppc_master_obj.pid_submod.p.output = ppc_master_obj.grad_submod.p.output
 		# Q PID
 		if q_pid_flag:
-			ppc_master_obj.q_pid_sp = Q_control(ppc_master_obj.grad_submod.q.output, ppc_master_obj.prev_q_pid_sp, ppc_master_obj)
+			ppc_master_obj.pid_submod.q.output = Q_control(ppc_master_obj.grad_submod.q.output, ppc_master_obj.pid_submod.q.prev_state, ppc_master_obj)
 		else:
-			ppc_master_obj.q_pid_sp = ppc_master_obj.grad_submod.p.output
+			ppc_master_obj.pid_submod.q.output = ppc_master_obj.grad_submod.p.output
 	
 	# Needed for the PID to follow along when not activated
 	ppc_master_obj.prev_p_in_sp = ppc_master_obj.p_in_sp
@@ -174,8 +176,8 @@ def controllerCore(window_obj, ppc_master_obj):
 	ppc_master_obj.grad_submod.q.prev_state = ppc_master_obj.grad_submod.q.output
 		
 	# Needed for the PID to follow along when not activated
-	ppc_master_obj.prev_p_pid_sp = ppc_master_obj.p_pid_sp
-	ppc_master_obj.prev_q_pid_sp = ppc_master_obj.q_pid_sp
+	ppc_master_obj.pid_submod.p.prev_state = ppc_master_obj.pid_submod.p.output
+	ppc_master_obj.pid_submod.q.prev_state = ppc_master_obj.pid_submod.q.output
 	
 	# 6th task: recalculate slave contribution percentages to implement distribution
 	recalc_contribution(ppc_master_obj, window_obj)

@@ -21,7 +21,6 @@ class PPC_master_class:
 		self.name = self.configdata["master"]["name"]
 		# Nominal ratings
 		self.S_nom = float(self.configdata["master"]["nominal_power"]) # Nominal apparent power in MVA
-		self.P_nom = float(self.configdata["master"]["nominal_power"]) # Nominal active power in MW
 		self.V_nom = float(self.configdata["master"]["nominal_voltage"]) # Nominal voltage in kV
 		self.sampling_rate = 10 # Hz = 20 samples/second => period = 1/20 = 0.05s (50ms)
 		# Slave PPCs management
@@ -45,11 +44,14 @@ class PPC_master_class:
 		self.total_qmax = 0 # MVAR
 		self.total_qmin = 0 # MVAR
 		self.connection = 0 # connection status
-		# --- Establish connection for transmission --------------
+		# ---------------------------------------------------------------
+		# ----------------------- ZMQ -----------------------------------
+		# ---------------------------------------------------------------
+		# --- Establish connection for signal transmission --------------
 		self.context_tx = zmq.Context()
 		self.socket_tx = self.context_tx.socket(zmq.PUSH)
 		self.socket_tx.bind("ipc:///tmp/zmqsub")
-		# --- Establish connection for reception --------------
+		# --- Establish connection for signal reception --------------
 		self.context_rx = zmq.Context()
 		self.socket_rx = self.context_rx.socket(zmq.PULL)
 		self.socket_rx.connect("ipc:///tmp/zmqpub")
@@ -64,8 +66,6 @@ class PPC_master_class:
 		self.max_P_cap = 1 # Max active power capability (meteo are ignored)
 		self.max_Q_cap = 0.33 # Max reactive power capability
 		self.min_Q_cap = -0.33 # Max reactive power capability
-		# Main switch position
-		self.main_switch_pos = 1 # 0 = Open / 1 = Closed
 		# -----------------------------------------------------------------------
 		# ----------------------- Setpoints -------------------------------------
 		# -----------------------------------------------------------------------
@@ -105,35 +105,28 @@ class PPC_master_class:
 		# Internal setpoints
 		self.p_in_sp = 0
 		self.q_in_sp = 0
-		# Setpoints with gradient
-		self.grad_submod = basic_submod()
-		#self.p_grad_sp = 0
-		#self.q_grad_sp = 0
-		# Setpoints with PID
-		self.p_pid_sp = 0
-		self.q_pid_sp = 0
-		# Previous Internal setpoints
 		self.prev_p_in_sp = 0
 		self.prev_q_in_sp = 0
-		# Previous setpoints with gradient
-		self.prev_p_grad_sp = 0
-		self.prev_q_grad_sp = 0
-		# Previous setpoints with PID
-		self.prev_p_pid_sp = 0
-		self.prev_q_pid_sp = 0
+		# Gradient submodule
+		self.grad_submod = basic_submod()
+		# PID submodule
+		self.pid_submod = basic_submod()
 		# Reactive power step change
 		self.delta_q = 0
-		# ----------------------- Measurements -------------------------------------
+		# -----------------------------------------------------------------------
+		# ----------------------- Measurements ----------------------------------
+		# -----------------------------------------------------------------------
 		# HV meter
-		self.p_actual_hv = 0
-		self.q_actual_hv = 0
-		self.s_actual_hv = 0
-		self.f_actual = 50
-		self.vab_actual = 1
-		self.vbc_actual = 1
-		self.vca_actual = 1
-		self.v_actual = 1
-		self.pf_actual = 1
+		self.hv_meter = HV_meter_class()
+		# self.p_actual_hv = 0
+		# self.q_actual_hv = 0
+		# self.s_actual_hv = 0
+		# self.f_actual = 50
+		# self.vab_actual = 1
+		# self.vbc_actual = 1
+		# self.vca_actual = 1
+		# self.v_actual = 1
+		# self.pf_actual = 1
 		# MV meter main
 		self.p_actual_mv = 0
 		self.q_actual_mv = 0

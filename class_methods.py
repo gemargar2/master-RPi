@@ -55,14 +55,17 @@ def initialize_setpoints(self):
 	# Memory of the internal setpoints in case of power supply fault
 	self.p_in_sp = self.memory["internal_setpoints"]["p_in_sp"]
 	self.q_in_sp = self.memory["internal_setpoints"]["q_in_sp"]
-	self.p_pid_sp = self.memory["internal_setpoints"]["p_pid_sp"]
-	self.q_pid_sp = self.memory["internal_setpoints"]["q_pid_sp"]
+	# Gradient submodule attributes
 	self.grad_submod.p.output = self.memory["internal_setpoints"]["p_grad_sp"]
 	self.grad_submod.q.output = self.memory["internal_setpoints"]["q_grad_sp"]
 	self.grad_submod.p.prev_state = self.memory["internal_setpoints"]["prev_p_grad_sp"]
 	self.grad_submod.q.prev_state = self.memory["internal_setpoints"]["prev_q_grad_sp"]
-	self.prev_p_pid_sp = self.memory["internal_setpoints"]["prev_p_pid_sp"]
-	self.prev_q_pid_sp = self.memory["internal_setpoints"]["prev_q_pid_sp"]
+	# PID submodule attributes
+	self.pid_submod.p.output = self.memory["internal_setpoints"]["p_pid_sp"]
+	self.pid_submod.q.output = self.memory["internal_setpoints"]["q_pid_sp"]
+	self.pid_submod.p.prev_state = self.memory["internal_setpoints"]["prev_p_pid_sp"]
+	self.pid_submod.q.prev_state = self.memory["internal_setpoints"]["prev_q_pid_sp"]
+	# Mode selection
 	self.p_mode = self.memory["control_mode"]["active_control_mode"]
 	self.q_mode = self.memory["control_mode"]["reactive_control_mode"]
 	# Config file vs Memory

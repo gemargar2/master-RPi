@@ -12,7 +12,7 @@ def local_remote_func(ppc_master_obj, var):
 
 # ----------------------- Local setpoints ------------------------------------
 
-def local_P_setpoint(ppc_master_obj, window_obj, var):
+def local_P_setpoint(ppc_master_obj, var):
 	# Convert to p.u
 	var = var/ppc_master_obj.S_nom
 	# Update ppc_master_obj variable

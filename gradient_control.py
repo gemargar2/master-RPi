@@ -94,7 +94,7 @@ def P_control(p_grad_sp, prev_p_grad_sp, ppc_master_obj):
 	kd = ppc_master_obj.p_pid.kd   # Derivative gain
 	dt = ppc_master_obj.p_pid.dt   # 100 ms
 	# Power control model
-	p_control, p_error, p_integral = p_pid_controller(p_grad_sp, ppc_master_obj.p_actual_hv, kp, ki, kd, p_prev_error, p_integral, dt)
+	p_control, p_error, p_integral = p_pid_controller(p_grad_sp, ppc_master_obj.hv_meter.p_actual, kp, ki, kd, p_prev_error, p_integral, dt)
 	p_pid_sp = prev_p_grad_sp + p_control * dt
 	p_prev_error = p_error
 	
@@ -116,7 +116,7 @@ def Q_control(q_grad_sp, prev_q_grad_sp, ppc_master_obj):
 	kd = ppc_master_obj.q_pid.kd   # Derivative gain
 	dt = ppc_master_obj.q_pid.dt   # 100 ms
 	# Power control model
-	q_control, q_error, q_integral = q_pid_controller(q_grad_sp, ppc_master_obj.q_actual_hv, kp, ki, kd, q_prev_error, q_integral, dt)
+	q_control, q_error, q_integral = q_pid_controller(q_grad_sp, ppc_master_obj.hv_meter.q_actual, kp, ki, kd, q_prev_error, q_integral, dt)
 	q_pid_sp = prev_q_grad_sp + q_control * dt
 	q_prev_error = q_error
 	
@@ -141,13 +141,13 @@ def QP_control(ppc_master_obj):
 
 # Q mode = 3
 def PF_control(ppc_master_obj):
-	q_in_sp = ppc_master_obj.p_actual_hv * math.tan(math.acos(ppc_master_obj.ex_sp.PF_sp))
+	q_in_sp = ppc_master_obj.p_in_sp * math.tan(math.acos(ppc_master_obj.ex_sp.PF_sp))
 	return q_in_sp
 
 # Hello sunshine
 def recalc_pf(ppc_master_obj):
-	if ppc_master_obj.p_actual_hv == 0:
-		ppc_master_obj.pf_actual = 1
+	if ppc_master_obj.hv_meter.p_actual == 0:
+		ppc_master_obj.hv_meter.pf_actual = 1
 	else:
-		ppc_master_obj.pf_actual = math.cos(math.atan(ppc_master_obj.q_actual_hv/ppc_master_obj.p_actual_hv))
-		if ppc_master_obj.q_actual_hv < 0: ppc_master_obj.pf_actual = -ppc_master_obj.pf_actual
+		ppc_master_obj.hv_meter.pf_actual = math.cos(math.atan(ppc_master_obj.hv_meter.q_actual/ppc_master_obj.hv_meter.p_actual))
+		if ppc_master_obj.hv_meter.q_actual < 0: ppc_master_obj.hv_meter.pf_actual = -ppc_master_obj.hv_meter.pf_actual

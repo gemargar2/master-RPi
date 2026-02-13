@@ -252,33 +252,6 @@ class Window_class:
         
 		# Emulate FuncAnimation
 		plt.pause(1/ppc_master_obj.sampling_rate) # 1/20Hz = 0.05 s (TG3, section 6.1.1, p.132)
-    
-	def plot_PF_curve(self, ppc_master_obj):
-		# P(f) curve (limits fixed / slopes modifiable)
-		s = ppc_master_obj.s_FSM
-		s_LFSMO = ppc_master_obj.s_LFSM_O
-		s_LFSMU = ppc_master_obj.s_LFSM_U
-		# Toggle setpoints
-		p_ref = ppc_master_obj.p_grad_sp
-		f_ref = 50
-		f_vector = [47.5,
-                	49.8 - (1 - (p_ref + 0.19/(s*f_ref)))*f_ref*s_LFSMU,
-                	49.8,
-                	49.99,
-                	50.01,
-                	50.2,
-                	50.2 + (1 - (p_ref + 0.19/(s*f_ref)))*f_ref*s_LFSMO,
-                	51.5]
-                
-		p_vector = [1,
-                	1, 
-                	p_ref + 0.19/(s*f_ref),
-                	p_ref,
-                	p_ref,
-                	p_ref - 0.19/(s*f_ref),
-                	0,
-                	0]
-		self.ln81.set_data(f_vector, p_vector)
 	
 	def plot_FSM_curve(self, ppc_master_obj):
 		# P(f) curve (limits fixed / slopes modifiable)
@@ -286,16 +259,13 @@ class Window_class:
 		# Toggle setpoints
 		p_ref = ppc_master_obj.p_actual_hv
 		f_ref = 50
-		f_vector = [
-			47.5,
+		f_vector = [47.5,
                 	49.8,
                 	49.99,
                 	50.01,
                 	50.2,
                 	51.5]
-                
-		p_vector = [
-			p_ref + 0.19/(s*f_ref),
+		p_vector = [p_ref + 0.19/(s*f_ref),
                 	p_ref + 0.19/(s*f_ref),
                 	p_ref,
                 	p_ref,
@@ -306,14 +276,12 @@ class Window_class:
 
 	def plot_LFSM_curve(self, ppc_master_obj):
 		p_ref = ppc_master_obj.p_actual_hv
-		f_vector = [
-			47.5,
+		f_vector = [47.5,
                 	49.8,
                 	50.2,
                 	51.5]
                 
-		p_vector = [
-                	p_ref + 2.3*0.4,
+		p_vector = [p_ref + 2.3*0.4,
                 	p_ref,
                 	p_ref,
                 	p_ref - 1.3*0.4*p_ref]
@@ -328,20 +296,18 @@ class Window_class:
 		q_max = ppc_master_obj.max_Q_cap
 		q_min = ppc_master_obj.min_Q_cap
 		db = ppc_master_obj.QU_db
-		v_vector = [
-			1.15,
-			v_ref + db + (q_ref - q_min)*s,
-			v_ref + db,
-			v_ref - db,
-			v_ref - db - (q_max - q_ref)*s,
-			0.85]
-		q_vector = [
-			q_min,
-			q_min,
-			0,
-			0,
-			q_max,
-			q_max]
+		v_vector = [1.15,
+					v_ref + db + (q_ref - q_min)*s,
+					v_ref + db,
+					v_ref - db,
+					v_ref - db - (q_max - q_ref)*s,
+					0.85]
+		q_vector = [q_min,
+					q_min,
+					0,
+					0,
+					q_max,
+					q_max]
 		self.ln71.set_data(v_vector, q_vector)
     
 	def plot_QU_limit_curve(self, ppc_master_obj):
@@ -354,17 +320,17 @@ class Window_class:
 		dbb = ppc_master_obj.P3[0] + q_ref / ppc_master_obj.mb
 		# Vectors
 		v_vector = [1.15,
-			ppc_master_obj.P4[0],
-			dbb,
-			dba,
-			ppc_master_obj.P1[0],
-			0.85]
+					ppc_master_obj.P4[0],
+					dbb,
+					dba,
+					ppc_master_obj.P1[0],
+					0.85]
 		q_vector = [q_min,
-			q_min,
-			q_ref,
-			q_ref,
-			q_max,
-			q_max]
+					q_min,
+					q_ref,
+					q_ref,
+					q_max,
+					q_max]
 		self.ln72.set_data(v_vector, q_vector)
 
 	def plot_V_control_curve(self, ppc_master_obj):
@@ -377,17 +343,17 @@ class Window_class:
 		q_min = ppc_master_obj.min_Q_cap
 		db = ppc_master_obj.V_deadband_sp
 		v_vector = [1.15,
-			v_ref + db + (q_ref - q_min)*s,
-			v_ref + db,
-			v_ref - db,
-			v_ref - db - (q_max - q_ref)*s,
-			0.85]
+					v_ref + db + (q_ref - q_min)*s,
+					v_ref + db,
+					v_ref - db,
+					v_ref - db - (q_max - q_ref)*s,
+					0.85]
 		q_vector = [q_min,
-			q_min,
-			q_ref,
-			q_ref,
-			q_max,
-			q_max]
+					q_min,
+					q_ref,
+					q_ref,
+					q_max,
+					q_max]
 		self.ln73.set_data(v_vector, q_vector)
     
 	def plot_QP_curve(self, ppc_master_obj):

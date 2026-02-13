@@ -7,68 +7,68 @@ release_timer = 60 # seconds
 def normal_op_limits(ppc_master_obj, window_obj):
 	# Check frequency to activate LFSM-O/U
 	# ----- Comment out for test 0 (FSM only) -------------------------------------------------------
-	if ppc_master_obj.f_actual>50.2 or ppc_master_obj.f_actual<49.8: ppc_master_obj.lfsm_flag = True
+	if ppc_master_obj.hv_meter.f_actual > 50.2 or ppc_master_obj.hv_meter.f_actual < 49.8: ppc_master_obj.lfsm_flag = True
 	else: ppc_master_obj.lfsm_flag = False
 	# ----- Comment out for test 0 (FSM only) -------------------------------------------------------
 	
 	# Frequency ranges
-	if 49.0 <= ppc_master_obj.f_actual <= 51.0:
+	if 49.0 <= ppc_master_obj.hv_meter.f_actual <= 51.0:
 		window_obj.ax2.set_title("Frequency")
 		ppc_master_obj.f_counter = 0
 		ppc_master_obj.f_shutdown = 0 # Runninng
-	elif 47.5 <= ppc_master_obj.f_actual < 49.0:
+	elif 47.5 <= ppc_master_obj.hv_meter.f_actual < 49.0:
 		window_obj.ax2.set_title(u"Underfrequency: shutdown in {}".format(f_timer*ppc_master_obj.sampling_rate-ppc_master_obj.f_counter))
 		ppc_master_obj.f_counter += 1
 		ppc_master_obj.f_shutdown = 2 # Stopping
-	elif 51.0 < ppc_master_obj.f_actual <= 51.5:
+	elif 51.0 < ppc_master_obj.hv_meter.f_actual <= 51.5:
 		window_obj.ax2.set_title(u"Overfrequency: shutdown in {}".format(f_timer*ppc_master_obj.sampling_rate-ppc_master_obj.f_counter))
 		ppc_master_obj.f_counter += 1
 		ppc_master_obj.f_shutdown = 2 # Stopping
-	elif ppc_master_obj.f_actual < 47.5 or ppc_master_obj.f_actual > 51.5:
+	elif ppc_master_obj.hv_meter.f_actual < 47.5 or ppc_master_obj.hv_meter.f_actual > 51.5:
 		window_obj.ax2.set_title('Frequency out of range!')
 		ppc_master_obj.f_shutdown = 1 # Not Running
 
 	# Vab voltage ranges
-	if 0.90 <= ppc_master_obj.vab_actual <= 1.118:
+	if 0.90 <= ppc_master_obj.hv_meter.vab_actual <= 1.118:
 		window_obj.ax4.set_title('Voltage')
 		ppc_master_obj.vab_counter = 0
 		ppc_master_obj.vab_shutdown = 0 # Running
-	elif 0.85 <= ppc_master_obj.vab_actual < 0.90:
+	elif 0.85 <= ppc_master_obj.hv_meter.vab_actual < 0.90:
 		window_obj.ax4.set_title(u"Undervoltage: shutdown in {}".format(v_timer*ppc_master_obj.sampling_rate-ppc_master_obj.vab_counter))
 		ppc_master_obj.vab_counter += 1
 		ppc_master_obj.vab_shutdown = 2 # Stopping
-	elif 1.118 < ppc_master_obj.vab_actual <= 1.15:
+	elif 1.118 < ppc_master_obj.hv_meter.vab_actual <= 1.15:
 		window_obj.ax4.set_title(u"Overvoltage: shutdown in {}".format(v_timer*ppc_master_obj.sampling_rate-ppc_master_obj.vab_counter))
 		ppc_master_obj.vab_counter += 1
 		ppc_master_obj.vab_shutdown = 2 # Stopping
-	elif ppc_master_obj.vab_actual < 0.85 or ppc_master_obj.vab_actual > 1.15:
+	elif ppc_master_obj.hv_meter.vab_actual < 0.85 or ppc_master_obj.hv_meter.vab_actual > 1.15:
 		window_obj.ax4.set_title('Voltage out of range!')
 		ppc_master_obj.vab_shutdown = 1 # Not Running
 
 	# Vbc Voltage ranges
-	if 0.90 <= ppc_master_obj.vbc_actual <= 1.118:
+	if 0.90 <= ppc_master_obj.hv_meter.vbc_actual <= 1.118:
 		ppc_master_obj.vbc_counter = 0
 		ppc_master_obj.vbc_shutdown = 0 # Running
-	elif 0.85 <= ppc_master_obj.vbc_actual < 0.90:
+	elif 0.85 <= ppc_master_obj.hv_meter.vbc_actual < 0.90:
 		ppc_master_obj.vbc_counter += 1
 		ppc_master_obj.vbc_shutdown = 2 # Stopping
-	elif 1.118 < ppc_master_obj.vbc_actual <= 1.15:
+	elif 1.118 < ppc_master_obj.hv_meter.vbc_actual <= 1.15:
 		ppc_master_obj.vbc_counter += 1
 		ppc_master_obj.vbc_shutdown = 2 # Stopping
-	elif ppc_master_obj.vbc_actual < 0.85 or ppc_master_obj.vbc_actual > 1.15:
+	elif ppc_master_obj.hv_meter.vbc_actual < 0.85 or ppc_master_obj.hv_meter.vbc_actual > 1.15:
 		ppc_master_obj.vbc_shutdown = 1 # Not Running
 
 	# Vca Voltage ranges
-	if 0.90 <= ppc_master_obj.vca_actual <= 1.118:
+	if 0.90 <= ppc_master_obj.hv_meter.vca_actual <= 1.118:
 		ppc_master_obj.vca_counter = 0
 		ppc_master_obj.vca_shutdown = 0 # Running
-	elif 0.85 <= ppc_master_obj.vca_actual < 0.90:
+	elif 0.85 <= ppc_master_obj.hv_meter.vca_actual < 0.90:
 		ppc_master_obj.vca_counter += 1
 		ppc_master_obj.vca_shutdown = 2 # Stopping
-	elif 1.118 < ppc_master_obj.vca_actual <= 1.15:
+	elif 1.118 < ppc_master_obj.hv_meter.vca_actual <= 1.15:
 		ppc_master_obj.vca_counter += 1
 		ppc_master_obj.vca_shutdown = 2 # Stopping
-	elif ppc_master_obj.vca_actual < 0.85 or ppc_master_obj.vca_actual > 1.15:
+	elif ppc_master_obj.hv_meter.vca_actual < 0.85 or ppc_master_obj.hv_meter.vca_actual > 1.15:
 		ppc_master_obj.vca_shutdown = 1 # Not Running
 
 # Check if frequency and voltage are within limits
@@ -108,7 +108,7 @@ def operating_ranges(ppc_master_obj, window_obj):
 	# Reconnection process
 	else:
 		# Frequency ranges
-		if 49.9 <= ppc_master_obj.f_actual <= 50.1 and ppc_master_obj.vab_actual >= 0.95 and ppc_master_obj.vbc_actual >= 0.95 and ppc_master_obj.vca_actual >= 0.95:
+		if 49.9 <= ppc_master_obj.hv_meter.f_actual <= 50.1 and ppc_master_obj.hv_meter.vab_actual >= 0.95 and ppc_master_obj.hv_meter.vbc_actual >= 0.95 and ppc_master_obj.hv_meter.vca_actual >= 0.95:
 			ppc_master_obj.release = True
 			ppc_master_obj.release_counter = 0
 			ppc_master_obj.set_start_zero() # Overwrite start signal

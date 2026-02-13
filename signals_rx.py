@@ -78,7 +78,7 @@ def receive_signals(ppc_master_obj, window_obj):
 				if message['value_name'] == 'active_control_mode': ppc_master_obj.p_mode = int(message['value'])
 				elif message['value_name'] == 'reactive_control_mode': ppc_master_obj.q_mode = int(message['value'])
 				# ----------------------------- Local setpoint values  ------------------------------------------------------------
-				elif message['value_name'] == 'P_setpoint': local_P_setpoint(ppc_master_obj, window_obj, float(message['value']))
+				elif message['value_name'] == 'P_setpoint': local_P_setpoint(ppc_master_obj, float(message['value']))
 				elif message['value_name'] == 'Q_setpoint': local_Q_setpoint(ppc_master_obj, window_obj, float(message['value']))
 				elif message['value_name'] == 'PF_setpoint': local_PF_setpoint(ppc_master_obj, float(message['value']))
 				elif message['value_name'] == 'V_setpoint': local_V_setpoint(ppc_master_obj, window_obj, float(message['value']))
@@ -147,13 +147,13 @@ def receive_signals(ppc_master_obj, window_obj):
 				elif message['value_name'] == 'Total_Qmin_available': ppc_master_obj.slave_qmin[i] = float(message["value"])
 		
 		if message['origin'] == 'HV_Meter':
-			if message['value_name'] == 'V1': ppc_master_obj.v_actual = float(message["value"])/ppc_master_obj.V_nom
-			elif message['value_name'] == 'Vab': ppc_master_obj.vab_actual = float(message["value"])/ppc_master_obj.V_nom
-			elif message['value_name'] == 'Vbc': ppc_master_obj.vbc_actual = float(message["value"])/ppc_master_obj.V_nom
-			elif message['value_name'] == 'Vca': ppc_master_obj.vca_actual = float(message["value"])/ppc_master_obj.V_nom
-			elif message['value_name'] == 'f': ppc_master_obj.f_actual = float(message["value"])
-			elif message['value_name'] == 'Pa': ppc_master_obj.p_actual_hv = float(message["value"])/ppc_master_obj.S_nom
-			elif message['value_name'] == 'Qa': ppc_master_obj.q_actual_hv = float(message["value"])/ppc_master_obj.S_nom
-			elif message['value_name'] == 'S': ppc_master_obj.s_actual_hv = float(message["value"])/ppc_master_obj.S_nom
-			elif message['value_name'] == 'main_switch_position': ppc_master_obj.main_switch_pos = int(message["value"])
+			if message['value_name'] == 'V1': ppc_master_obj.hv_meter.v_actual = float(message["value"])/ppc_master_obj.V_nom
+			elif message['value_name'] == 'Vab': ppc_master_obj.hv_meter.vab_actual = float(message["value"])/ppc_master_obj.V_nom
+			elif message['value_name'] == 'Vbc': ppc_master_obj.hv_meter.vbc_actual = float(message["value"])/ppc_master_obj.V_nom
+			elif message['value_name'] == 'Vca': ppc_master_obj.hv_meter.vca_actual = float(message["value"])/ppc_master_obj.V_nom
+			elif message['value_name'] == 'f': ppc_master_obj.hv_meter.f_actual = float(message["value"])
+			elif message['value_name'] == 'Pa': ppc_master_obj.hv_meter.p_actual = float(message["value"])/ppc_master_obj.S_nom
+			elif message['value_name'] == 'Qa': ppc_master_obj.hv_meter.q_actual = float(message["value"])/ppc_master_obj.S_nom
+			elif message['value_name'] == 'S': ppc_master_obj.hv_meter.s_actual = float(message["value"])/ppc_master_obj.S_nom
+			elif message['value_name'] == 'main_switch_position': ppc_master_obj.hv_meter.main_switch_pos = int(message["value"])
 
