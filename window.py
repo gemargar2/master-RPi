@@ -204,13 +204,13 @@ class Window_class:
 		self.ln46.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.v_up2)
 		self.ln47.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.v_dn2)
 		# V-Q
-		self.ln53.set_data(ppc_master_obj.plot_v.q_in_sp, ppc_master_obj.plot_v.hv_meter.v_actual)
+		self.ln53.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.hv_meter.v_actual)
 		# P-Q
-		self.ln64.set_data(ppc_master_obj.plot_v.q_in_sp, ppc_master_obj.plot_v.p_in_sp)
+		self.ln64.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.p_in_sp)
 		# Q_U characteristics
-		self.ln74.set_data(ppc_master_obj.plot_v.hv_meter.v_actual, ppc_master_obj.plot_v.q_in_sp)
+		self.ln74.set_data(ppc_master_obj.hv_meter.v_actual, ppc_master_obj.q_in_sp)
 		# P-f
-		self.ln83.set_data(ppc_master_obj.plot_v.hv_meter.f_actual, ppc_master_obj.plot_v.p_in_sp)
+		self.ln83.set_data(ppc_master_obj.hv_meter.f_actual, ppc_master_obj.p_in_sp)
 
 		# Slide window
 		if x>=xmax:
