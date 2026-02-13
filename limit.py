@@ -11,6 +11,12 @@ def normal_op_limits(ppc_master_obj, window_obj):
 	else: ppc_master_obj.lfsm_flag = False
 	# ----- Comment out for test 0 (FSM only) -------------------------------------------------------
 	
+	ppc_master_obj.hv_clocks.f_clock.check_range(ppc_master_obj.hv_meter.f_actual)
+	ppc_master_obj.hv_clocks.vab_clock.check_range(ppc_master_obj.hv_meter.vab_actual)
+	ppc_master_obj.hv_clocks.vbc_clock.check_range(ppc_master_obj.hv_meter.vbc_actual)
+	ppc_master_obj.hv_clocks.vca_clock.check_range(ppc_master_obj.hv_meter.vca_actual)
+
+	'''
 	# Frequency ranges
 	if 49.0 <= ppc_master_obj.hv_meter.f_actual <= 51.0:
 		window_obj.ax2.set_title("Frequency")
@@ -70,13 +76,20 @@ def normal_op_limits(ppc_master_obj, window_obj):
 		ppc_master_obj.vca_shutdown = 2 # Stopping
 	elif ppc_master_obj.hv_meter.vca_actual < 0.85 or ppc_master_obj.hv_meter.vca_actual > 1.15:
 		ppc_master_obj.vca_shutdown = 1 # Not Running
+	'''
 
 # Check if frequency and voltage are within limits
 def operating_ranges(ppc_master_obj, window_obj):
 	if (ppc_master_obj.release):
 		# Check limits for normal operation
 		normal_op_limits(ppc_master_obj, window_obj)
+
+		ppc_master_obj.hv_clocks.f_clock.check_timer()
+		ppc_master_obj.hv_clocks.vab_clock.check_timer()
+		ppc_master_obj.hv_clocks.vbc_clock.check_timer()
+		ppc_master_obj.hv_clocks.vca_clock.check_timer()
 		
+		'''
 		# Check counters for timeouts
 		if ppc_master_obj.f_counter > f_timer*ppc_master_obj.sampling_rate:
 			window_obj.ax2.set_title("Frequency shutdown timeout")
@@ -90,6 +103,7 @@ def operating_ranges(ppc_master_obj, window_obj):
 		if ppc_master_obj.vca_counter > v_timer*ppc_master_obj.sampling_rate:
 			window_obj.ax4.set_title("Vca shutdown timeout")
 			ppc_master_obj.vca_shutdown = 1 # Timeout = PPC Not Running
+		'''	
 		
 		# If either f or v has gone out of range
 		if (ppc_master_obj.f_shutdown == 1 or ppc_master_obj.vab_shutdown == 1 or ppc_master_obj.vbc_shutdown == 1 or ppc_master_obj.vca_shutdown == 1):

@@ -34,7 +34,7 @@ class basic_submod():
         self.p.zero()
         self.q.zero()
 
-class HV_meter_class():
+class HV_meter():
     def __init__(self):
         # Power
         self.p_actual = 0 # Active
@@ -51,6 +51,46 @@ class HV_meter_class():
         self.pf_actual = 1
 		# Main switch position
         self.main_switch_pos = 1 # 0 = Open / 1 = Closed
+
+class clock():
+    def __init__(self, name, lim_dn, unlim_dn, unlim_up, lim_up, timer):
+        self.name = name
+        self.shutdown = 0 # 0 = Running / 1 = Not Running / 2 = Stopping / 3 = Error
+        self.counter = 0
+        self.timer = timer
+        self.lim_dn = lim_dn
+        self.unlim_dn = unlim_dn
+        self.unlim_up = unlim_up
+        self.lim_up = lim_up
+
+    def check_range(self, var):
+        # Frequency ranges
+        if self.unlim_up <= var <= self.unlim_dn:
+            self.counter = 0
+            self.shutdown = 0 # Runninng
+        elif self.lim_dn <= var < self.unlim_dn:
+            self.counter += 1
+            self.shutdown = 2 # Stopping
+            print("{} Limited operation (lower band): shutdown in {}".format(self.name, self.timer - self.counter))
+        elif self.unlim_up <= var < self.lim_up:
+            self.counter += 1
+            self.shutdown = 2 # Stopping
+            print("{} Limited operation (lower band): shutdown in {}".format(self.name, self.timer - self.counter))
+        elif var < self.lim_dn or var > self.lim_up:
+            self.shutdown = 1 # Not Running
+            print("{} Variable out of range! Emergency shutdown".format(self.name))
+    
+    def check_timer(self):
+        if self.counter >= self.timer:
+            self.shutdown = 1 # Not Running
+            print("{} Timeout!".format(self.name))
+
+class HV_clocks():
+    def __init__(self, sampling_rate):
+        self.f_clock = clock("freq", 47.5, 49.0, 51.0, 51.5, 30*sampling_rate)
+        self.vab_clock = clock("Vab", 0.85, 0.90, 1.118, 1.15, 60*sampling_rate)
+        self.vbc_clock = clock("Vbc", 0.85, 0.90, 1.118, 1.15, 60*sampling_rate)
+        self.vca_clock = clock("Vca", 0.85, 0.90, 1.118, 1.15, 60*sampling_rate)
 
 sampling_rate = 10 # 20Hz
 time_window = 30 # 30 seconds

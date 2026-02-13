@@ -106,7 +106,8 @@ class PPC_master_class:
 		# ----------------------- Measurements ----------------------------------
 		# -----------------------------------------------------------------------
 		# HV meter
-		self.hv_meter = HV_meter_class()
+		self.hv_meter = HV_meter()
+		self.hv_clocks = HV_clocks(self.sampling_rate)
 		# MV meter main
 		self.p_actual_mv = 0
 		self.q_actual_mv = 0
@@ -128,7 +129,9 @@ class PPC_master_class:
 		self.vbc_counter = 0
 		self.vca_counter = 0
 		self.release_counter = 0
+		# -----------------------------------------------------------------
 		# ------- Characteristics curves ----------------------------------
+		# -----------------------------------------------------------------
 		# ------- Signal driven -------------------------------------------
 		# P(f)
 		self.s_FSM = self.configdata["PPC_parameters"]["P(f)_curve"]["s_FSM"]
