@@ -13,43 +13,43 @@ def populate_vectors(ppc_master_obj):
 	# samples/timestamp	
 	# ------ P plot -------
 	# P remote setpoints
-	ppc_master_obj.p_scada_sp.append(ppc_master_obj.local_sp.P_sp)
-	ppc_master_obj.p_tso_sp.append(ppc_master_obj.tso_sp.P_sp)
-	ppc_master_obj.p_fose_sp.append(ppc_master_obj.fose_sp.P_sp)
+	ppc_master_obj.plot_v.p_scada_sp.append(ppc_master_obj.local_sp.P_sp)
+	ppc_master_obj.plot_v.p_tso_sp.append(ppc_master_obj.tso_sp.P_sp)
+	ppc_master_obj.plot_v.p_fose_sp.append(ppc_master_obj.fose_sp.P_sp)
 	# P internal setpoints
-	ppc_master_obj.p_in_sp_data.append(ppc_master_obj.p_in_sp)
-	ppc_master_obj.p_grad_sp_data.append(ppc_master_obj.grad_submod.p.output)
-	ppc_master_obj.p_pid_sp_data.append(ppc_master_obj.pid_submod.p.output)
+	ppc_master_obj.plot_v.p_in_sp_data.append(ppc_master_obj.p_in_sp)
+	ppc_master_obj.plot_v.p_grad_sp_data.append(ppc_master_obj.grad_submod.p.output)
+	ppc_master_obj.plot_v.p_pid_sp_data.append(ppc_master_obj.pid_submod.p.output)
 	# P measurement
-	ppc_master_obj.p_actual_data.append(ppc_master_obj.hv_meter.p_actual)
+	ppc_master_obj.plot_v.p_actual_data.append(ppc_master_obj.hv_meter.p_actual)
 		
 	# F plot
-	ppc_master_obj.f_data.append(ppc_master_obj.hv_meter.f_actual)
-	ppc_master_obj.f_up.append(51)
-	ppc_master_obj.f_dn.append(49)
-	ppc_master_obj.f_up2.append(51.5)
-	ppc_master_obj.f_dn2.append(47.5)
+	ppc_master_obj.plot_v.f_data.append(ppc_master_obj.hv_meter.f_actual)
+	ppc_master_obj.plot_v.f_up.append(51)
+	ppc_master_obj.plot_v.f_dn.append(49)
+	ppc_master_obj.plot_v.f_up2.append(51.5)
+	ppc_master_obj.plot_v.f_dn2.append(47.5)
 		
 	# ------ Q plot -------
 	# Q remote setpoints
-	ppc_master_obj.q_scada_sp.append(ppc_master_obj.local_sp.Q_sp)
-	ppc_master_obj.q_tso_sp.append(ppc_master_obj.tso_sp.Q_sp)
-	ppc_master_obj.q_fose_sp.append(ppc_master_obj.fose_sp.Q_sp)
+	ppc_master_obj.plot_v.q_scada_sp.append(ppc_master_obj.local_sp.Q_sp)
+	ppc_master_obj.plot_v.q_tso_sp.append(ppc_master_obj.tso_sp.Q_sp)
+	ppc_master_obj.plot_v.q_fose_sp.append(ppc_master_obj.fose_sp.Q_sp)
 	# Q internal setpoints
-	ppc_master_obj.q_in_sp_data.append(ppc_master_obj.q_in_sp)
-	ppc_master_obj.q_grad_sp_data.append(ppc_master_obj.grad_submod.q.output)
-	ppc_master_obj.q_pid_sp_data.append(ppc_master_obj.pid_submod.q.output)
+	ppc_master_obj.plot_v.q_in_sp_data.append(ppc_master_obj.q_in_sp)
+	ppc_master_obj.plot_v.q_grad_sp_data.append(ppc_master_obj.grad_submod.q.output)
+	ppc_master_obj.plot_v.q_pid_sp_data.append(ppc_master_obj.pid_submod.q.output)
 	# Q measurement
-	ppc_master_obj.q_actual_data.append(ppc_master_obj.hv_meter.q_actual)
+	ppc_master_obj.plot_v.q_actual_data.append(ppc_master_obj.hv_meter.q_actual)
 		
 	# V plots
-	ppc_master_obj.vab_data.append(ppc_master_obj.hv_meter.vab_actual)
-	ppc_master_obj.vbc_data.append(ppc_master_obj.hv_meter.vbc_actual)
-	ppc_master_obj.vca_data.append(ppc_master_obj.hv_meter.vca_actual)
-	ppc_master_obj.v_up.append(1.118)
-	ppc_master_obj.v_dn.append(0.9)
-	ppc_master_obj.v_up2.append(1.15)
-	ppc_master_obj.v_dn2.append(0.85)
+	ppc_master_obj.plot_v.vab_data.append(ppc_master_obj.hv_meter.vab_actual)
+	ppc_master_obj.plot_v.vbc_data.append(ppc_master_obj.hv_meter.vbc_actual)
+	ppc_master_obj.plot_v.vca_data.append(ppc_master_obj.hv_meter.vca_actual)
+	ppc_master_obj.plot_v.v_up.append(1.118)
+	ppc_master_obj.plot_v.v_dn.append(0.9)
+	ppc_master_obj.plot_v.v_up2.append(1.15)
+	ppc_master_obj.plot_v.v_dn2.append(0.85)
 
 def controllerCore(window_obj, ppc_master_obj):
 	global p_pid_flag, q_pid_flag
@@ -70,15 +70,9 @@ def controllerCore(window_obj, ppc_master_obj):
 		ppc_master_obj.prev_p_in_sp = 0
 		ppc_master_obj.prev_q_in_sp = 0
 		# Gradient submodule zero
-		ppc_master_obj.grad_submod.p.output = 0
-		ppc_master_obj.grad_submod.q.output = 0
-		ppc_master_obj.grad_submod.p.prev_state = 0
-		ppc_master_obj.grad_submod.q.prev_state = 0
+		ppc_master_obj.grad_submod.zero()
 		# PID submodule zero
-		ppc_master_obj.pid_submod.p.output = 0
-		ppc_master_obj.pid_submod.q.output = 0
-		ppc_master_obj.pid_submod.p.prev_state = 0
-		ppc_master_obj.pid_submod.p.prev_state = 0
+		ppc_master_obj.pid_submod.zero()
 	else:
 		if ppc_master_obj.lfsm_flag and (ppc_master_obj.vde4130_flag or ppc_master_obj.tso_none_flag):
 			if ppc_master_obj.lfsm_pref_flag:

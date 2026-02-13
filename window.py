@@ -22,16 +22,6 @@ class Window_class:
 		self.ax6 = self.fig.add_subplot(244)
 		self.ax7 = self.fig.add_subplot(247)
 		self.ax8 = self.fig.add_subplot(243)
-		'''
-		self.ax1 = self.fig.add_subplot(231)
-		self.ax2 = self.fig.add_subplot(232)
-		self.ax3 = self.fig.add_subplot(234)
-		self.ax4 = self.fig.add_subplot(235)
-		#self.ax5 = self.fig.add_subplot(243)
-		#self.ax6 = self.fig.add_subplot(244)
-		self.ax7 = self.fig.add_subplot(236)
-		self.ax8 = self.fig.add_subplot(233)
-		'''
 
 		# Set titles of subplots
 		self.ax1.set_title('Active Power')
@@ -184,43 +174,43 @@ class Window_class:
 		
 		# Plot stuff
 		# P plot
-		self.ln11.set_data(ppc_master_obj.x_data, ppc_master_obj.p_actual_data)
-		self.ln12.set_data(ppc_master_obj.x_data, ppc_master_obj.p_scada_sp)
-		self.ln13.set_data(ppc_master_obj.x_data, ppc_master_obj.p_tso_sp)
-		self.ln14.set_data(ppc_master_obj.x_data, ppc_master_obj.p_fose_sp)
-		self.ln15.set_data(ppc_master_obj.x_data, ppc_master_obj.p_in_sp_data)
-		self.ln16.set_data(ppc_master_obj.x_data, ppc_master_obj.p_grad_sp_data)
-		self.ln17.set_data(ppc_master_obj.x_data, ppc_master_obj.p_pid_sp_data)
+		self.ln11.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.p_actual_data)
+		self.ln12.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.p_scada_sp)
+		self.ln13.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.p_tso_sp)
+		self.ln14.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.p_fose_sp)
+		self.ln15.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.p_in_sp_data)
+		self.ln16.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.p_grad_sp_data)
+		self.ln17.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.p_pid_sp_data)
 		# F plot
-		self.ln21.set_data(ppc_master_obj.x_data, ppc_master_obj.f_data)
-		self.ln22.set_data(ppc_master_obj.x_data, ppc_master_obj.f_up)
-		self.ln23.set_data(ppc_master_obj.x_data, ppc_master_obj.f_dn)
-		self.ln24.set_data(ppc_master_obj.x_data, ppc_master_obj.f_up2)
-		self.ln25.set_data(ppc_master_obj.x_data, ppc_master_obj.f_dn2)
+		self.ln21.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.f_data)
+		self.ln22.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.f_up)
+		self.ln23.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.f_dn)
+		self.ln24.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.f_up2)
+		self.ln25.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.f_dn2)
 		# Q plot
-		self.ln31.set_data(ppc_master_obj.x_data, ppc_master_obj.q_actual_data)
-		self.ln32.set_data(ppc_master_obj.x_data, ppc_master_obj.q_scada_sp)
-		self.ln33.set_data(ppc_master_obj.x_data, ppc_master_obj.q_tso_sp)
-		self.ln34.set_data(ppc_master_obj.x_data, ppc_master_obj.q_fose_sp)
-		self.ln35.set_data(ppc_master_obj.x_data, ppc_master_obj.q_in_sp_data)
-		self.ln36.set_data(ppc_master_obj.x_data, ppc_master_obj.q_pid_sp_data)
-		self.ln37.set_data(ppc_master_obj.x_data, ppc_master_obj.q_grad_sp_data)
+		self.ln31.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.q_actual_data)
+		self.ln32.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.q_scada_sp)
+		self.ln33.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.q_tso_sp)
+		self.ln34.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.q_fose_sp)
+		self.ln35.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.q_in_sp_data)
+		self.ln36.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.q_pid_sp_data)
+		self.ln37.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.q_grad_sp_data)
 		# V plot
-		self.ln41.set_data(ppc_master_obj.x_data, ppc_master_obj.vab_data)
-		self.ln42.set_data(ppc_master_obj.x_data, ppc_master_obj.vbc_data)
-		self.ln43.set_data(ppc_master_obj.x_data, ppc_master_obj.vca_data)
-		self.ln44.set_data(ppc_master_obj.x_data, ppc_master_obj.v_up)
-		self.ln45.set_data(ppc_master_obj.x_data, ppc_master_obj.v_dn)
-		self.ln46.set_data(ppc_master_obj.x_data, ppc_master_obj.v_up2)
-		self.ln47.set_data(ppc_master_obj.x_data, ppc_master_obj.v_dn2)
+		self.ln41.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.vab_data)
+		self.ln42.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.vbc_data)
+		self.ln43.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.vca_data)
+		self.ln44.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.v_up)
+		self.ln45.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.v_dn)
+		self.ln46.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.v_up2)
+		self.ln47.set_data(ppc_master_obj.plot_v.x_data, ppc_master_obj.plot_v.v_dn2)
 		# V-Q
-		self.ln53.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.hv_meter.v_actual)
+		self.ln53.set_data(ppc_master_obj.plot_v.q_in_sp, ppc_master_obj.plot_v.hv_meter.v_actual)
 		# P-Q
-		self.ln64.set_data(ppc_master_obj.q_in_sp, ppc_master_obj.p_in_sp)
+		self.ln64.set_data(ppc_master_obj.plot_v.q_in_sp, ppc_master_obj.plot_v.p_in_sp)
 		# Q_U characteristics
-		self.ln74.set_data(ppc_master_obj.hv_meter.v_actual, ppc_master_obj.q_in_sp)
+		self.ln74.set_data(ppc_master_obj.plot_v.hv_meter.v_actual, ppc_master_obj.plot_v.q_in_sp)
 		# P-f
-		self.ln83.set_data(ppc_master_obj.hv_meter.f_actual, ppc_master_obj.p_in_sp)
+		self.ln83.set_data(ppc_master_obj.plot_v.hv_meter.f_actual, ppc_master_obj.plot_v.p_in_sp)
 
 		# Slide window
 		if x>=xmax:

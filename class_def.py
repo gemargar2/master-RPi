@@ -5,11 +5,6 @@ from aux_classes import *
 from numpy import zeros
 from V_control import *
 from class_methods import *
-from collections import deque
-
-sampling_rate = 10 # 20Hz
-time_window = 30 # 30 seconds
-smax = time_window*sampling_rate # samples
 
 class PPC_master_class:
 	def __init__(self, json_obj, json_mem):
@@ -69,16 +64,11 @@ class PPC_master_class:
 		# -----------------------------------------------------------------------
 		# ----------------------- Setpoints -------------------------------------
 		# -----------------------------------------------------------------------
-		# Local setpoints (SCADA)
-		self.local_sp = setpoints()
-		# Remote setpoints (TSO vs FOSE)
-		self.remote_sp = setpoints()
-		# Network Operator setpoints (TSO)
-		self.tso_sp = setpoints()
-		# 3rd party setpoints (FOSE)
-		self.fose_sp = setpoints()
-		# External setpoints (init with local values)
-		self.ex_sp = setpoints()
+		self.local_sp = setpoints() # Local setpoints (SCADA)
+		self.remote_sp = setpoints() # Remote setpoints (TSO vs FOSE)
+		self.tso_sp = setpoints() # Network Operator setpoints (TSO)
+		self.fose_sp = setpoints() # 3rd party setpoints (FOSE)
+		self.ex_sp = setpoints() # External setpoints (init with local values)
 		# Gradient values (setpoint rate of change MW/sec or p.u/sample)
 		# 0.66%*Pbinst/sec = 0.0066/(20*0.05) = 0.000330 p.u/sample
 		# 0.33%*Pbinst/sec = 0.0033/(20*0.05) = 0.000165 p.u/sample
@@ -87,10 +77,9 @@ class PPC_master_class:
 		self.P_grad = 0
 		self.F_grad = 0
 		self.MPPT_grad = 0
-		# P control PID parameters
-		self.p_pid = pid_params()
-		# Q control PID parameters
-		self.q_pid = pid_params()
+		# PID parameters
+		self.p_pid = pid_params() # P control PID parameters
+		self.q_pid = pid_params() # Q control PID parameters
 		# Simulation variables
 		self.f_disturbance = 50 # Nominal Frequency = 50 Hz
 		self.v_disturbance = 1 # Nominal Voltage = 1 p.u
@@ -118,15 +107,6 @@ class PPC_master_class:
 		# -----------------------------------------------------------------------
 		# HV meter
 		self.hv_meter = HV_meter_class()
-		# self.p_actual_hv = 0
-		# self.q_actual_hv = 0
-		# self.s_actual_hv = 0
-		# self.f_actual = 50
-		# self.vab_actual = 1
-		# self.vbc_actual = 1
-		# self.vca_actual = 1
-		# self.v_actual = 1
-		# self.pf_actual = 1
 		# MV meter main
 		self.p_actual_mv = 0
 		self.q_actual_mv = 0
@@ -188,42 +168,7 @@ class PPC_master_class:
 		# ------- Plot vectors -------------------------------------------------
 		self.sample = 0 # samples
 		self.x = 0 # samples
-		# Samples/timestamps
-		self.x_data = deque([], maxlen=smax)
-		# P remote setpoints
-		self.p_scada_sp = deque([], maxlen=smax)
-		self.p_tso_sp = deque([], maxlen=smax)
-		self.p_fose_sp = deque([], maxlen=smax)
-		# P internal setpoints
-		self.p_in_sp_data = deque([], maxlen=smax)
-		self.p_grad_sp_data = deque([], maxlen=smax)
-		self.p_pid_sp_data = deque([], maxlen=smax)
-		# P measurement
-		self.p_actual_data = deque([], maxlen=smax)
-		# F setpoint
-		self.f_data = deque([], maxlen=smax)
-		self.f_up = deque([], maxlen=smax)
-		self.f_dn = deque([], maxlen=smax)
-		self.f_up2 = deque([], maxlen=smax)
-		self.f_dn2 = deque([], maxlen=smax)
-		# Q remote setpoints
-		self.q_scada_sp = deque([], maxlen=smax)
-		self.q_tso_sp = deque([], maxlen=smax)
-		self.q_fose_sp = deque([], maxlen=smax)
-		# Q internal setpoints
-		self.q_in_sp_data = deque([], maxlen=smax)
-		self.q_grad_sp_data = deque([], maxlen=smax)
-		self.q_pid_sp_data = deque([], maxlen=smax)
-		# Q measurement
-		self.q_actual_data = deque([], maxlen=smax)
-		# V setpoint
-		self.vab_data = deque([], maxlen=smax)
-		self.vbc_data = deque([], maxlen=smax)
-		self.vca_data = deque([], maxlen=smax)
-		self.v_up = deque([], maxlen=smax)
-		self.v_dn = deque([], maxlen=smax)
-		self.v_up2 = deque([], maxlen=smax)
-		self.v_dn2 = deque([], maxlen=smax)
+		self.plot_v = plot_vectors()
 		# ---- Run init functions --------------------------------
 		self.QP_init()
 		self.V_Limit_VDE_init()
